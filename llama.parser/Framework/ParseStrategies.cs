@@ -9,7 +9,10 @@
 
     public class ParseStrategies : IParseStrategies
     {
-        private readonly Dictionary<Type, object> _parsers = new Dictionary<Type, object>();
+        private struct StrategyStore<T> where T : class, IEntity
+        {
+            public static IParse<T> Strategy;
+        }
 
         public ParseStrategies()
         {
@@ -27,15 +30,12 @@
 
         public IParse<T> GetStrategyFor<T>() where T : class, IEntity
         {
-            IParse<T> result = null;
-            if (_parsers.TryGetValue(typeof(T), out var resultObj))
-                result = resultObj as IParse<T>;
-            return result;
+            return StrategyStore<T>.Strategy;
         }
 
-        private void Register<T, TU>() where T : IParse<TU>, new() where TU : class, IEntity
+        private static void Register<T, TU>() where T : IParse<TU>, new() where TU : class, IEntity
         {
-            _parsers.Add(typeof(TU), new T());
+            StrategyStore<TU>.Strategy = new T();
         }
     }
 }
