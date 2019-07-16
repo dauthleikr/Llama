@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Llama.Parser.Framework", "L
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Llama.Parser", "Llama.parser\Llama.Parser.csproj", "{F3203166-973A-4AEF-863F-6F0AE0EBFB72}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Llama.Parser.Tests", "Llama.Parser.Tests\Llama.Parser.Tests.csproj", "{655B866D-B238-44EE-A31E-174990A87AEE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{F3203166-973A-4AEF-863F-6F0AE0EBFB72}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F3203166-973A-4AEF-863F-6F0AE0EBFB72}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F3203166-973A-4AEF-863F-6F0AE0EBFB72}.Release|Any CPU.Build.0 = Release|Any CPU
+		{655B866D-B238-44EE-A31E-174990A87AEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{655B866D-B238-44EE-A31E-174990A87AEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{655B866D-B238-44EE-A31E-174990A87AEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{655B866D-B238-44EE-A31E-174990A87AEE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

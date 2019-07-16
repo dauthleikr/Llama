@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Llama.Parser.Framework
+﻿namespace Llama.Parser.Framework
 {
-    using System.Linq;
-    using System.Reflection;
+    using System;
+    using System.Collections.Generic;
     using Parsers;
     using Tokens;
     using Tokens.Expressions;
@@ -26,17 +22,17 @@ namespace Llama.Parser.Framework
             Register<CommaParser, CommaToken>();
         }
 
-        private void Register<T, TU>() where T : IParse<TU>, new() where TU : class, IToken
-        {
-            _parsers.Add(typeof(TU), new T());
-        }
-
         public IParse<T> GetStrategyFor<T>() where T : class, IToken
         {
             IParse<T> result = null;
             if (_parsers.TryGetValue(typeof(T), out var resultObj))
                 result = resultObj as IParse<T>;
             return result;
+        }
+
+        private void Register<T, TU>() where T : IParse<TU>, new() where TU : class, IToken
+        {
+            _parsers.Add(typeof(TU), new T());
         }
     }
 }
