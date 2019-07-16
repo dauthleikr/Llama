@@ -21,6 +21,7 @@
             Register<IdentifierParser, IdentifierEntity>();
             Register<NumericLiteralParser, NumericLiteralEntity>();
             Register<CommaParser, CommaEntity>();
+            Register<VariableDeclarationParser, VariableDeclarationEntity>();
         }
 
         public IParse<T> GetStrategyFor<T>() where T : class, IEntity
