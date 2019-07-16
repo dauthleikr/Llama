@@ -2,7 +2,7 @@
 {
     using Framework;
 
-    public class VariableInitializationToken : TokenBase<VariableInitializationToken>
+    public class VariableInitializationToken : TokenBase<VariableInitializationToken>, IStatementToken
     {
         public readonly AssignmentToken Assignment;
         public readonly VariableDeclarationToken Declaration;

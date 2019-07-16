@@ -2,7 +2,7 @@
 {
     using Framework;
 
-    public class VariableDeclarationToken : TokenBase<VariableDeclarationToken>
+    public class VariableDeclarationToken : TokenBase<VariableDeclarationToken>, IStatementToken
     {
         public readonly IdentifierToken DeclarationName;
         public readonly IdentifierToken DeclarationType;
