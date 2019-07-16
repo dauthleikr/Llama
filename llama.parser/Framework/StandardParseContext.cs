@@ -6,12 +6,12 @@
 
     public class StandardParseContext : IParseContext
     {
+        private readonly List<IStandardParseContextDebugHook> _debugHooks = new List<IStandardParseContextDebugHook>();
         private readonly IErrorManager _errorManager;
         private readonly INonCodeParser _nonCodeParser;
         private readonly IPanicResolverStrategies _panicResolvers;
         private readonly IParseStrategies _parsers;
         private readonly ISourceReader _reader;
-        private readonly List<IStandardParseContextDebugHook> _debugHooks = new List<IStandardParseContextDebugHook>();
 
         public StandardParseContext(ISourceReader reader, IErrorManager errorManager, IPanicResolverStrategies panicResolvers, IParseStrategies parsers, INonCodeParser nonCodeParser)
         {
@@ -46,7 +46,7 @@
             var strategySuccess = false;
             _errorManager.IncreaseLevel();
             CallIncreaseLevelDebugHooks(typeof(T));
-            
+
             try
             {
                 var startPosition = _reader.Position;
@@ -58,6 +58,7 @@
                     _reader.Position = startPosition;
                     _errorManager.Add(strategyResult.ResultError);
                 }
+
                 return strategyResult;
             }
             finally

@@ -4,6 +4,7 @@
 
     internal class FloatToken : NumericLiteralToken
     {
+        public override BasicType Type => BasicType.Float;
         private readonly string _token;
         public readonly float Number;
 
@@ -14,6 +15,5 @@
         }
 
         protected override string ToStringInternal() => _token;
-        public override BasicType Type => BasicType.Float;
     }
 }

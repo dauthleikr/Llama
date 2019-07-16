@@ -3,21 +3,18 @@
     using System.Globalization;
     using System.Text;
     using Framework;
-    using Tokens;
     using Tokens.Expressions;
     using Tokens.Expressions.NumericLiterals;
 
-    class NumericLiteralParser : AtomicTokenParser<NumericLiteralToken>
+    internal class NumericLiteralParser : AtomicTokenParser<NumericLiteralToken>
     {
         public override bool IsPlausible(ISourcePeeker reader, IParseContext context)
         {
             var peekChar = reader.Peek();
             return char.IsDigit(peekChar) || peekChar == '.' && char.IsDigit(reader.PeekFurther(1));
         }
-        protected override ITokenizationResult<NumericLiteralToken> TryReadTokenInternal(ISourceReader reader, IParseContext context)
-        {
-            return TryReadNumber(reader);
-        }
+
+        protected override ITokenizationResult<NumericLiteralToken> TryReadTokenInternal(ISourceReader reader, IParseContext context) => TryReadNumber(reader);
 
         private ITokenizationResult<NumericLiteralToken> TryReadNumber(ISourceReader reader)
         {
@@ -39,9 +36,13 @@
                     decimapPoint = true;
                 }
                 else if (decimapPoint && isDigit)
+                {
                     digitAfterDecimalPoint = true;
+                }
                 else if (!isDigit && !isSeperator)
+                {
                     break;
+                }
 
                 reader.Eat();
                 stringBuilder.Append(peekChar);
@@ -60,28 +61,31 @@
         {
             var suffixChar = reader.ReadChar();
             token.Append(suffixChar);
-    
+
             switch (char.ToUpper(suffixChar))
             {
                 case 'F':
-                    {
-                        if (float.TryParse(number, NumberStyles.Float, NumberFormatInfo.InvariantInfo, out var result))
-                            return new FloatToken(token.ToString(), result);
-                        break;
-                    }
+                {
+                    if (float.TryParse(number, NumberStyles.Float, NumberFormatInfo.InvariantInfo, out var result))
+                        return new FloatToken(token.ToString(), result);
+                    break;
+                }
+
                 case 'D':
-                    {
-                        if (double.TryParse(number, NumberStyles.Float, NumberFormatInfo.InvariantInfo, out var result))
-                            return new DoubleToken(token.ToString(), result);
-                        break;
-                    }
+                {
+                    if (double.TryParse(number, NumberStyles.Float, NumberFormatInfo.InvariantInfo, out var result))
+                        return new DoubleToken(token.ToString(), result);
+                    break;
+                }
+
                 case 'U':
-                    {
-                        if (ulong.TryParse(number, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out var result))
-                            return new UI64Token(token.ToString(), result);
-                        break;
-                    }
-                default:  // no suffix, undo reading and adding the last char
+                {
+                    if (ulong.TryParse(number, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out var result))
+                        return new UI64Token(token.ToString(), result);
+                    break;
+                }
+
+                default: // no suffix, undo reading and adding the last char
                     reader.Vomit();
                     token.Remove(token.Length - 1, 1);
                     break;

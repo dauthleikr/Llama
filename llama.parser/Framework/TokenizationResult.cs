@@ -1,14 +1,11 @@
 ﻿namespace Llama.Parser.Framework
 {
-    using System;
-
     public class TokenizationResult<T> : ITokenizationResult<T> where T : class, IToken
     {
-        public static readonly TokenizationResult<T> ErrorNotPlausible = new TokenizationResult<T>((IErrorWithConfidence)null);
-
         public IErrorWithConfidence ResultError { get; }
         public T ResultSuccess { get; }
         public bool Successful { get; }
+        public static readonly TokenizationResult<T> ErrorNotPlausible = new TokenizationResult<T>((IErrorWithConfidence) null);
 
         public TokenizationResult(T token)
         {

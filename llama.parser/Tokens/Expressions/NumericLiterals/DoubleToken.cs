@@ -4,6 +4,7 @@
 
     internal class DoubleToken : NumericLiteralToken
     {
+        public override BasicType Type => BasicType.Double;
         private readonly string _token;
         public readonly double Number;
 
@@ -15,7 +16,5 @@
 
 
         protected override string ToStringInternal() => _token;
-
-        public override BasicType Type => BasicType.Double;
     }
 }

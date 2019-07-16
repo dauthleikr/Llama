@@ -1,7 +1,4 @@
 ﻿namespace Llama.Parser.Framework
 {
-    internal static class ParseContextExtensions
-    {
-
-    }
+    internal static class ParseContextExtensions { }
 }

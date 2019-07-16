@@ -1,6 +1,5 @@
 ﻿namespace Llama.Parser.Parsers
 {
-    using System;
     using Framework;
     using Language;
     using Tokens;
@@ -32,10 +31,7 @@
             return initialToken is ITokenizationResult<IExpressionToken> result ? result : new TokenizationResult<IExpressionToken>(initialToken);
         }
 
-        static void a(TokenBase<IExpressionToken> wow)
-        {
-
-        }
+        private static void a(TokenBase<IExpressionToken> wow) { }
 
         private static BinaryOperationToken GetPrecedenceDominatedToken(BinaryOperationToken root, byte precedence)
         {
@@ -67,7 +63,7 @@
 
             var result = binaryOperation ?? new BinaryOperationToken(leftToken, operatorToken, rightToken);
             if (result.BinaryOperator.Operator == BinaryOperator.MemberAccess && !(result.Right is IdentifierToken))
-                return Error(positionExpectedExpression, $"Expected identifier on the right side of {nameof(BinaryOperator.MemberAccess)}-operator", 2, (int)(reader.Position - positionExpectedExpression));
+                return Error(positionExpectedExpression, $"Expected identifier on the right side of {nameof(BinaryOperator.MemberAccess)}-operator", 2, (int) (reader.Position - positionExpectedExpression));
             return result;
         }
 

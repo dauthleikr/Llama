@@ -2,7 +2,7 @@
 {
     using Language;
 
-    abstract class NumericLiteralToken : AtomicToken<NumericLiteralToken>, IExpressionToken
+    internal abstract class NumericLiteralToken : AtomicToken<NumericLiteralToken>, IExpressionToken
     {
         public abstract BasicType Type { get; }
     }

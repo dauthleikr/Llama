@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Llama.Parser.Tokens.Expressions
+﻿namespace Llama.Parser.Tokens.Expressions
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Text;
     using Framework;
 
-    class FunctionCallToken : TokenBase<FunctionCallToken>
+    internal class FunctionCallToken : TokenBase<FunctionCallToken>
     {
+        public readonly CloseParanthesisToken CloseParanthesisToken;
+        public readonly IReadOnlyList<CommaToken> Commas;
         public readonly OpenParanthesisToken OpenParanthesisToken;
         public readonly IReadOnlyList<IExpressionToken> Parameters;
-        public readonly IReadOnlyList<CommaToken> Commas;
-        public readonly CloseParanthesisToken CloseParanthesisToken;
 
         public FunctionCallToken(OpenParanthesisToken open, IReadOnlyList<IExpressionToken> parameters, IReadOnlyList<CommaToken> commaTokens, CloseParanthesisToken close)
         {
@@ -34,6 +33,7 @@ namespace Llama.Parser.Tokens.Expressions
                 if (index < Commas.Count)
                     Commas[index].WalkRecursive(walker, codeChildrenOnly);
             }
+
             CloseParanthesisToken.WalkRecursive(walker, codeChildrenOnly);
         }
 
@@ -47,6 +47,7 @@ namespace Llama.Parser.Tokens.Expressions
                 if (Commas.Count > i)
                     builder.Append(Commas[i]);
             }
+
             builder.Append(CloseParanthesisToken);
             return builder.ToString();
         }

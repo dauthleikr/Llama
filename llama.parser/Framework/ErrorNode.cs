@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Llama.Parser.Framework
+﻿namespace Llama.Parser.Framework
 {
-    class ErrorNode
+    using System;
+    using System.Collections.Generic;
+
+    internal class ErrorNode
     {
         public ErrorNode Parent { get; }
         public int Depth { get; }
@@ -12,10 +11,7 @@ namespace Llama.Parser.Framework
         private readonly List<ErrorNode> _children = new List<ErrorNode>();
         private readonly IErrorWithConfidence _error;
 
-        public ErrorNode(IErrorWithConfidence error)
-        {
-            _error = error;
-        }
+        public ErrorNode(IErrorWithConfidence error) => _error = error;
 
         private ErrorNode(ErrorNode parent, IErrorWithConfidence error, int depth) : this(error)
         {
@@ -32,8 +28,8 @@ namespace Llama.Parser.Framework
             var newNode = new ErrorNode(this, error, depth);
             _children.Add(newNode);
             return newNode;
-
         }
+
         public void KillChildren() => _children.Clear();
 
         public IErrorWithConfidence GetHighest() => GetHighest(this)._error;

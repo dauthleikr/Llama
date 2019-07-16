@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Llama.Parser.Tokens.Expressions
+﻿namespace Llama.Parser.Tokens.Expressions
 {
     using Framework;
 
-    class BinaryOperationToken : TokenBase<BinaryOperationToken>, IExpressionToken
+    internal class BinaryOperationToken : TokenBase<BinaryOperationToken>, IExpressionToken
     {
         public IExpressionToken Left { get; internal set; }
         public BinaryOperatorToken BinaryOperator { get; }

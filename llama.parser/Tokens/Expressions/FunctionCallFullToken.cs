@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Llama.Parser.Tokens.Expressions
+﻿namespace Llama.Parser.Tokens.Expressions
 {
     using Framework;
 
-    class FunctionCallFullToken : TokenBase<FunctionCallFullToken>, IExpressionToken
+    internal class FunctionCallFullToken : TokenBase<FunctionCallFullToken>, IExpressionToken
     {
         public readonly IExpressionToken ExpressionToken;
         public readonly FunctionCallToken FunctionCallToken;

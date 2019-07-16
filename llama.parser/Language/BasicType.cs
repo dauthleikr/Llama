@@ -1,9 +1,8 @@
-﻿
-// ReSharper disable InconsistentNaming
+﻿// ReSharper disable InconsistentNaming
 
 namespace Llama.Parser.Language
 {
-    enum BasicType
+    internal enum BasicType
     {
         I8,
         I16,

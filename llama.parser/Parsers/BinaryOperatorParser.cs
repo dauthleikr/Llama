@@ -6,7 +6,7 @@
     using Language;
     using Tokens;
 
-    class BinaryOperatorParser : AtomicTokenParser<BinaryOperatorToken>
+    internal class BinaryOperatorParser : AtomicTokenParser<BinaryOperatorToken>
     {
         private static readonly HashSet<string> Operators = BinaryOperators.OperatorToEnum.Keys.ToHashSet();
         private static readonly HashSet<char> ValidFirstOperatorChars = Operators.Select(item => item.First()).Distinct().ToHashSet();

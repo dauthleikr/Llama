@@ -15,6 +15,7 @@
                 builder.Append(readChar);
                 readChar = reader.ReadChar();
             }
+
             reader.Vomit();
             return new IdentifierToken(builder.ToString());
         }

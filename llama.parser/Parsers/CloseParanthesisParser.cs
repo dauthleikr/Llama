@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Llama.Parser.Parsers
+﻿namespace Llama.Parser.Parsers
 {
     using Framework;
     using Tokens;
 
-    class CloseParanthesisParser : AtomicTokenParser<CloseParanthesisToken>
+    internal class CloseParanthesisParser : AtomicTokenParser<CloseParanthesisToken>
     {
         protected override ITokenizationResult<CloseParanthesisToken> TryReadTokenInternal(ISourceReader reader, IParseContext context)
         {

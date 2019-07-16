@@ -4,6 +4,7 @@
 
     internal class UI64Token : NumericLiteralToken
     {
+        public override BasicType Type => BasicType.UI64;
         private readonly string _token;
         public readonly ulong Integer;
 
@@ -14,6 +15,5 @@
         }
 
         protected override string ToStringInternal() => _token;
-        public override BasicType Type => BasicType.UI64;
     }
 }

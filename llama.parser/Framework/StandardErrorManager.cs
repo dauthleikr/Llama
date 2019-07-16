@@ -50,7 +50,7 @@
                 _errorCurrent.Parent.KillChildren();
                 _errorCurrent = _errorCurrent.Parent;
             }
-            
+
             _level--;
         }
 
