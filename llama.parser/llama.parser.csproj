@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Llama.parser.framework\Llama.Parser.Framework.csproj" />
+    <ProjectReference Include="..\Llama.parser.abstractions\Llama.Parser.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

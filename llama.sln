@@ -3,15 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28803.352
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Llama.Syntax", "Llama.syntax\Llama.Syntax.csproj", "{BA07622B-82B3-4050-AF3B-EF852190EDE8}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "test", "test\test.csproj", "{33C77A4F-820A-4851-9910-41A7DD97169B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Llama.Parser.Framework", "Llama.parser.framework\Llama.Parser.Framework.csproj", "{C7B2DEB8-3169-49BD-A506-A5001B731857}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Llama.Parser.Abstractions", "Llama.parser.abstractions\Llama.Parser.Abstractions.csproj", "{C7B2DEB8-3169-49BD-A506-A5001B731857}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Llama.Parser", "Llama.parser\Llama.Parser.csproj", "{F3203166-973A-4AEF-863F-6F0AE0EBFB72}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Llama.Parser.Tests", "Llama.Parser.Tests\Llama.Parser.Tests.csproj", "{655B866D-B238-44EE-A31E-174990A87AEE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Llama.Parser.Tests", "Llama.Parser.Tests\Llama.Parser.Tests.csproj", "{655B866D-B238-44EE-A31E-174990A87AEE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,10 +17,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{BA07622B-82B3-4050-AF3B-EF852190EDE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BA07622B-82B3-4050-AF3B-EF852190EDE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BA07622B-82B3-4050-AF3B-EF852190EDE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BA07622B-82B3-4050-AF3B-EF852190EDE8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{33C77A4F-820A-4851-9910-41A7DD97169B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{33C77A4F-820A-4851-9910-41A7DD97169B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33C77A4F-820A-4851-9910-41A7DD97169B}.Release|Any CPU.ActiveCfg = Release|Any CPU
