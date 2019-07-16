@@ -1,8 +1,8 @@
-﻿namespace Llama.Parser.Framework
+﻿namespace Llama.Parser.Abstractions
 {
     public interface ISourceWalker
     {
-        void Walk(IToken token);
+        void Walk(IEntity entity);
         void Walk(INonCode token);
     }
 }

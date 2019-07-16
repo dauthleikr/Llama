@@ -1,7 +1,7 @@
 ﻿namespace Llama.Parser.Tests.DebugImplementations
 {
     using System.Diagnostics;
-    using Framework;
+    using Abstractions;
 
     internal class PanicResolvers : IPanicResolverStrategies, IPanicResolver
     {

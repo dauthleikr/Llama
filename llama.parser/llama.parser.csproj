@@ -8,4 +8,8 @@
     <ProjectReference Include="..\Llama.parser.abstractions\Llama.Parser.Abstractions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Entities\Statements\" />
+  </ItemGroup>
+
 </Project>

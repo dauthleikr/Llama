@@ -1,6 +1,8 @@
 ﻿namespace Llama.Parser.Framework
 {
-    public class ErrorResult<T> : IErrorWithConfidence, ITokenizationResult<T> where T : class, IToken
+    using Abstractions;
+
+    public class ErrorResult<T> : IErrorWithConfidence, IParseResult<T> where T : class, IEntity
     {
         public string Message { get; }
         public long Index { get; }

@@ -1,12 +1,12 @@
 ﻿namespace Llama.Parser.NonCode.Parsers
 {
     using System.Text;
-    using Framework;
-    using Tokens;
+    using Abstractions;
+    using Entities;
 
-    public class LineCommentParser : NonCodeTokenParserBase<LineCommentToken>
+    public class LineCommentParser : NonCodeEntityParserBase<LineCommentEntity>
     {
-        public override bool TryParse(ISourceReader reader, out LineCommentToken nonCode)
+        public override bool TryParse(ISourceReader reader, out LineCommentEntity nonCode)
         {
             if (reader.ReadChar() != '/' || reader.ReadChar() != '/')
             {
@@ -23,7 +23,7 @@
                     break;
             }
 
-            nonCode = new LineCommentToken(builder.ToString());
+            nonCode = new LineCommentEntity(builder.ToString());
             return true;
         }
     }

@@ -1,8 +1,8 @@
 ﻿namespace Llama.Parser.Tests
 {
     using DebugImplementations;
+    using NonCode.Entities;
     using NonCode.Parsers;
-    using NonCode.Tokens;
     using NUnit.Framework;
 
     [TestFixture]
@@ -13,7 +13,7 @@
         {
             const string src = "//wow";
             var reader = new StringSourceReader(src);
-            var success = new LineCommentParser().TryParse(reader, out LineCommentToken result);
+            var success = new LineCommentParser().TryParse(reader, out LineCommentEntity result);
 
             Assert.True(success);
             Assert.NotNull(result);
@@ -25,7 +25,7 @@
         {
             const string src = "//wow\nbad";
             var reader = new StringSourceReader(src);
-            var success = new LineCommentParser().TryParse(reader, out LineCommentToken result);
+            var success = new LineCommentParser().TryParse(reader, out LineCommentEntity result);
 
             Assert.True(success);
             Assert.NotNull(result);

@@ -1,6 +1,6 @@
 ﻿namespace Llama.Parser.NonCode
 {
-    using Framework;
+    using Abstractions;
 
     public interface IParseNonCode
     {

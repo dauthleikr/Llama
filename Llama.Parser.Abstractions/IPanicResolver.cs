@@ -1,4 +1,4 @@
-﻿namespace Llama.Parser.Framework
+﻿namespace Llama.Parser.Abstractions
 {
     public interface IPanicResolver
     {

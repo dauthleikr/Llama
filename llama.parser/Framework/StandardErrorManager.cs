@@ -2,6 +2,7 @@
 {
     using System;
     using System.Diagnostics;
+    using Abstractions;
 
     public class StandardErrorManager : IErrorManager
     {
@@ -23,7 +24,7 @@
 
         public void Add(IError error, int confidenceMetric = 0)
         {
-            Add(new TokenizerError(error, confidenceMetric));
+            Add(new ParseError(error, confidenceMetric));
         }
 
         public void Add(IErrorWithConfidence error)

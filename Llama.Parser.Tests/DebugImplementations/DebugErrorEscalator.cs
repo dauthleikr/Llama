@@ -1,6 +1,7 @@
 ﻿namespace Llama.Parser.Tests.DebugImplementations
 {
     using System.Diagnostics;
+    using Abstractions;
     using Framework;
 
     internal class DebugErrorEscalator : IErrorEscalator

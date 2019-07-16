@@ -1,12 +1,13 @@
 ﻿namespace Llama.Parser.Parsers
 {
     using System.Text;
+    using Abstractions;
+    using Entities;
     using Framework;
-    using Tokens;
 
-    internal class IdentifierParser : AtomicTokenParser<IdentifierToken>
+    internal class IdentifierParser : AtomicEntityParser<IdentifierEntity>
     {
-        protected override ITokenizationResult<IdentifierToken> TryReadTokenInternal(ISourceReader reader, IParseContext context)
+        protected override IParseResult<IdentifierEntity> TryReadEntityInternal(ISourceReader reader, IParseContext context)
         {
             var readChar = reader.ReadChar();
             var builder = new StringBuilder();
@@ -17,7 +18,7 @@
             }
 
             reader.Vomit();
-            return new IdentifierToken(builder.ToString());
+            return new IdentifierEntity(builder.ToString());
         }
 
         public override bool IsPlausible(ISourcePeeker reader, IParseContext context)

@@ -1,14 +1,14 @@
 ﻿namespace Llama.Parser.Parsers
 {
-    using Framework;
-    using Tokens;
+    using Abstractions;
+    using Entities;
 
-    internal class CommaParser : AtomicTokenParser<CommaToken>
+    internal class CommaParser : AtomicEntityParser<CommaEntity>
     {
-        protected override ITokenizationResult<CommaToken> TryReadTokenInternal(ISourceReader reader, IParseContext context)
+        protected override IParseResult<CommaEntity> TryReadEntityInternal(ISourceReader reader, IParseContext context)
         {
             reader.Eat();
-            return new CommaToken();
+            return new CommaEntity();
         }
 
         public override bool IsPlausible(ISourcePeeker reader, IParseContext context) => reader.Peek() == ',';

@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using Abstractions;
 
     public class StandardParseContext : IParseContext
     {
@@ -22,14 +23,14 @@
             _nonCodeParser = nonCodeParser;
         }
 
-        public bool TryReadToken<T>(out T result) where T : class, IToken
+        public bool TryRead<T>(out T result) where T : class, IEntity
         {
-            var token = TryReadToken<T>();
+            var token = TryRead<T>();
             result = token.ResultSuccess;
             return token.Successful;
         }
 
-        public ITokenizationResult<T> TryReadToken<T>() where T : class, IToken
+        public IParseResult<T> TryRead<T>() where T : class, IEntity
         {
             var strategy = _parsers.GetStrategyFor<T>();
             if (strategy == null)
@@ -40,7 +41,7 @@
                 CallIncreaseLevelDebugHooks(typeof(T));
                 CallNotPlausibleDebugHooks();
                 CallDecreaseLevelDebugHooks();
-                return TokenizationResult<T>.ErrorNotPlausible;
+                return ParseResult<T>.ErrorNotPlausible;
             }
 
             var strategySuccess = false;
@@ -51,7 +52,7 @@
             {
                 var startPosition = _reader.Position;
                 CallParsingStartDebugHooks();
-                var strategyResult = strategy.TryReadToken(_reader, this, _nonCodeParser);
+                var strategyResult = strategy.TryRead(_reader, this, _nonCodeParser);
                 CallParsingEndDebugHooks(strategyResult);
                 if (!(strategySuccess = strategyResult.Successful))
                 {
@@ -68,7 +69,7 @@
             }
         }
 
-        public bool IsPlausible<T>() where T : class, IToken => _parsers.GetStrategyFor<T>().IsPlausible(_reader, this);
+        public bool IsPlausible<T>() where T : class, IEntity => _parsers.GetStrategyFor<T>().IsPlausible(_reader, this);
 
         public void Panic<T>() where T : IPanicResolver
         {
@@ -103,7 +104,7 @@
         }
 
         [Conditional("DEBUG")]
-        private void CallParsingEndDebugHooks<T>(ITokenizationResult<T> result) where T : class, IToken
+        private void CallParsingEndDebugHooks<T>(IParseResult<T> result) where T : class, IEntity
         {
             foreach (var hook in _debugHooks)
                 hook.ParsingEnd(result);

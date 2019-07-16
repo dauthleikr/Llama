@@ -1,4 +1,4 @@
-﻿namespace Llama.Parser.Framework
+﻿namespace Llama.Parser.Abstractions
 {
     using System;
 

@@ -1,21 +1,15 @@
-﻿using System;
-
-namespace test
+﻿namespace test
 {
-    using System.Collections.Immutable;
+    using System;
     using System.Diagnostics;
-    using System.Linq;
-    using System.Threading;
+    using Llama.Parser.Entities;
     using Llama.Parser.Framework;
-    using Llama.Parser.Language;
     using Llama.Parser.NonCode;
     using Llama.Parser.NonCode.Parsers;
-    using Llama.Parser.Parsers;
-    using Llama.Parser.Tokens;
 
-    class Program
+    internal class Program
     {
-        class ConsoleTrace : TraceListener
+        private class ConsoleTrace : TraceListener
         {
             public override void Write(string message)
             {
@@ -28,7 +22,7 @@ namespace test
             }
         }
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             //  Trace.Listeners.Add(new ConsoleTrace());
 
@@ -46,14 +40,10 @@ namespace test
             context.AddDebugHook(new ConsoleParseContextDebugHook());
 
             var time = Stopwatch.StartNew();
-            if (context.TryReadToken(out IExpressionToken result))
-            {
+            if (context.TryRead(out IExpressionEntity result))
                 Console.WriteLine($"{time.Elapsed.TotalMilliseconds:F4} ms");
-            }
             else
-            {
-                Debug.WriteLine($"Failed to parse");
-            }
+                Debug.WriteLine("Failed to parse");
             Console.ReadLine();
         }
     }

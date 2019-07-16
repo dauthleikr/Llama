@@ -1,12 +1,12 @@
 ﻿namespace Llama.Parser.NonCode.Parsers
 {
     using System.Text;
-    using Framework;
-    using Tokens;
+    using Abstractions;
+    using Entities;
 
-    public class WhitespaceParser : NonCodeTokenParserBase<WhitespaceToken>
+    public class WhitespaceParser : NonCodeEntityParserBase<WhitespaceEntity>
     {
-        public override bool TryParse(ISourceReader reader, out WhitespaceToken nonCode)
+        public override bool TryParse(ISourceReader reader, out WhitespaceEntity nonCode)
         {
             var builder = new StringBuilder();
             var peekChar = reader.Peek();
@@ -19,7 +19,7 @@
 
             if (builder.Length > 0)
             {
-                nonCode = new WhitespaceToken(builder.ToString());
+                nonCode = new WhitespaceEntity(builder.ToString());
                 return true;
             }
 

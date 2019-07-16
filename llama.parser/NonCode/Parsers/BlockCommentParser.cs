@@ -1,12 +1,12 @@
 ﻿namespace Llama.Parser.NonCode.Parsers
 {
     using System.Text;
-    using Framework;
-    using Tokens;
+    using Abstractions;
+    using Entities;
 
-    public class BlockCommentParser : NonCodeTokenParserBase<BlockCommentToken>
+    public class BlockCommentParser : NonCodeEntityParserBase<BlockCommentEntity>
     {
-        public override bool TryParse(ISourceReader reader, out BlockCommentToken nonCode)
+        public override bool TryParse(ISourceReader reader, out BlockCommentEntity nonCode)
         {
             if (reader.ReadChar() != '/' || reader.ReadChar() != '*')
             {
@@ -28,7 +28,7 @@
             }
 
             reader.Eat(2);
-            nonCode = new BlockCommentToken(builder.ToString());
+            nonCode = new BlockCommentEntity(builder.ToString());
             return true;
         }
     }

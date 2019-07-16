@@ -1,18 +1,14 @@
-﻿using System;
-
-namespace Llama.Parser.Tests
+﻿namespace Llama.Parser.Tests
 {
     using DebugImplementations;
     using NonCode;
+    using NonCode.Entities;
     using NonCode.Parsers;
-    using NonCode.Tokens;
     using NUnit.Framework;
 
     [TestFixture]
     internal class NonCodeParserTests
     {
-        private NonCodeParser _parser;
-
         [SetUp]
         public void Setup()
         {
@@ -24,6 +20,8 @@ namespace Llama.Parser.Tests
             });
         }
 
+        private NonCodeParser _parser;
+
 
         [Test]
         public void ParsesBlockComments()
@@ -32,7 +30,7 @@ namespace Llama.Parser.Tests
             var reader = new StringSourceReader(src);
             var nonCode = _parser.ReadOrNull(reader);
 
-            Assert.IsAssignableFrom<BlockCommentToken>(nonCode);
+            Assert.IsAssignableFrom<BlockCommentEntity>(nonCode);
             Assert.AreEqual(nonCode.ToString(), src);
         }
 

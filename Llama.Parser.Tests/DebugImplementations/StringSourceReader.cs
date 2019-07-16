@@ -1,7 +1,7 @@
 ﻿namespace Llama.Parser.Tests.DebugImplementations
 {
     using System;
-    using Framework;
+    using Abstractions;
 
     internal class StringSourceReader : ISourceReader
     {

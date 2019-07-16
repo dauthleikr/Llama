@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace test
+﻿namespace test
 {
-    using System.Globalization;
+    using System;
+    using System.Collections.Generic;
+    using System.Text;
+    using Llama.Parser.Abstractions;
     using Llama.Parser.Framework;
 
-    class ConsoleParseContextDebugHook : IStandardParseContextDebugHook
+    internal class ConsoleParseContextDebugHook : IStandardParseContextDebugHook
     {
-        private readonly Stack<ConsoleArea> _printAreas = new Stack<ConsoleArea>();
-        private readonly Stack<Type> _tokenTypes = new Stack<Type>();
-        private int _level = -1;
-
         private struct ConsoleArea
         {
             public readonly int PosX, PosY;
@@ -30,33 +25,34 @@ namespace test
             }
         }
 
-        public ConsoleParseContextDebugHook()
-        {
-            Console.OutputEncoding = Encoding.UTF8;
-        }
+        private readonly Stack<ConsoleArea> _printAreas = new Stack<ConsoleArea>();
+        private readonly Stack<Type> _entityTypes = new Stack<Type>();
+        private int _level = -1;
+
+        public ConsoleParseContextDebugHook() => Console.OutputEncoding = Encoding.UTF8;
 
         public void IncreaseLevel(Type tokenType)
         {
             _level++;
-            _tokenTypes.Push(tokenType);
+            _entityTypes.Push(tokenType);
         }
 
         public void DecreaseLevel()
         {
             _level--;
-            _tokenTypes.Pop();
-            if (_printAreas.Count > _tokenTypes.Count)
+            _entityTypes.Pop();
+            if (_printAreas.Count > _entityTypes.Count)
                 _printAreas.Pop();
         }
 
         public void ParsingSkippedNotPlausible(ISourcePeeker source)
         {
-            PrintLevelAndType(_tokenTypes.Peek());
+            PrintLevelAndType(_entityTypes.Peek());
             PrintCodePreview(source);
             Write(" Not plausible\n", ConsoleColor.Yellow);
         }
 
-        public void ParsingEnd<T>(ITokenizationResult<T> result) where T : class, IToken
+        public void ParsingEnd<T>(IParseResult<T> result) where T : class, IEntity
         {
             var x = Console.CursorLeft;
             var y = Console.CursorTop;
@@ -64,7 +60,7 @@ namespace test
             _printAreas.Pop().SetToPos();
             if (result.Successful)
             {
-                Write($" succeeded", ConsoleColor.Green);
+                Write(" succeeded", ConsoleColor.Green);
             }
             else
             {
@@ -78,7 +74,7 @@ namespace test
 
         public void ParsingStart(ISourcePeeker source)
         {
-            PrintLevelAndType(_tokenTypes.Peek());
+            PrintLevelAndType(_entityTypes.Peek());
             PrintCodePreview(source);
             _printAreas.Push(new ConsoleArea(Console.CursorLeft, Console.CursorTop));
             Write("\n");
@@ -109,12 +105,10 @@ namespace test
         private void PrintLevelAndType(Type tokenType)
         {
             for (var i = 0; i < _level * 2; i++)
-            {
-                if(i % 2 == 0)
+                if (i % 2 == 0)
                     Write("|", ConsoleColor.White);
                 else
                     Write(" ");
-            }
             var typeName = tokenType.Name;
             if (typeName.StartsWith('I') && typeName.Length > 1 && char.IsUpper(typeName[1]))
                 typeName = typeName.Substring(1);

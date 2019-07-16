@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace test
+﻿namespace test
 {
     using System.Diagnostics;
+    using Llama.Parser.Abstractions;
     using Llama.Parser.Framework;
 
-    class DebugErrorEscalator : IErrorEscalator
+    internal class DebugErrorEscalator : IErrorEscalator
     {
         public void Escalate(IErrorWithConfidence error)
         {

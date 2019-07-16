@@ -1,17 +1,18 @@
 ﻿namespace Llama.Parser.Parsers
 {
+    using Abstractions;
+    using Entities;
     using Framework;
-    using Tokens;
 
-    internal class VariableDeclarationParser : ParserBase<VariableDeclarationToken>
+    internal class VariableDeclarationParser : ParserBase<VariableDeclarationEntity>
     {
-        public override ITokenizationResult<VariableDeclarationToken> TryReadToken(ISourceReader reader, IParseContext context, INonCodeParser nonCodeParser)
+        public override IParseResult<VariableDeclarationEntity> TryRead(ISourceReader reader, IParseContext context, INonCodeParser nonCodeParser)
         {
-            if (context.TryReadToken<IdentifierToken>(out var typeIdentifier) && context.TryReadToken<IdentifierToken>(out var nameIdentifier))
-                return new VariableDeclarationToken(typeIdentifier, nameIdentifier);
+            if (context.TryRead<IdentifierEntity>(out var typeIdentifier) && context.TryRead<IdentifierEntity>(out var nameIdentifier))
+                return new VariableDeclarationEntity(typeIdentifier, nameIdentifier);
             return ErrorExpectedToken(reader);
         }
 
-        public override bool IsPlausible(ISourcePeeker reader, IParseContext context) => context.IsPlausible<IdentifierToken>();
+        public override bool IsPlausible(ISourcePeeker reader, IParseContext context) => context.IsPlausible<IdentifierEntity>();
     }
 }

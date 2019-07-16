@@ -1,33 +1,34 @@
 ﻿namespace Llama.Parser.Parsers
 {
     using System.Collections.Generic;
+    using Abstractions;
+    using Entities;
+    using Entities.Expressions;
     using Framework;
-    using Tokens;
-    using Tokens.Expressions;
 
-    internal class FunctionCallParser : ParserBase<FunctionCallToken>
+    internal class FunctionCallParser : ParserBase<FunctionCallEntity>
     {
-        public override ITokenizationResult<FunctionCallToken> TryReadToken(ISourceReader reader, IParseContext context, INonCodeParser nonCodeParser)
+        public override IParseResult<FunctionCallEntity> TryRead(ISourceReader reader, IParseContext context, INonCodeParser nonCodeParser)
         {
-            if (!context.TryReadToken<OpenParanthesisToken>(out var openParanthesis))
+            if (!context.TryRead<OpenParanthesisEntity>(out var openParanthesis))
                 return ErrorExpectedToken(reader);
 
-            var parameters = new List<IExpressionToken>();
-            var commas = new List<CommaToken>();
-            while (context.TryReadToken<IExpressionToken>(out var parameter))
+            var parameters = new List<IExpressionEntity>();
+            var commas = new List<CommaEntity>();
+            while (context.TryRead<IExpressionEntity>(out var parameter))
             {
                 parameters.Add(parameter);
-                if (!context.TryReadToken<CommaToken>(out var comma))
+                if (!context.TryRead<CommaEntity>(out var comma))
                     break;
                 commas.Add(comma);
             }
 
-            return context.TryReadToken<CloseParanthesisToken>().Match<CloseParanthesisToken, ITokenizationResult<FunctionCallToken>>(
-                closeParanthesis => new FunctionCallToken(openParanthesis, parameters, commas, closeParanthesis),
-                (err, self) => new ErrorResult<FunctionCallToken>(err, "Expected ',' or ')'", 1)
+            return context.TryRead<CloseParanthesisEntity>().Match<CloseParanthesisEntity, IParseResult<FunctionCallEntity>>(
+                closeParanthesis => new FunctionCallEntity(openParanthesis, parameters, commas, closeParanthesis),
+                (err, self) => new ErrorResult<FunctionCallEntity>(err, "Expected ',' or ')'", 1)
             );
         }
 
-        public override bool IsPlausible(ISourcePeeker reader, IParseContext context) => context.IsPlausible<OpenParanthesisToken>();
+        public override bool IsPlausible(ISourcePeeker reader, IParseContext context) => context.IsPlausible<OpenParanthesisEntity>();
     }
 }

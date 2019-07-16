@@ -1,6 +1,7 @@
 ﻿namespace Llama.Parser.Framework
 {
     using System.Collections.Generic;
+    using Abstractions;
 
     internal static class SourceReaderExtensions
     {

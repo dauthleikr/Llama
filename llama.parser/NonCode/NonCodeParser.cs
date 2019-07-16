@@ -2,8 +2,8 @@
 {
     using System.Collections.Generic;
     using System.Linq;
-    using Framework;
-    using Tokens;
+    using Abstractions;
+    using Entities;
 
     public class NonCodeParser : INonCodeParser
     {
@@ -27,7 +27,7 @@
                     tokens.Add(token);
                 }
 
-                return new AggregateNonCodeToken(tokens.ToArray());
+                return new AggregateNonCodeEntity(tokens.ToArray());
             }
 
             return nonCode;
@@ -42,7 +42,7 @@
         {
             var startPosition = reader.Position;
             if (_nonCodePositions.TryGetValue(reader.Position, out var nonCodeLength))
-                return new InvalidSyntaxNonCodeToken(reader.Read(nonCodeLength));
+                return new InvalidSyntaxNonCodeEntity(reader.Read(nonCodeLength));
             foreach (var nonCodeParser in _nonCodeParsers)
             {
                 if (nonCodeParser.TryParse(reader, out var result))

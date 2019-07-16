@@ -2,9 +2,10 @@
 {
     using System;
     using System.Collections.Generic;
+    using Abstractions;
+    using Entities;
+    using Entities.Expressions;
     using Parsers;
-    using Tokens;
-    using Tokens.Expressions;
 
     public class ParseStrategies : IParseStrategies
     {
@@ -12,17 +13,17 @@
 
         public ParseStrategies()
         {
-            Register<ExpressionParser, IExpressionToken>();
-            Register<BinaryOperatorParser, BinaryOperatorToken>();
-            Register<CloseParanthesisParser, CloseParanthesisToken>();
-            Register<OpenParanthesisParser, OpenParanthesisToken>();
-            Register<FunctionCallParser, FunctionCallToken>();
-            Register<IdentifierParser, IdentifierToken>();
-            Register<NumericLiteralParser, NumericLiteralToken>();
-            Register<CommaParser, CommaToken>();
+            Register<ExpressionParser, IExpressionEntity>();
+            Register<BinaryOperatorParser, BinaryOperatorEntity>();
+            Register<CloseParanthesisParser, CloseParanthesisEntity>();
+            Register<OpenParanthesisParser, OpenParanthesisEntity>();
+            Register<FunctionCallParser, FunctionCallEntity>();
+            Register<IdentifierParser, IdentifierEntity>();
+            Register<NumericLiteralParser, NumericLiteralEntity>();
+            Register<CommaParser, CommaEntity>();
         }
 
-        public IParse<T> GetStrategyFor<T>() where T : class, IToken
+        public IParse<T> GetStrategyFor<T>() where T : class, IEntity
         {
             IParse<T> result = null;
             if (_parsers.TryGetValue(typeof(T), out var resultObj))
@@ -30,7 +31,7 @@
             return result;
         }
 
-        private void Register<T, TU>() where T : IParse<TU>, new() where TU : class, IToken
+        private void Register<T, TU>() where T : IParse<TU>, new() where TU : class, IEntity
         {
             _parsers.Add(typeof(TU), new T());
         }

@@ -1,68 +1,69 @@
 ﻿namespace Llama.Parser.Parsers
 {
+    using Abstractions;
+    using Entities;
+    using Entities.Expressions;
     using Framework;
     using Language;
-    using Tokens;
-    using Tokens.Expressions;
 
-    public class ExpressionParser : ParserBase<IExpressionToken>
+    public class ExpressionParser : ParserBase<IExpressionEntity>
     {
-        public override ITokenizationResult<IExpressionToken> TryReadToken(ISourceReader reader, IParseContext context, INonCodeParser nonCodeParser)
+        public override IParseResult<IExpressionEntity> TryRead(ISourceReader reader, IParseContext context, INonCodeParser nonCodeParser)
         {
             return TryReadInitial(reader, context)
                 .ImproveableWith(initial => TryReadGreedyContinuation(reader, context, initial));
         }
 
-        private ITokenizationResult<IExpressionToken> TryReadInitial(ISourceReader reader, IParseContext context)
+        private IParseResult<IExpressionEntity> TryReadInitial(ISourceReader reader, IParseContext context)
         {
-            if (context.TryReadToken<NumericLiteralToken>(out var numericLiteral))
+            if (context.TryRead<NumericLiteralEntity>(out var numericLiteral))
                 return numericLiteral;
-            if (context.TryReadToken<IdentifierToken>(out var identifier))
+            if (context.TryRead<IdentifierEntity>(out var identifier))
                 return identifier;
-            return ErrorExpectedToken(reader);
+            return ErrorExpectedEntity(reader);
         }
 
-        private ITokenizationResult<IExpressionToken> TryReadGreedyContinuation(ISourceReader reader, IParseContext context, IExpressionToken initialToken)
+        private IParseResult<IExpressionEntity> TryReadGreedyContinuation(ISourceReader reader, IParseContext context, IExpressionEntity initialEntity)
         {
-            if (context.TryReadToken<BinaryOperatorToken>(out var binaryOperator))
-                return TryReadGreedyContinuationBinaryOperator(reader, context, initialToken, binaryOperator);
-            if (context.TryReadToken<FunctionCallToken>(out var functionCall))
-                return TryReadGreedyContinuation(reader, context, new FunctionCallFullToken(initialToken, functionCall));
-            return initialToken is ITokenizationResult<IExpressionToken> result ? result : new TokenizationResult<IExpressionToken>(initialToken);
+            if (context.TryRead<BinaryOperatorEntity>(out var binaryOperator))
+                return TryReadGreedyContinuationBinaryOperator(reader, context, initialEntity, binaryOperator);
+            if (context.TryRead<FunctionCallEntity>(out var functionCall))
+                return TryReadGreedyContinuation(reader, context, new FunctionCallFullEntity(initialEntity, functionCall));
+            return initialEntity is IParseResult<IExpressionEntity> result ? result : new ParseResult<IExpressionEntity>(initialEntity);
         }
 
-        private static void a(TokenBase<IExpressionToken> wow) { }
+        private static void a(EntityBase<IExpressionEntity> wow) { }
 
-        private static BinaryOperationToken GetPrecedenceDominatedToken(BinaryOperationToken root, byte precedence)
+        private static BinaryOperationEntity GetPrecedenceDominatedEntity(BinaryOperationEntity root, byte precedence)
         {
             if (root.BinaryOperator.Precedence >= precedence)
                 return null;
 
-            if (root.Left is BinaryOperationToken binaryOperation)
-                return GetPrecedenceDominatedToken(binaryOperation, precedence) ?? root;
+            if (root.Left is BinaryOperationEntity binaryOperation)
+                return GetPrecedenceDominatedEntity(binaryOperation, precedence) ?? root;
             return root;
         }
 
-        private ITokenizationResult<IExpressionToken> TryReadGreedyContinuationBinaryOperator(ISourceReader reader, IParseContext context, IExpressionToken leftToken, BinaryOperatorToken operatorToken)
+        private IParseResult<IExpressionEntity> TryReadGreedyContinuationBinaryOperator(ISourceReader reader, IParseContext context, IExpressionEntity leftEntity, BinaryOperatorEntity operatorEntity)
         {
             var positionExpectedExpression = reader.Position;
-            if (!context.TryReadToken<IExpressionToken>(out var rightToken))
-                return ErrorExpectedToken(reader, 1);
+            if (!context.TryRead<IExpressionEntity>(out var rightToken))
+                return ErrorExpectedEntity(reader, 1);
 
-            BinaryOperationToken binaryOperation = null;
-            if (rightToken is BinaryOperationToken rightBinaryOperation)
+            BinaryOperationEntity binaryOperation = null;
+            if (rightToken is BinaryOperationEntity rightBinaryOperation)
             {
-                var precedenceDominated = GetPrecedenceDominatedToken(rightBinaryOperation, operatorToken.Precedence);
+                var precedenceDominated = GetPrecedenceDominatedEntity(rightBinaryOperation, operatorEntity.Precedence);
                 if (precedenceDominated != null)
                 {
-                    var newTornOperation = new BinaryOperationToken(leftToken, operatorToken, precedenceDominated.Left);
+                    var newTornOperation = new BinaryOperationEntity(leftEntity, operatorEntity, precedenceDominated.Left);
                     precedenceDominated.Left = newTornOperation;
                     binaryOperation = rightBinaryOperation;
                 }
             }
 
-            var result = binaryOperation ?? new BinaryOperationToken(leftToken, operatorToken, rightToken);
-            if (result.BinaryOperator.Operator == BinaryOperator.MemberAccess && !(result.Right is IdentifierToken))
+            var result = binaryOperation ?? new BinaryOperationEntity(leftEntity, operatorEntity, rightToken);
+            if (result.BinaryOperator.Operator == BinaryOperator.MemberAccess && !(result.Right is IdentifierEntity))
                 return Error(positionExpectedExpression, $"Expected identifier on the right side of {nameof(BinaryOperator.MemberAccess)}-operator", 2, (int) (reader.Position - positionExpectedExpression));
             return result;
         }

@@ -1,14 +1,15 @@
 ﻿namespace Llama.Parser.Parsers
 {
+    using Abstractions;
+    using Entities;
     using Framework;
-    using Tokens;
 
-    internal class CloseParanthesisParser : AtomicTokenParser<CloseParanthesisToken>
+    internal class CloseParanthesisParser : AtomicEntityParser<CloseParanthesisEntity>
     {
-        protected override ITokenizationResult<CloseParanthesisToken> TryReadTokenInternal(ISourceReader reader, IParseContext context)
+        protected override IParseResult<CloseParanthesisEntity> TryReadEntityInternal(ISourceReader reader, IParseContext context)
         {
             reader.Eat();
-            return new CloseParanthesisToken();
+            return new CloseParanthesisEntity();
         }
 
         public override bool IsPlausible(ISourcePeeker reader, IParseContext context) => reader.Peek() == ')';

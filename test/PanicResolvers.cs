@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace test
+﻿namespace test
 {
     using System.Diagnostics;
-    using Llama.Parser.Framework;
+    using Llama.Parser.Abstractions;
 
-    class PanicResolvers : IPanicResolverStrategies, IPanicResolver
+    internal class PanicResolvers : IPanicResolverStrategies, IPanicResolver
     {
-        public IPanicResolver GetStrategy<T>() => this;
-
         public int GetFaultyCodeLength(ISourcePeeker reader)
         {
             Debug.WriteLine($"PANIC: {reader.Position}");
             return 1;
         }
+
+        public IPanicResolver GetStrategy<T>() => this;
     }
 }

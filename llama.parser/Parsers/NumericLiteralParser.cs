@@ -2,11 +2,12 @@
 {
     using System.Globalization;
     using System.Text;
+    using Abstractions;
+    using Entities.Expressions;
+    using Entities.Expressions.NumericLiterals;
     using Framework;
-    using Tokens.Expressions;
-    using Tokens.Expressions.NumericLiterals;
 
-    internal class NumericLiteralParser : AtomicTokenParser<NumericLiteralToken>
+    internal class NumericLiteralParser : AtomicEntityParser<NumericLiteralEntity>
     {
         public override bool IsPlausible(ISourcePeeker reader, IParseContext context)
         {
@@ -14,9 +15,9 @@
             return char.IsDigit(peekChar) || peekChar == '.' && char.IsDigit(reader.PeekFurther(1));
         }
 
-        protected override ITokenizationResult<NumericLiteralToken> TryReadTokenInternal(ISourceReader reader, IParseContext context) => TryReadNumber(reader);
+        protected override IParseResult<NumericLiteralEntity> TryReadEntityInternal(ISourceReader reader, IParseContext context) => TryReadNumber(reader);
 
-        private ITokenizationResult<NumericLiteralToken> TryReadNumber(ISourceReader reader)
+        private IParseResult<NumericLiteralEntity> TryReadNumber(ISourceReader reader)
         {
             var decimapPoint = false;
             var digitAfterDecimalPoint = false;
@@ -51,13 +52,13 @@
             }
 
             if (numBuilder.Length == 0)
-                return ErrorExpectedToken(reader);
+                return ErrorExpectedEntity(reader);
             if (decimapPoint && !digitAfterDecimalPoint)
                 return Error(reader, "Expected digit after decimal point", 1);
             return TryReadSuffixForNumber(reader, stringBuilder, numBuilder.ToString());
         }
 
-        private ITokenizationResult<NumericLiteralToken> TryReadSuffixForNumber(ISourceReader reader, StringBuilder token, string number)
+        private IParseResult<NumericLiteralEntity> TryReadSuffixForNumber(ISourceReader reader, StringBuilder token, string number)
         {
             var suffixChar = reader.ReadChar();
             token.Append(suffixChar);
@@ -67,21 +68,21 @@
                 case 'F':
                 {
                     if (float.TryParse(number, NumberStyles.Float, NumberFormatInfo.InvariantInfo, out var result))
-                        return new FloatToken(token.ToString(), result);
+                        return new FloatEntity(token.ToString(), result);
                     break;
                 }
 
                 case 'D':
                 {
                     if (double.TryParse(number, NumberStyles.Float, NumberFormatInfo.InvariantInfo, out var result))
-                        return new DoubleToken(token.ToString(), result);
+                        return new DoubleEntity(token.ToString(), result);
                     break;
                 }
 
                 case 'U':
                 {
                     if (ulong.TryParse(number, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out var result))
-                        return new UI64Token(token.ToString(), result);
+                        return new UI64Entity(token.ToString(), result);
                     break;
                 }
 
@@ -92,7 +93,7 @@
             }
 
             if (long.TryParse(number, out var defaultResult))
-                return new FloatToken(token.ToString(), defaultResult);
+                return new FloatEntity(token.ToString(), defaultResult);
             return Error(reader, "", 2);
         }
     }
