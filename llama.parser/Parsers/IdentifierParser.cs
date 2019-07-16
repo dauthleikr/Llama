@@ -5,7 +5,7 @@
     using Entities;
     using Framework;
 
-    internal class IdentifierParser : AtomicEntityParser<IdentifierEntity>
+    public class IdentifierParser : AtomicEntityParser<IdentifierEntity>
     {
         protected override IParseResult<IdentifierEntity> TryReadEntityInternal(ISourceReader reader, IParseContext context)
         {

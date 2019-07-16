@@ -2,7 +2,7 @@
 
 namespace Llama.Parser.Language
 {
-    internal enum BasicType
+    public enum BasicType
     {
         I8,
         I16,

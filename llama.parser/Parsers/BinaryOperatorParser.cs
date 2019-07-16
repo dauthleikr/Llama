@@ -7,7 +7,7 @@
     using Framework;
     using Language;
 
-    internal class BinaryOperatorParser : AtomicEntityParser<BinaryOperatorEntity>
+    public class BinaryOperatorParser : AtomicEntityParser<BinaryOperatorEntity>
     {
         private static readonly HashSet<string> Operators = BinaryOperators.OperatorToEnum.Keys.ToHashSet();
         private static readonly HashSet<char> ValidFirstOperatorChars = Operators.Select(item => item.First()).Distinct().ToHashSet();

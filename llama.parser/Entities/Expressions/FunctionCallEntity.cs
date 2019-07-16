@@ -6,7 +6,7 @@
     using Abstractions;
     using Framework;
 
-    internal class FunctionCallEntity : EntityBase<FunctionCallEntity>
+    public class FunctionCallEntity : EntityBase<FunctionCallEntity>
     {
         public readonly CloseParanthesisEntity CloseParanthesisEntity;
         public readonly IReadOnlyList<CommaEntity> Commas;

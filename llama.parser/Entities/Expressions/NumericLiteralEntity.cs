@@ -2,7 +2,7 @@
 {
     using Language;
 
-    internal abstract class NumericLiteralEntity : AtomicEntity<NumericLiteralEntity>, IExpressionEntity
+    public abstract class NumericLiteralEntity : AtomicEntity<NumericLiteralEntity>, IExpressionEntity
     {
         public abstract BasicType Type { get; }
     }

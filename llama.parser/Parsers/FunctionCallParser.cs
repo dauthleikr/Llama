@@ -6,7 +6,7 @@
     using Entities.Expressions;
     using Framework;
 
-    internal class FunctionCallParser : ParserBase<FunctionCallEntity>
+    public class FunctionCallParser : ParserBase<FunctionCallEntity>
     {
         public override IParseResult<FunctionCallEntity> TryRead(ISourceReader reader, IParseContext context, INonCodeParser nonCodeParser)
         {

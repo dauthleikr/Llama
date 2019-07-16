@@ -3,7 +3,7 @@
     using Abstractions;
     using Framework;
 
-    internal abstract class AtomicEntityParser<T> : ParserBase<T> where T : class, IAtomicEntity
+    public abstract class AtomicEntityParser<T> : ParserBase<T> where T : class, IAtomicEntity
     {
         public override IParseResult<T> TryRead(ISourceReader reader, IParseContext context, INonCodeParser nonCodeParser)
         {

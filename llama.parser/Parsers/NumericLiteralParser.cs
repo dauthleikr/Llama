@@ -7,7 +7,7 @@
     using Entities.Expressions.NumericLiterals;
     using Framework;
 
-    internal class NumericLiteralParser : AtomicEntityParser<NumericLiteralEntity>
+    public class NumericLiteralParser : AtomicEntityParser<NumericLiteralEntity>
     {
         public override bool IsPlausible(ISourcePeeker reader, IParseContext context)
         {

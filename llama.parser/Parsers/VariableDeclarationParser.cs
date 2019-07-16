@@ -4,7 +4,7 @@
     using Entities;
     using Framework;
 
-    internal class VariableDeclarationParser : ParserBase<VariableDeclarationEntity>
+    public class VariableDeclarationParser : ParserBase<VariableDeclarationEntity>
     {
         public override IParseResult<VariableDeclarationEntity> TryRead(ISourceReader reader, IParseContext context, INonCodeParser nonCodeParser)
         {

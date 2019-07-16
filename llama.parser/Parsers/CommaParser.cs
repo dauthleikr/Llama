@@ -3,7 +3,7 @@
     using Abstractions;
     using Entities;
 
-    internal class CommaParser : AtomicEntityParser<CommaEntity>
+    public class CommaParser : AtomicEntityParser<CommaEntity>
     {
         protected override IParseResult<CommaEntity> TryReadEntityInternal(ISourceReader reader, IParseContext context)
         {

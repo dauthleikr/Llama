@@ -3,7 +3,7 @@
     using Abstractions;
     using Entities;
 
-    internal class OpenParanthesisParser : AtomicEntityParser<OpenParanthesisEntity>
+    public class OpenParanthesisParser : AtomicEntityParser<OpenParanthesisEntity>
     {
         protected override IParseResult<OpenParanthesisEntity> TryReadEntityInternal(ISourceReader reader, IParseContext context)
         {

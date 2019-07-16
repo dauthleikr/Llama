@@ -3,7 +3,7 @@
     using Abstractions;
     using Entities;
 
-    internal class AssignmentParser : AtomicEntityParser<AssignmentEntity>
+    public class AssignmentParser : AtomicEntityParser<AssignmentEntity>
     {
         public override bool IsPlausible(ISourcePeeker reader, IParseContext context) => reader.Peek() == '=';
 
