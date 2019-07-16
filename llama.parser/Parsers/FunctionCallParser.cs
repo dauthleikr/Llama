@@ -11,7 +11,7 @@
         public override IParseResult<FunctionCallEntity> TryRead(ISourceReader reader, IParseContext context, INonCodeParser nonCodeParser)
         {
             if (!context.TryRead<OpenParanthesisEntity>(out var openParanthesis))
-                return ErrorExpectedToken(reader);
+                return ErrorExpectedEntity(reader);
 
             var parameters = new List<IExpressionEntity>();
             var commas = new List<CommaEntity>();

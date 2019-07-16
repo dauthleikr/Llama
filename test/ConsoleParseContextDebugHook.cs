@@ -25,8 +25,9 @@
             }
         }
 
-        private readonly Stack<ConsoleArea> _printAreas = new Stack<ConsoleArea>();
         private readonly Stack<Type> _entityTypes = new Stack<Type>();
+
+        private readonly Stack<ConsoleArea> _printAreas = new Stack<ConsoleArea>();
         private int _level = -1;
 
         public ConsoleParseContextDebugHook() => Console.OutputEncoding = Encoding.UTF8;

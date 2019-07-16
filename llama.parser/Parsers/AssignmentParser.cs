@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Llama.Parser.Parsers
+﻿namespace Llama.Parser.Parsers
 {
     using Abstractions;
     using Entities;
-    using Framework;
 
-    class AssignmentParser : AtomicEntityParser<AssignmentEntity>
+    internal class AssignmentParser : AtomicEntityParser<AssignmentEntity>
     {
         public override bool IsPlausible(ISourcePeeker reader, IParseContext context) => reader.Peek() == '=';
 

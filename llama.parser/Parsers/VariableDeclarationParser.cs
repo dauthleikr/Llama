@@ -12,7 +12,7 @@
                 return ErrorExpectedEntity(reader);
 
             if (context.TryRead<AssignmentEntity>(out var equals) && context.TryRead<IExpressionEntity>(out var expression))
-                return new VariableInitializationEntity(typeIdentifier, nameIdentifier, @equals, expression);
+                return new VariableInitializationEntity(typeIdentifier, nameIdentifier, equals, expression);
             return new VariableDeclarationEntity(typeIdentifier, nameIdentifier);
         }
 

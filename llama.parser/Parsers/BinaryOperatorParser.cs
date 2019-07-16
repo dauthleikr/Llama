@@ -17,7 +17,7 @@
         {
             var operatorString = reader.TryReadLongest(Operators, MaxOperatorLength);
             if (operatorString == null)
-                return ErrorExpectedToken(reader);
+                return ErrorExpectedEntity(reader);
             return new BinaryOperatorEntity(BinaryOperators.OperatorToEnum[operatorString]);
         }
 

@@ -1,7 +1,6 @@
 ﻿namespace Llama.Parser.NonCode
 {
     using Abstractions;
-    using Framework;
 
     public abstract class NonCodeEntityParserBase<T> : IParseNonCode<T>, IParseNonCode where T : class, INonCode
     {
