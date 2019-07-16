@@ -1,17 +1,14 @@
 ﻿namespace Llama.Parser.Entities
 {
     using Abstractions;
-    using Framework;
 
-    public class VariableInitializationEntity : EntityBase<VariableInitializationEntity>, IStatementEntity
+    public class VariableInitializationEntity : VariableDeclarationEntity, IStatementEntity
     {
         public readonly AssignmentEntity Assignment;
-        public readonly VariableDeclarationEntity Declaration;
         public readonly IExpressionEntity Value;
 
-        public VariableInitializationEntity(VariableDeclarationEntity declaration, AssignmentEntity assignment, IExpressionEntity value)
+        public VariableInitializationEntity(IdentifierEntity declarationType, IdentifierEntity declarationName, AssignmentEntity assignment, IExpressionEntity value) : base(declarationType, declarationName)
         {
-            Declaration = declaration;
             Assignment = assignment;
             Value = value;
         }
@@ -19,6 +16,10 @@
         public override void WalkRecursive(ISourceWalker walker, bool codeChildrenOnly = true)
         {
             walker.Walk(this);
+            DeclarationType.WalkRecursive(walker, codeChildrenOnly);
+            DeclarationName.WalkRecursive(walker, codeChildrenOnly);
+            Assignment.WalkRecursive(walker, codeChildrenOnly);
+            Value.WalkRecursive(walker, codeChildrenOnly);
         }
     }
 }
