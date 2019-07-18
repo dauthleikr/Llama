@@ -1,7 +1,5 @@
 ﻿namespace Llama.Parser.Framework
 {
-    using System;
-    using System.Collections.Generic;
     using Abstractions;
     using Entities;
     using Entities.Expressions;
@@ -28,10 +26,7 @@
             Register<AssignmentParser, AssignmentEntity>();
         }
 
-        public IParse<T> GetStrategyFor<T>() where T : class, IEntity
-        {
-            return StrategyStore<T>.Strategy;
-        }
+        public IParse<T> GetStrategyFor<T>() where T : class, IEntity => StrategyStore<T>.Strategy;
 
         private static void Register<T, TU>() where T : IParse<TU>, new() where TU : class, IEntity
         {
