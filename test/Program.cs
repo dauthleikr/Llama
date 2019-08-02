@@ -1,7 +1,12 @@
 ﻿namespace test
 {
     using System;
+    using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Diagnostics;
+    using System.IO;
+    using System.Reflection.Metadata;
+    using System.Reflection.PortableExecutable;
     using Llama.Parser.Entities;
     using Llama.Parser.Framework;
     using Llama.Parser.NonCode;
@@ -9,21 +14,47 @@
 
     internal class Program
     {
-        private class ConsoleTrace : TraceListener
+        class Huh : PEBuilder
         {
-            public override void Write(string message)
+            public Huh(PEHeaderBuilder header, Func<IEnumerable<Blob>, BlobContentId> deterministicIdProvider) : base(header, deterministicIdProvider)
             {
-                Console.Write(message);
             }
 
-            public override void WriteLine(string message)
+            protected override ImmutableArray<Section> CreateSections()
             {
-                Console.WriteLine(message);
+                var sec = new Section[1];
+                sec[0] = new Section(".text", SectionCharacteristics.Align512Bytes | SectionCharacteristics.MemExecute | SectionCharacteristics.MemRead | SectionCharacteristics.ContainsCode);
+                return sec.ToImmutableArray();
+            }
+
+            protected override PEDirectoriesBuilder GetDirectories() => new PEDirectoriesBuilder();
+
+            protected override BlobBuilder SerializeSection(string name, SectionLocation location)
+            {
+                Console.WriteLine(name);
+                var blobBuilder = new BlobBuilder();
+                for (var i = 0; i < 10; i++)
+                {
+                    blobBuilder.WriteByte(0xC3);
+                }
+                return blobBuilder;
             }
         }
 
         private static void Main(string[] args)
         {
+
+            PEHeaderBuilder hmm = new PEHeaderBuilder(Machine.Amd64, imageCharacteristics: Characteristics.ExecutableImage);
+            
+            PEBuilder wow = new Huh(hmm, null);
+
+            BlobBuilder code = new BlobBuilder();
+
+            var blobContentId = wow.Serialize(code);
+
+            File.WriteAllBytes("lol.exe", code.ToArray());
+
+            return;
             //  Trace.Listeners.Add(new ConsoleTrace());
 
             var reader = new StringSourceReader("lol = a.b * c + 12_3.1f - h(a, 2 << 3, f(xd))");
