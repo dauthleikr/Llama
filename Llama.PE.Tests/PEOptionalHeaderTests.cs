@@ -17,20 +17,20 @@
             fixed (byte* exePtr = exeBytes)
             {
                 var mzheader = *(MZHeader*) exePtr;
-                if (sizeof(PEHeader) + sizeof(PEOptionalHeader) + mzheader.NewHeaderRVA > exeBytes.Length)
+                if (sizeof(PEHeader) + sizeof(PE32PlusOptionalHeader) + mzheader.NewHeaderRVA > exeBytes.Length)
                     throw new Exception("Bad test exe file (cannot fit PE optional header)");
-                _header = *(PEOptionalHeader*) (exePtr + mzheader.NewHeaderRVA + sizeof(PEHeader));
+                _header = *(PE32PlusOptionalHeader*) (exePtr + mzheader.NewHeaderRVA + sizeof(PEHeader));
             }
         }
 
-        private PEOptionalHeader _header;
+        private PE32PlusOptionalHeader _header;
 
         [Test]
         public void ExecutableKindIsValid()
         {
-            Assert.That(_header.ExecutableKind == ExecutableKind.ROM ||
-                        _header.ExecutableKind == ExecutableKind.PE32 ||
-                        _header.ExecutableKind == ExecutableKind.PE32Plus);
+            Assert.That(_header.Standard.ExecutableKind == ExecutableKind.ROM ||
+                        _header.Standard.ExecutableKind == ExecutableKind.PE32 ||
+                        _header.Standard.ExecutableKind == ExecutableKind.PE32Plus);
         }
     }
 }
