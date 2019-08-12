@@ -11,5 +11,6 @@
     {
         public PE32PlusOptionalHeaderStandard Standard;
         public PE32PlusOptionalHeaderWinNT WinNT;
+        public PE32PlusOptionalHeaderDataDirectories DataDirectories;
     }
 }
