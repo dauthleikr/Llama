@@ -3,6 +3,7 @@
     using System;
     using System.IO;
     using System.Reflection.PortableExecutable;
+    using System.Text;
     using NUnit.Framework;
 
     [TestFixture]
@@ -12,22 +13,28 @@
         public void SetUp()
         {
             var exeBytes = File.ReadAllBytes("syncthing.exe");
+            _testFileSize = exeBytes.Length;
             if (sizeof(MZHeader) > exeBytes.Length)
                 throw new Exception("Bad test exe file");
 
             fixed (byte* exePtr = exeBytes)
-                _header = *(MZHeader*) exePtr;
-
-            var peHeaderBuilder = PEHeaderBuilder.CreateExecutableHeader();
+                _header = *(MZHeader*)exePtr;
         }
 
         private MZHeader _header;
+        private int _testFileSize;
 
         [Test]
         public void MagicIsMZ()
         {
-            Assert.AreEqual('M', _header.Magic[0]);
-            Assert.AreEqual('Z', _header.Magic[1]);
+            fixed (byte* ptr = _header.Magic)
+                Assert.AreEqual("MZ", Encoding.ASCII.GetString(ptr, 2), "Magic value not matching (headers corrupt?)");
+        }
+
+        [Test]
+        public void HasPlausiblePEHeaderOffset()
+        {
+            Assert.That(_header.NewHeaderRVA, Is.InRange(sizeof(MZHeader), _testFileSize));
         }
     }
 }

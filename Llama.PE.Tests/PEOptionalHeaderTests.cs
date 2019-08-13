@@ -30,7 +30,7 @@
         {
             Assert.That(_header.Standard.ExecutableKind == ExecutableKind.ROM ||
                         _header.Standard.ExecutableKind == ExecutableKind.PE32 ||
-                        _header.Standard.ExecutableKind == ExecutableKind.PE32Plus);
+                        _header.Standard.ExecutableKind == ExecutableKind.PE32Plus, "Bad executable kind (headers corrupt?)");
         }
     }
 }

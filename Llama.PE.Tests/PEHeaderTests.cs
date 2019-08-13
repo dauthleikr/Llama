@@ -2,6 +2,7 @@
 {
     using System;
     using System.IO;
+    using System.Text;
     using NUnit.Framework;
 
     [TestFixture]
@@ -16,10 +17,10 @@
 
             fixed (byte* exePtr = exeBytes)
             {
-                var mzheader = *(MZHeader*) exePtr;
+                var mzheader = *(MZHeader*)exePtr;
                 if (sizeof(PEHeader) + mzheader.NewHeaderRVA > exeBytes.Length)
                     throw new Exception("Bad test exe file (cannot fit PE header)");
-                _header = *(PEHeader*) (exePtr + mzheader.NewHeaderRVA);
+                _header = *(PEHeader*)(exePtr + mzheader.NewHeaderRVA);
             }
         }
 
@@ -28,16 +29,14 @@
         [Test]
         public void HeaderHasExpectedSize()
         {
-            Assert.AreEqual(sizeof(PEHeader), 4 + 20);
+            Assert.AreEqual(sizeof(PEHeader), 4 + 20, "Header size does not match standard");
         }
 
         [Test]
         public void MagicIsPE()
         {
-            Assert.AreEqual('P', _header.Magic[0]);
-            Assert.AreEqual('E', _header.Magic[1]);
-            Assert.AreEqual('\0', _header.Magic[2]);
-            Assert.AreEqual('\0', _header.Magic[3]);
+            fixed (byte* ptr = _header.Magic)
+                Assert.AreEqual("PE\0\0", Encoding.ASCII.GetString(ptr, 4), "Magic value not matching (headers corrupt?)");
         }
     }
 }
