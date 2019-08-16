@@ -21,8 +21,7 @@
         [Test]
         public void HasTextSection()
         {
-            Assert.Contains(".text\0\0\0", GetSectionNames(), "Cannot find text section (sections corrupt?)"
-            );
+            Assert.Contains(".text\0\0\0", GetSectionNames(), "Cannot find text section (sections corrupt?)");
         }
 
         [Test]

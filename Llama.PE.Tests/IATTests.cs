@@ -5,9 +5,9 @@
     using NUnit.Framework;
 
     [TestFixture]
-    public class IatTests : TestsUsingHeaders
+    public class IATTests : TestsUsingHeaders
     {
-        public IatTests() : base(File.ReadAllBytes("test.exe")) { }
+        public IATTests() : base(File.ReadAllBytes("test.exe")) { }
 
 
         [Test]

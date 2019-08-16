@@ -12,13 +12,13 @@
         [Test]
         public void HasPlausiblePeHeaderOffset()
         {
-            Assert.That(MzHeader.NewHeaderRVA, Is.InRange(sizeof(MZHeader), TestFile.Length));
+            Assert.That(MZHeader.NewHeaderRVA, Is.InRange(sizeof(MZHeader), TestFile.Length));
         }
 
         [Test]
         public void MagicIsMz()
         {
-            fixed (byte* ptr = MzHeader.Magic)
+            fixed (byte* ptr = MZHeader.Magic)
                 Assert.AreEqual("MZ", Encoding.ASCII.GetString(ptr, 2), "Magic value not matching (headers corrupt?)");
         }
     }
