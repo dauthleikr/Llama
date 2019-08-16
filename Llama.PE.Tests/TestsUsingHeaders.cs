@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Llama.PE.Tests
+﻿namespace Llama.PE.Tests
 {
+    using System;
     using System.Runtime.InteropServices;
 
     public abstract class TestsUsingHeaders
     {
         protected readonly MZHeader MZHeader;
-        protected readonly PEHeader PEHeader;
         protected readonly PE32PlusOptionalHeader OptionalHeader;
+        protected readonly PEHeader PEHeader;
         protected readonly SectionHeader[] SectionHeaders;
         protected readonly byte[] TestFile;
 

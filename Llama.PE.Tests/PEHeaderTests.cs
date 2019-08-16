@@ -1,13 +1,14 @@
 ﻿namespace Llama.PE.Tests
 {
-    using System;
     using System.IO;
     using System.Text;
     using NUnit.Framework;
 
     [TestFixture]
-    public  class PEHeaderTests : TestsUsingHeaders
+    public class PEHeaderTests : TestsUsingHeaders
     {
+        public PEHeaderTests() : base(File.ReadAllBytes("test.exe")) { }
+
         [Test]
         public unsafe void HeaderHasExpectedSize()
         {
@@ -15,12 +16,10 @@
         }
 
         [Test]
-        public unsafe void MagicIsPE()
+        public unsafe void MagicIsPe()
         {
-            fixed (byte* ptr = PEHeader.Magic)
+            fixed (byte* ptr = PeHeader.Magic)
                 Assert.AreEqual("PE\0\0", Encoding.ASCII.GetString(ptr, 4), "Magic value not matching (headers corrupt?)");
         }
-
-        public PEHeaderTests() : base(File.ReadAllBytes("test.exe")) { }
     }
 }

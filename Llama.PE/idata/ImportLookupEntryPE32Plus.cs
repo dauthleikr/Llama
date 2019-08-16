@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Llama.PE.idata
+﻿namespace Llama.PE.idata
 {
     using System.Runtime.InteropServices;
 

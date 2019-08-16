@@ -3,7 +3,7 @@
     using System.Runtime.InteropServices;
 
     /// <summary>
-    /// The data directories part of the <see cref="PE32PlusOptionalHeader"/> header.
+    ///     The data directories part of the <see cref="PE32PlusOptionalHeader" /> header.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct PE32PlusOptionalHeaderDataDirectories
@@ -14,16 +14,19 @@
         public ImageDataDirectory ExceptionTable;
         public ImageDataDirectory CertificateTable;
         public ImageDataDirectory BaseRelocationTable;
+
         /// <summary>
-        /// Optional
+        ///     Optional
         /// </summary>
         public ImageDataDirectory Debug;
+
         /// <summary>
-        /// Reserved, must be 0
+        ///     Reserved, must be 0
         /// </summary>
         public ImageDataDirectory Architecture;
+
         /// <summary>
-        /// RVA of the value to be stored in the global pointer register. Size must be 0!
+        ///     RVA of the value to be stored in the global pointer register. Size must be 0!
         /// </summary>
         public ImageDataDirectory GlobalPtr;
 
@@ -33,8 +36,9 @@
         public ImageDataDirectory IAT;
         public ImageDataDirectory DelayImportDescriptor;
         public ImageDataDirectory CLRRuntimeHeader;
+
         /// <summary>
-        /// Must be 0!
+        ///     Must be 0!
         /// </summary>
         public ImageDataDirectory Reserved;
     }

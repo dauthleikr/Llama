@@ -9,4 +9,8 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Llama.BinaryUtils\Llama.BinaryUtils.csproj" />
+  </ItemGroup>
+
 </Project>

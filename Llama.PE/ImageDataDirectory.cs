@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Llama.PE
+﻿namespace Llama.PE
 {
     using System.Runtime.InteropServices;
 
