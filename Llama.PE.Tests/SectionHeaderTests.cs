@@ -49,10 +49,8 @@
         {
             var textIndex = Array.IndexOf(_names, ".text\0\0\0");
             if (textIndex < 0)
-            {
                 Assert.Inconclusive("Cannot run this test without .text section");
-                return;
-            }
+
             Assert.That(_headers[textIndex].Characteristics.HasFlag(SectionCharacteristics.ContainsCode), ".text does not contain code (section flags)");
             Assert.That(_headers[textIndex].Characteristics.HasFlag(SectionCharacteristics.MemExecute), ".text is not executable (section flags)");
             Assert.That(_headers[textIndex].Characteristics.HasFlag(SectionCharacteristics.MemRead), ".text is not readable (section flags)");
