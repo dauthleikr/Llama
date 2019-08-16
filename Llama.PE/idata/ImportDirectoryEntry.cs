@@ -2,7 +2,7 @@
 {
     using System.Runtime.InteropServices;
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct ImportDirectoryEntry
     {
         public uint ImportLookupTableRVA;
