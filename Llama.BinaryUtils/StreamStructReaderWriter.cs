@@ -1,4 +1,4 @@
-﻿namespace Llama.PE.Utility
+﻿namespace Llama.BinaryUtils
 {
     using System;
     using System.IO;
@@ -28,8 +28,7 @@
             _stream.Position = _initialPosition + rva;
             var result = default(T);
             var spanStruct = MemoryMarshal.CreateSpan(ref result, 1);
-            var spanBytes = MemoryMarshal.AsBytes(spanStruct);
-            _stream.Read(spanBytes);
+            _stream.Read(MemoryMarshal.AsBytes(spanStruct));
             _rva = _stream.Position;
             return result;
         }
@@ -41,8 +40,9 @@
             else if (rva < 0)
                 throw new ArgumentOutOfRangeException(nameof(rva));
 
-            var startPosition = _stream.Position = _initialPosition + rva;
-            var span = MemoryMarshal.CreateReadOnlySpan(ref item, TypeSize<T>.Size);
+            var startPosition = rva;
+            _stream.Position = _initialPosition + rva;
+            var span = MemoryMarshal.CreateReadOnlySpan(ref item, 1);
             _stream.Write(MemoryMarshal.AsBytes(span));
             return startPosition;
         }

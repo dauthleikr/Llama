@@ -1,4 +1,4 @@
-﻿namespace Llama.PE.Utility
+﻿namespace Llama.BinaryUtils
 {
     using System;
     using System.Runtime.InteropServices;
