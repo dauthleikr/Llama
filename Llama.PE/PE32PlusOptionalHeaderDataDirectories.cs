@@ -14,6 +14,9 @@
         public ImageDataDirectory ExceptionTable;
         public ImageDataDirectory CertificateTable;
         public ImageDataDirectory BaseRelocationTable;
+        /// <summary>
+        /// Optional
+        /// </summary>
         public ImageDataDirectory Debug;
         /// <summary>
         /// Reserved, must be 0
