@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Llama.PE.Utility
+﻿namespace Llama.PE.Utility
 {
+    using System;
     using System.IO;
     using System.Runtime.InteropServices;
 
-    internal class StreamStructReaderWriter : IStructReaderWriter
+    public class StreamStructReaderWriter : IStructReaderWriter
     {
-        private readonly Stream _stream;
         private readonly long _initialPosition;
+        private readonly Stream _stream;
         private long _rva;
 
         public StreamStructReaderWriter(Stream stream)

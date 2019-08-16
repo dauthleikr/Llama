@@ -3,7 +3,7 @@
     using System;
     using System.Runtime.InteropServices;
 
-    internal class ArrayStructReaderWriter : IStructReaderWriter
+    public class ArrayStructReaderWriter : IStructReaderWriter
     {
         private readonly byte[] _rawData;
         private long _rva;

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Llama.PE.Utility
+﻿namespace Llama.PE.Utility
 {
-    internal interface IStructReaderWriter : IStructReader, IStructWriter
-    {
-    }
+    public interface IStructReaderWriter : IStructReader, IStructWriter { }
 }
