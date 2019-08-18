@@ -8,7 +8,7 @@
     {
         private readonly long _initialPosition;
         private readonly Stream _stream;
-        public long RVA { get; private set; }
+        public long RVA { get; set; }
 
         public StreamStructReaderWriter(Stream stream)
         {

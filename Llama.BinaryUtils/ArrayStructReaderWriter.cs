@@ -6,7 +6,7 @@
     public class ArrayStructReaderWriter : IStructReaderWriter
     {
         private readonly byte[] _rawData;
-        public long RVA { get; private set; }
+        public long RVA { get; set; }
 
         public ArrayStructReaderWriter(byte[] rawData) => _rawData = rawData;
 
