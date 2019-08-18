@@ -8,7 +8,7 @@
     {
         private readonly long _initialPosition;
         private readonly Stream _stream;
-        private long _rva;
+        public long RVA { get; private set; }
 
         public StreamStructReaderWriter(Stream stream)
         {
@@ -25,32 +25,32 @@
             if (rva >= 0)
             {
                 _stream.Position = _initialPosition + rva;
-                _rva = rva;
+                RVA = rva;
             }
 
             var result = default(T);
             var spanStruct = MemoryMarshal.CreateSpan(ref result, 1);
             var spanBytes = MemoryMarshal.AsBytes(spanStruct);
-            _rva += _stream.Read(spanBytes);
+            RVA += _stream.Read(spanBytes);
             return result;
         }
 
         public long Write<T>(T item, long rva = -1) where T : struct
         {
             if (rva == -1)
-                rva = _rva;
+                rva = RVA;
             else if (rva < 0)
                 throw new ArgumentOutOfRangeException(nameof(rva));
             else
             {
                 _stream.Position = _initialPosition + rva;
-                _rva = rva;
+                RVA = rva;
             }
 
             var span = MemoryMarshal.CreateReadOnlySpan(ref item, 1);
             var spanBytes = MemoryMarshal.AsBytes(span);
             _stream.Write(spanBytes);
-            _rva += spanBytes.Length;
+            RVA += spanBytes.Length;
             return rva;
         }
     }
