@@ -2,6 +2,7 @@
 {
     using System.IO;
     using System.Text;
+    using Header;
     using NUnit.Framework;
 
     [TestFixture]

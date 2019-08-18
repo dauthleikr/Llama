@@ -1,4 +1,4 @@
-﻿namespace Llama.PE.idata
+﻿namespace Llama.PE.Idata
 {
     using System.Runtime.InteropServices;
 

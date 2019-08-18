@@ -1,4 +1,4 @@
-﻿namespace Llama.PE
+﻿namespace Llama.PE.Header
 {
     using System;
     using System.Runtime.InteropServices;

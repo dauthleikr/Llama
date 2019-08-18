@@ -2,6 +2,7 @@
 {
     using System;
     using System.Runtime.InteropServices;
+    using Header;
 
     public abstract class TestsUsingHeaders
     {

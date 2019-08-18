@@ -1,6 +1,7 @@
 ﻿namespace Llama.PE.Tests
 {
     using System.IO;
+    using Header;
     using NUnit.Framework;
 
     [TestFixture]
