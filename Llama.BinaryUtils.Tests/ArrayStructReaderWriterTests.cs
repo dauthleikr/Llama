@@ -46,8 +46,8 @@
         [Test]
         public void IsCorrectSize()
         {
-            var rwGood = new ArrayStructReaderWriter(new byte[10]);
-            var rwBad = new ArrayStructReaderWriter(new byte[9]);
+            var rwGood = new ArrayStructReaderWriter(new byte[9]);
+            var rwBad = new ArrayStructReaderWriter(new byte[8]);
 
             rwGood.Write(testStruct2);
 

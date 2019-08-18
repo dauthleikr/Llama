@@ -20,16 +20,18 @@
 
         public T Read<T>(long rva = -1) where T : struct
         {
-            if (rva == -1)
-                rva = _rva;
-            else if (rva < 0)
+            if (rva < -1)
                 throw new ArgumentOutOfRangeException(nameof(rva));
+            if (rva >= 0)
+            {
+                _stream.Position = _initialPosition + rva;
+                _rva = rva;
+            }
 
-            _stream.Position = _initialPosition + rva;
             var result = default(T);
             var spanStruct = MemoryMarshal.CreateSpan(ref result, 1);
-            _stream.Read(MemoryMarshal.AsBytes(spanStruct));
-            _rva = _stream.Position;
+            var spanBytes = MemoryMarshal.AsBytes(spanStruct);
+            _rva += _stream.Read(spanBytes);
             return result;
         }
 
@@ -39,12 +41,17 @@
                 rva = _rva;
             else if (rva < 0)
                 throw new ArgumentOutOfRangeException(nameof(rva));
+            else
+            {
+                _stream.Position = _initialPosition + rva;
+                _rva = rva;
+            }
 
-            var startPosition = rva;
-            _stream.Position = _initialPosition + rva;
             var span = MemoryMarshal.CreateReadOnlySpan(ref item, 1);
-            _stream.Write(MemoryMarshal.AsBytes(span));
-            return startPosition;
+            var spanBytes = MemoryMarshal.AsBytes(span);
+            _stream.Write(spanBytes);
+            _rva += spanBytes.Length;
+            return rva;
         }
     }
 }

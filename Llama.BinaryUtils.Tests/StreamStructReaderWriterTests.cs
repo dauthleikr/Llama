@@ -1,13 +1,15 @@
 ﻿namespace Llama.BinaryUtils.Tests
 {
+    using System;
+    using System.Diagnostics;
     using System.IO;
     using NUnit.Framework;
 
     [TestFixture]
     internal class StreamStructReaderWriterTests
     {
-        private readonly TestStruct1 _testStruct1 = new TestStruct1 {Value = 123};
-        private readonly TestStruct2 _testStruct2 = new TestStruct2 {Value = 222, Value2 = 22};
+        private readonly TestStruct1 _testStruct1 = new TestStruct1 { Value = 123 };
+        private readonly TestStruct2 _testStruct2 = new TestStruct2 { Value = 222, Value2 = 22 };
 
         private void CanWriteAndRead<T>(T testValue) where T : struct
         {
@@ -31,7 +33,7 @@
         }
 
         [Test]
-        public void HandlesRVACorrectly()
+        public void KeepsInitialRVA()
         {
             var stream = new MemoryStream();
             stream.WriteByte(2);
@@ -47,6 +49,19 @@
         }
 
         [Test]
+        public void IncreasesRVA()
+        {
+            var stream = new MemoryStream();
+            var rw = new StreamStructReaderWriter(stream);
+
+            rw.Write(123);
+            rw.Write('c');
+            rw.Write(true);
+
+            Assert.AreEqual(7, stream.Length);
+        }
+
+        [Test]
         public void IsCorrectSize()
         {
             var stream = new MemoryStream();
@@ -54,7 +69,7 @@
 
             rw.Write(_testStruct2);
 
-            Assert.AreEqual(10, stream.Length);
+            Assert.AreEqual(9, stream.Length);
         }
     }
 }
