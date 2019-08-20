@@ -1,8 +1,7 @@
 ﻿namespace Llama.BinaryUtils
 {
-    public interface IStructWriter
+    public interface IStructWriter : IHaveRVA
     {
-        long RVA { get; set; }
-        long Write<T>(T item, long rva = -1) where T : struct;
+        ulong Write<T>(T item) where T : struct;
     }
 }

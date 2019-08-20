@@ -1,8 +1,7 @@
 ﻿namespace Llama.BinaryUtils
 {
-    public interface IStructReader
+    public interface IStructReader : IHaveRVA
     {
-        long RVA { get; set; }
-        T Read<T>(long rva = -1) where T : struct;
+        T Read<T>() where T : struct;
     }
 }

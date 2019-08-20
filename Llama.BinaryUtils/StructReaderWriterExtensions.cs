@@ -4,16 +4,27 @@
 
     public static class StructReaderWriterExtensions
     {
-        public static long WriteArray<T>(this IStructWriter writer, T[] arr, int rva = -1) where T : struct
+        public static ulong Write<T>(this IStructWriter writer, T item, ulong rva) where T : struct
+        {
+            writer.RVA = rva;
+            writer.Write(item);
+            return rva;
+        }
+
+        public static T Read<T>(this IStructReader reader, ulong rva) where T : struct
+        {
+            reader.RVA = rva;
+            return reader.Read<T>();
+        }
+
+        public static ulong WriteArray<T>(this IStructWriter writer, T[] arr) where T : struct
         {
             if (arr == null)
                 throw new ArgumentNullException(nameof(arr));
-            if (arr.Length == 0)
-                throw new ArgumentException("Value cannot be an empty collection.", nameof(arr));
 
-            var writtenRva = writer.Write(arr[0], rva);
-            for (var i = 1; i < arr.Length; i++)
-                writer.Write(arr[i]);
+            var writtenRva = writer.RVA;
+            foreach (var item in arr)
+                writer.Write(item);
             return writtenRva;
         }
     }

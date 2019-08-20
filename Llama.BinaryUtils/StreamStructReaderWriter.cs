@@ -6,9 +6,22 @@
 
     public class StreamStructReaderWriter : IStructReaderWriter
     {
+        public ulong RVA
+        {
+            get => _rva;
+            set
+            {
+                if (value > long.MaxValue)
+                    throw new ArgumentOutOfRangeException(nameof(value));
+
+                _rva = value;
+                _stream.Position = _initialPosition + (long)value;
+            }
+        }
+
+        private ulong _rva;
         private readonly long _initialPosition;
         private readonly Stream _stream;
-        public long RVA { get; set; }
 
         public StreamStructReaderWriter(Stream stream)
         {
@@ -18,40 +31,23 @@
             _initialPosition = stream.Position;
         }
 
-        public T Read<T>(long rva = -1) where T : struct
+        public T Read<T>() where T : struct
         {
-            if (rva < -1)
-                throw new ArgumentOutOfRangeException(nameof(rva));
-            if (rva >= 0)
-            {
-                _stream.Position = _initialPosition + rva;
-                RVA = rva;
-            }
-
             var result = default(T);
             var spanStruct = MemoryMarshal.CreateSpan(ref result, 1);
             var spanBytes = MemoryMarshal.AsBytes(spanStruct);
-            RVA += _stream.Read(spanBytes);
+            _rva += (ulong)_stream.Read(spanBytes);
             return result;
         }
 
-        public long Write<T>(T item, long rva = -1) where T : struct
+        public ulong Write<T>(T item) where T : struct
         {
-            if (rva == -1)
-                rva = RVA;
-            else if (rva < 0)
-                throw new ArgumentOutOfRangeException(nameof(rva));
-            else
-            {
-                _stream.Position = _initialPosition + rva;
-                RVA = rva;
-            }
-
             var span = MemoryMarshal.CreateReadOnlySpan(ref item, 1);
             var spanBytes = MemoryMarshal.AsBytes(span);
+            var start = _rva;
             _stream.Write(spanBytes);
-            RVA += spanBytes.Length;
-            return rva;
+            _rva += (ulong)spanBytes.Length;
+            return start;
         }
     }
 }
