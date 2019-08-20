@@ -6,22 +6,23 @@
 
     public class StreamStructReaderWriter : IStructReaderWriter
     {
-        public ulong RVA
+        public ulong Offset
         {
-            get => _rva;
+            get => _offset;
             set
             {
                 if (value > long.MaxValue)
                     throw new ArgumentOutOfRangeException(nameof(value));
 
-                _rva = value;
+                _offset = value;
                 _stream.Position = _initialPosition + (long)value;
             }
         }
 
-        private ulong _rva;
         private readonly long _initialPosition;
         private readonly Stream _stream;
+
+        private ulong _offset;
 
         public StreamStructReaderWriter(Stream stream)
         {
@@ -36,7 +37,7 @@
             var result = default(T);
             var spanStruct = MemoryMarshal.CreateSpan(ref result, 1);
             var spanBytes = MemoryMarshal.AsBytes(spanStruct);
-            _rva += (ulong)_stream.Read(spanBytes);
+            _offset += (ulong)_stream.Read(spanBytes);
             return result;
         }
 
@@ -44,9 +45,9 @@
         {
             var span = MemoryMarshal.CreateReadOnlySpan(ref item, 1);
             var spanBytes = MemoryMarshal.AsBytes(span);
-            var start = _rva;
+            var start = _offset;
             _stream.Write(spanBytes);
-            _rva += (ulong)spanBytes.Length;
+            _offset += (ulong)spanBytes.Length;
             return start;
         }
     }

@@ -5,16 +5,16 @@
 
     public static class StructReaderWriterExtensions
     {
-        public static ulong Write<T>(this IStructWriter writer, T item, ulong rva) where T : struct
+        public static ulong Write<T>(this IStructWriter writer, T item, ulong offset) where T : struct
         {
-            writer.RVA = rva;
+            writer.Offset = offset;
             writer.Write(item);
-            return rva;
+            return offset;
         }
 
-        public static T Read<T>(this IStructReader reader, ulong rva) where T : struct
+        public static T Read<T>(this IStructReader reader, ulong offset) where T : struct
         {
-            reader.RVA = rva;
+            reader.Offset = offset;
             return reader.Read<T>();
         }
 
@@ -34,22 +34,23 @@
             if (arr == null)
                 throw new ArgumentNullException(nameof(arr));
 
-            var writtenRva = writer.RVA;
+            var writtenOffset = writer.Offset;
             foreach (var item in arr)
                 writer.Write(item);
-            return writtenRva;
+            return writtenOffset;
         }
 
-        public static ulong WriteArray<T>(this IStructWriter writer, T[] arr, ulong rva) where T : struct
+        public static ulong WriteArray<T>(this IStructWriter writer, T[] arr, ulong offset) where T : struct
         {
             if (arr == null)
                 throw new ArgumentNullException(nameof(arr));
-            writer.RVA = rva;
+            writer.Offset = offset;
             return WriteArray(writer, arr);
         }
 
         /// <summary>
-        ///     Reads elements of the given type, until default(<see cref="T" />) is read. Leaves the RVA after the nulled element.
+        ///     Reads elements of the given type, until default(<see cref="T" />) is read. Leaves the offset after the nulled
+        ///     element.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="reader"></param>
