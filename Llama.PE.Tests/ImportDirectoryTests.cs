@@ -37,6 +37,15 @@
         }
 
         [Test]
+        public void CanResolveHintNames()
+        {
+            var functionNames = _importDirectory.HintOrNameTable.Select(item => item.Name).ToArray();
+
+            Assert.That(functionNames.All(func => !string.IsNullOrWhiteSpace(func)));
+            Assert.Contains("HeapAlloc", functionNames);
+        }
+
+        [Test]
         public void ImportDirectoryEntryHasTheRightSize()
         {
             Assert.AreEqual(20, sizeof(ImportDirectoryEntry));
