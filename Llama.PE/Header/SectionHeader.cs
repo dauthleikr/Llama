@@ -1,16 +1,21 @@
 ﻿namespace Llama.PE.Header
 {
+    using System;
     using System.Reflection.PortableExecutable;
     using System.Runtime.InteropServices;
     using System.Text;
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public unsafe struct SectionHeader
+    public struct SectionHeader
     {
         public const int NameSize = 8;
 
-        public fixed byte Name[NameSize];
+        public ulong Name;
         public uint VirtualSize;
+
+        /// <summary>
+        /// RVA when loaded into memory by the OS
+        /// </summary>
         public uint VirtualAddress;
 
         /// <summary>
@@ -18,6 +23,9 @@
         /// </summary>
         public uint SizeOfRawData;
 
+        /// <summary>
+        /// RVA on file
+        /// </summary>
         public uint PointerToRawData;
         public uint PointerToRelocations;
         public uint PointerToLinenumbers;
@@ -25,13 +33,6 @@
         public ushort NumberOfLinenumbers;
         public SectionCharacteristics Characteristics;
 
-        public string NameString
-        {
-            get
-            {
-                fixed (byte* ptr = Name)
-                    return Encoding.ASCII.GetString(ptr, 8);
-            }
-        }
+        public string NameString => Encoding.ASCII.GetString(BitConverter.GetBytes(Name));
     }
 }

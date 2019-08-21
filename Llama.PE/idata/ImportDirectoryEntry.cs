@@ -2,7 +2,6 @@
 {
     using System;
     using System.Runtime.InteropServices;
-    using Microsoft.VisualBasic.CompilerServices;
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct ImportDirectoryEntry : IEquatable<ImportDirectoryEntry>

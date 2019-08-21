@@ -19,8 +19,7 @@
         [Test]
         public void MagicIsMz()
         {
-            fixed (byte* ptr = MZHeader.Magic)
-                Assert.AreEqual("MZ", Encoding.ASCII.GetString(ptr, 2), "Magic value not matching (headers corrupt?)");
+            Assert.AreEqual("MZ", MZHeader.MagicString, "Magic value not matching (headers corrupt?)");
         }
     }
 }

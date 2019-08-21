@@ -5,7 +5,7 @@
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct ImageDataDirectory
     {
-        public uint StartRVA;
+        public uint VirtualAddress;
         public uint Size;
     }
 }

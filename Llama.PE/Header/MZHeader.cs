@@ -2,11 +2,12 @@
 {
     using System;
     using System.Runtime.InteropServices;
+    using System.Text;
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public unsafe struct MZHeader
     {
-        public fixed byte Magic[2]; // MZ
+        public ushort Magic; // MZ
         public ushort NumberOfBytesInLastPage;
         public ushort NumberOfPages;
         public ushort NumerOfRelocationEntries;
@@ -27,6 +28,8 @@
         public fixed byte MSDOSStub[MSDOSStubLength];
 
         private const int MSDOSStubLength = 64;
+
+        public string MagicString => Encoding.ASCII.GetString(BitConverter.GetBytes(Magic));
 
         public byte[] CreateMSDOSStubArray()
         {
@@ -60,8 +63,7 @@
                 OemInfo = 0
             };
 
-            header.Magic[0] = (byte)'M';
-            header.Magic[1] = (byte)'Z';
+            header.Magic = BitConverter.ToUInt16(new[] {(byte)'M', (byte)'Z'});
             for (var i = 0; i < msdosStub.Length; i++)
                 header.MSDOSStub[i] = msdosStub[i];
 

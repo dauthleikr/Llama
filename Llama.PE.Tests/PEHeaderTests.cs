@@ -17,10 +17,9 @@
         }
 
         [Test]
-        public unsafe void MagicIsPe()
+        public void MagicIsPe()
         {
-            fixed (byte* ptr = PEHeader.Magic)
-                Assert.AreEqual("PE\0\0", Encoding.ASCII.GetString(ptr, 4), "Magic value not matching (headers corrupt?)");
+            Assert.AreEqual("PE\0\0", PEHeader.MagicString, "Magic value not matching (headers corrupt?)");
         }
     }
 }
