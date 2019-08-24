@@ -14,7 +14,7 @@
         public uint VirtualSize;
 
         /// <summary>
-        /// RVA when loaded into memory by the OS
+        ///     RVA when loaded into memory by the OS
         /// </summary>
         public uint VirtualAddress;
 
@@ -24,9 +24,10 @@
         public uint SizeOfRawData;
 
         /// <summary>
-        /// RVA on file
+        ///     RVA on file
         /// </summary>
         public uint PointerToRawData;
+
         public uint PointerToRelocations;
         public uint PointerToLinenumbers;
         public ushort NumberOfRelocations;
