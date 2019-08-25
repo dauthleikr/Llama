@@ -13,4 +13,12 @@
     <ProjectReference Include="..\Llama.BinaryUtils\Llama.BinaryUtils.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Builder\" />
+    <Folder Include="Structures\Header\" />
+    <Folder Include="Structures\Sections\Edata\" />
+    <Folder Include="Structures\Sections\Pdata\" />
+    <Folder Include="Structures\Sections\Rsrc\" />
+  </ItemGroup>
+
 </Project>

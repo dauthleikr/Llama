@@ -2,7 +2,7 @@
 {
     using BinaryUtils;
 
-    public class GenericStructMapper<T> : IPEReader<T> where T : struct
+    public class GenericStructReader<T> : IPEReader<T> where T : struct
     {
         public T Read(IStructReader reader, IPE32PlusContext image) => reader.Read<T>();
 
