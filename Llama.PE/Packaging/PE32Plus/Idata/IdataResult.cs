@@ -6,8 +6,8 @@
     internal class IdataResult : IIdataResult
     {
         public ReadOnlySpan<byte> RawData => _rawData.AsSpan();
-        private readonly byte[] _rawData;
         private readonly Dictionary<(string lib, string func), uint> _importToRVA;
+        private readonly byte[] _rawData;
 
         public IdataResult(byte[] rawData, Dictionary<(string lib, string func), uint> importToRVA)
         {

@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Llama.PE.Packaging.PE32Plus.Idata
+﻿namespace Llama.PE.Packaging.PE32Plus.Idata
 {
+    using System.Collections.Generic;
+
     internal interface IIdataInfo
     {
         IEnumerable<(string library, string function)> Imports { get; }

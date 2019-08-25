@@ -1,12 +1,12 @@
-﻿namespace Llama.PE.Packaging.PE32Plus.AnySection
+﻿namespace Llama.PE.Packaging.PE32Plus.Idata
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Text;
     using BinaryUtils;
     using Converters;
-    using Idata;
     using Structures.Sections.Idata;
 
     internal class IdataSectionPackager : IPackage<IIdataInfo, IIdataResult>
@@ -44,12 +44,11 @@
                     },
                     ref directoryTableOffset
                 );
-
                 WriteAndIncreaseOffset(structWriter, Encoding.ASCII.GetBytes(import.Key + "\0"), ref hintNameOffset);
 
                 foreach (var (libName, functionName) in import)
                 {
-                    var lookupEntry = new ImportLookupEntryPE32Plus { HintNameTableRVA = hintNameOffset + param.IdataRVA };
+                    var lookupEntry = new ImportLookupEntryPE32Plus {HintNameTableRVA = hintNameOffset + param.IdataRVA};
                     libAndFuncToRVAOfIATEntry[(libName, functionName)] = iatOffset;
                     WriteAndIncreaseOffset(structWriter, lookupEntry, ref iatOffset);
                     WriteAndIncreaseOffset(structWriter, lookupEntry, ref lookupTableOffset);
@@ -59,6 +58,11 @@
                 iatOffset = Round.Up(iatOffset, param.IATBlockSize);
                 WriteAndIncreaseOffset(structWriter, default(ImportLookupEntryPE32Plus), ref lookupTableOffset);
             }
+
+            Debug.Assert(iatOffset <= iatSize);
+            Debug.Assert(directoryTableOffset <= iatSize + directoryTableSize);
+            Debug.Assert(lookupTableOffset <= iatSize + directoryTableSize + lookupTableSize);
+
             return new IdataResult(dataStream.ToArray(), libAndFuncToRVAOfIATEntry);
         }
 

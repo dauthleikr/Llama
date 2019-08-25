@@ -2,6 +2,6 @@
 {
     internal interface IIdataResult : IPackagingResult
     {
-        uint GetRVAOfIATEntry(string library, string name);
+        uint GetRVAOfIATEntry(string library, string function);
     }
 }
