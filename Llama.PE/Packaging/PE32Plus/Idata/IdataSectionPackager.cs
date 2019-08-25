@@ -63,7 +63,7 @@
             Debug.Assert(directoryTableOffset <= iatSize + directoryTableSize);
             Debug.Assert(lookupTableOffset <= iatSize + directoryTableSize + lookupTableSize);
 
-            return new IdataResult(dataStream.ToArray(), libAndFuncToRVAOfIATEntry);
+            return new IdataResult(param.IdataRVA, param.IdataRVA + (uint)iatSize, param.IdataRVA, dataStream.ToArray(), libAndFuncToRVAOfIATEntry);
         }
 
         private void WriteAndIncreaseOffset<T>(IStructWriter writer, T item, ref uint offset) where T : struct
