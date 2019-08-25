@@ -1,4 +1,4 @@
-﻿namespace Llama.PE.Packaging.PE32Plus
+﻿namespace Llama.PE.Packaging.PE32Plus.MZHeader
 {
     using Structures.Header;
 
