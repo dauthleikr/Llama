@@ -8,7 +8,7 @@
     using PE.Packaging.PE32Plus.Idata;
 
     [TestFixture]
-    internal class IdataTests
+    internal class ImportDirectoryTests
     {
         [SetUp]
         public void SetUp()
