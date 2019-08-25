@@ -1,0 +1,18 @@
+﻿AnySection:
+IdataSection:
+DataSection:
+BssSection:
+CodeSection:
+
+Sections: AnySection, IdataSection, DataSection, BssSection, CodeSection
+SectionHeaders: Sections
+
+MZHeader:
+
+OptionalHeader-Standard: Sections
+OptionalHeader-DD: Sections
+OptionalHeader-WinNT: MZHeader, SectionsHeader, Sections
+OptionalHeader: OptionalHeader-Standard, OptionalHeader-WinNT, OptionalHeader-DD
+
+PEHeader: OptionalHeader, SectionHeader
+PE: MZHeader, PEHeader, OptionalHeader, SectionHeader, Sections

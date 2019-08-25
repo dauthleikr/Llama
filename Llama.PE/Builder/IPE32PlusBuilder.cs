@@ -2,7 +2,6 @@
 {
     using System.Reflection.PortableExecutable;
     using System.Runtime.InteropServices;
-    using Structures.Header;
 
     public interface IPE32PlusBuilder
     {
