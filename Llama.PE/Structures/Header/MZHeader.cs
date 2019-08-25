@@ -37,7 +37,7 @@
                 return new Span<byte>(ptr, MSDOSStubLength).ToArray();
         }
 
-        public static MZHeader CreateWithDefaultStub(uint newHeaderRVA, ushort initialStackPointer, ushort numberOfHeaderParagraphs, ushort numberOfRelocationEntries)
+        public static MZHeader CreateWithDefaultStub(uint newHeaderRVA, ushort initialStackPointer = 0xB8, ushort numberOfHeaderParagraphs = 0x4, ushort numberOfRelocationEntries = 0x0)
         {
             var msdosStub = new byte[]
             {
