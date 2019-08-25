@@ -1,21 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Llama.PE.Builder
+﻿namespace Llama.PE.Builder
 {
     using System.Reflection.PortableExecutable;
     using System.Runtime.InteropServices;
+    using Structures.Header;
 
-    interface IPE32PlusBuilder
+    public interface IPE32PlusBuilder
     {
-        IPE32PlusBuilder SetArchitecture(Architecture architecture);
-
-        IPE32PlusBuilder SetCharacteristics(Characteristics characteristics);
-
-        IPE32PlusBuilder SetSubsystem(Subsystem subsystem);
-
-        IPE32PlusBuilder SetDllCharacteristics(DllCharacteristics characteristics);
+        Architecture Architecture { get; set; }
+        Characteristics Characteristics { get; set; }
+        Subsystem Subsystem { get; set; }
+        DllCharacteristics DllCharacteristics { get; set; }
 
         IPE32PlusBuilder AddAdditionalSection(string name, uint size);
 
