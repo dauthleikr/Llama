@@ -1,6 +1,6 @@
 ﻿namespace Llama.PE.Packaging
 {
-    internal interface IPackage<out TResult, in TParam> where TResult : IPackagingResult
+    internal interface IPackage<in TParam, out TResult>
     {
         TResult Package(TParam param);
     }

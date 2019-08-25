@@ -14,7 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Packaging\PE32Plus\" />
     <Folder Include="Structures\Header\" />
     <Folder Include="Structures\Sections\Edata\" />
     <Folder Include="Structures\Sections\Pdata\" />
