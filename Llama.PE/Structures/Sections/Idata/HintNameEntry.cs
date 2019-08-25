@@ -1,4 +1,4 @@
-﻿namespace Llama.PE.Idata
+﻿namespace Llama.PE.Structures.Sections.Idata
 {
     public class HintNameEntry
     {

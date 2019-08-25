@@ -1,7 +1,7 @@
-﻿namespace Llama.PE
+﻿namespace Llama.PE.Converters
 {
     using BinaryUtils;
-    using Header;
+    using Structures.Header;
 
     public class PE32PlusReaderContext : IPE32PlusContext
     {

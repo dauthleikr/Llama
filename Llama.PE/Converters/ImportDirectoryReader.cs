@@ -1,7 +1,8 @@
-﻿namespace Llama.PE.Idata
+﻿namespace Llama.PE.Converters
 {
     using System.Collections.Generic;
     using BinaryUtils;
+    using Structures.Sections.Idata;
 
     public class ImportDirectoryReader : IPEReader<ImportDirectory>
     {

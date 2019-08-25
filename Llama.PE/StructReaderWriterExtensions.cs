@@ -2,6 +2,7 @@
 {
     using System;
     using BinaryUtils;
+    using Converters;
 
     public static class StructWriterExtensions
     {

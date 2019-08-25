@@ -1,6 +1,6 @@
-﻿namespace Llama.PE
+﻿namespace Llama.PE.Converters
 {
-    using Header;
+    using Structures.Header;
 
     public interface IPE32PlusContext
     {

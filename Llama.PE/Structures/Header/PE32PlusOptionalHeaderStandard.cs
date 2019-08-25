@@ -1,4 +1,4 @@
-﻿namespace Llama.PE.Header
+﻿namespace Llama.PE.Structures.Header
 {
     using System.Runtime.InteropServices;
 
@@ -15,6 +15,7 @@
         public uint SizeOfInitializedData;
         public uint SizeOfUninitializedData;
         public uint EntryPointRVA;
+
         public uint BaseOfCodeRVA;
         // The normal PE32 header would also have "uint BaseOfData" here
     }

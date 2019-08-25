@@ -1,4 +1,4 @@
-﻿namespace Llama.PE.Header
+﻿namespace Llama.PE.Structures.Header
 {
     public enum ExecutableKind : ushort
     {

@@ -1,4 +1,4 @@
-﻿namespace Llama.PE
+﻿namespace Llama.PE.Converters
 {
     using BinaryUtils;
 

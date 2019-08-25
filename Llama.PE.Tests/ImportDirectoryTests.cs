@@ -3,8 +3,9 @@
     using System.IO;
     using System.Linq;
     using BinaryUtils;
-    using Idata;
+    using Converters;
     using NUnit.Framework;
+    using Structures.Sections.Idata;
 
     [TestFixture]
     internal unsafe class IdataTests : TestsUsingHeaders

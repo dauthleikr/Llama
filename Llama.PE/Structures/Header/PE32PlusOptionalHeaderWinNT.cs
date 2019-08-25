@@ -1,4 +1,4 @@
-﻿namespace Llama.PE.Header
+﻿namespace Llama.PE.Structures.Header
 {
     using System.Reflection.PortableExecutable;
     using System.Runtime.InteropServices;

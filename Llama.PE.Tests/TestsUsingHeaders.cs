@@ -2,7 +2,8 @@
 {
     using System.Text;
     using BinaryUtils;
-    using Header;
+    using Converters;
+    using Structures.Header;
 
     public abstract class TestsUsingHeaders
     {
