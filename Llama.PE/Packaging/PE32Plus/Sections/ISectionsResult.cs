@@ -6,5 +6,6 @@
     internal interface ISectionsResult : IPackagingResult
     {
         IReadOnlyList<SectionHeader> SectionHeaders { get; }
+        uint EntryPointRVA { get; }
     }
 }

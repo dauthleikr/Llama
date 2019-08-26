@@ -1,6 +1,8 @@
 ﻿namespace Llama.PE.Packaging.PE32Plus.Idata
 {
-    internal interface IIdataResult : IPackagingResult
+    using Sections;
+
+    internal interface IIdataResult : IPackagingResult, ISectionInfo
     {
         uint ImportDirectoryTableRVA { get; }
         uint IAT_RVA { get; }

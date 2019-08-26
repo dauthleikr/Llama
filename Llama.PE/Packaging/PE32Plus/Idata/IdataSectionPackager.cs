@@ -48,7 +48,7 @@
 
                 foreach (var (libName, functionName) in import)
                 {
-                    var lookupEntry = new ImportLookupEntryPE32Plus {HintNameTableRVA = hintNameOffset + param.IdataRVA};
+                    var lookupEntry = new ImportLookupEntryPE32Plus { HintNameTableRVA = hintNameOffset + param.IdataRVA };
                     libAndFuncToRVAOfIATEntry[(libName, functionName)] = iatOffset + param.IdataRVA;
                     WriteAndIncreaseOffset(structWriter, lookupEntry, ref iatOffset);
                     WriteAndIncreaseOffset(structWriter, lookupEntry, ref lookupTableOffset);

@@ -2,13 +2,20 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Reflection.PortableExecutable;
+    using System.Text;
 
     internal class IdataResult : IIdataResult
     {
-        public ReadOnlySpan<byte> RawData => _rawData.AsSpan();
+        public ReadOnlySpan<byte> RawSectionData => _rawData.AsSpan();
+        public ulong Name => BitConverter.ToUInt64(Encoding.ASCII.GetBytes(".idata\0\0"));
+        public uint VirtualSize => (uint)_rawData.Length;
+        public SectionCharacteristics Characteristics => SectionCharacteristics.MemRead | SectionCharacteristics.ContainsInitializedData;
         public uint ImportDirectoryTableRVA { get; }
         public uint IAT_RVA { get; }
         public uint IdataRVA { get; }
+
+        public ReadOnlySpan<byte> RawData => RawSectionData;
         private readonly Dictionary<(string lib, string func), uint> _importToRVA;
         private readonly byte[] _rawData;
 

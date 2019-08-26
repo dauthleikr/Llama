@@ -1,8 +1,13 @@
-﻿namespace Llama.PE.Packaging.PE32Plus.Section
+﻿namespace Llama.PE.Packaging.PE32Plus.Sections
 {
+    using System;
+    using System.Reflection.PortableExecutable;
+
     internal interface ISectionInfo
     {
-        byte[] RawData { get; }
-        string Name { get; }
+        ReadOnlySpan<byte> RawSectionData { get; }
+        ulong Name { get; }
+        uint VirtualSize { get; }
+        SectionCharacteristics Characteristics { get; }
     }
 }

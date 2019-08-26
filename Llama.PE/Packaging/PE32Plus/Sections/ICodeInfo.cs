@@ -1,7 +1,5 @@
-﻿namespace Llama.PE.Packaging.PE32Plus.CodeSection
+﻿namespace Llama.PE.Packaging.PE32Plus.Sections
 {
-    using Section;
-
     internal interface ICodeInfo : ISectionInfo
     {
         uint EntryPointOffset { get; }

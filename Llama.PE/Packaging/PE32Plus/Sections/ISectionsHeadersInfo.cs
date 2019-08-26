@@ -8,5 +8,8 @@
         IEnumerable<ISectionInfo> OtherSections { get; }
         ICodeInfo TextSection { get; }
         IIdataResult IdataSection { get; }
+        uint FileAlignment { get; }
+        uint SectionAlignment { get; }
+        uint FileOffsetAtSectionsHeader { get; }
     }
 }
