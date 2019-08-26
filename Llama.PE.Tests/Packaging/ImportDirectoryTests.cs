@@ -1,9 +1,10 @@
 ﻿namespace Llama.PE.Tests.Packaging
 {
-    using System.Collections.Generic;
+    using System.Linq;
     using System.Text;
     using BinaryUtils;
     using Converters;
+    using Moq;
     using NUnit.Framework;
     using PE.Packaging.PE32Plus.Idata;
 
@@ -13,33 +14,32 @@
         [SetUp]
         public void SetUp()
         {
+            var idataInfo = new Mock<IIdataInfo>();
+            idataInfo.Setup(item => item.IdataRVA).Returns(TestIdataRVA);
+            idataInfo.Setup(item => item.IATBlockSize).Returns(32);
+            idataInfo.Setup(item => item.Imports)
+                .Returns(
+                    new (string library, string function)[]
+                    {
+                        ("kernel32.dll", "WriteFile"),
+                        ("kernel32.dll", "VirtualAllocEx"),
+                        ("user32.dll", "MessageBox")
+                    }
+                );
+
             var packager = new IdataSectionPackager(new HintNameEntryWriter());
-            _packaged = packager.Package(new IdataInfo());
+            _packaged = packager.Package(idataInfo.Object);
         }
 
         private const int TestIdataRVA = 10000;
         private IIdataResult _packaged;
 
-        private class IdataInfo : IIdataInfo
-        {
-            public IEnumerable<(string library, string function)> Imports =>
-                new (string library, string function)[]
-                {
-                    ("kernel32.dll", "WriteFile"),
-                    ("kernel32.dll", "VirtualAllocEx"),
-                    ("user32.dll", "MessageBox")
-                };
-
-            public uint IdataRVA => TestIdataRVA;
-            public uint IATBlockSize => 32;
-        }
-
         [Test]
         public void CanResolveFunctionNames()
         {
-            var rva = _packaged.GetRVAOfIATEntry("kernel32.dll", "VirtualAllocEx");
+            var rva = _packaged.IATResolver.GetRVAOfIATEntry("kernel32.dll", "VirtualAllocEx");
             Assert.GreaterOrEqual(rva, _packaged.IdataRVA, "IAT entry RVA should be in idata");
-            var reader = new ArrayStructReaderWriter(_packaged.RawData.ToArray())
+            var reader = new ArrayStructReaderWriter(_packaged.RawData)
             {
                 Offset = rva - _packaged.IdataRVA
             };
@@ -53,7 +53,10 @@
         [Test]
         public void CanResolveLibraryNames()
         {
-            var reader = new ArrayStructReaderWriter(_packaged.RawData.ToArray()) {Offset = _packaged.ImportDirectoryTableRVA - _packaged.IdataRVA};
+            var reader = new ArrayStructReaderWriter(_packaged.RawData.ToArray())
+            {
+                Offset = _packaged.ImportDirectoryTableRVA - _packaged.IdataRVA
+            };
             reader.Offset += 12;
             var nameRVA = reader.Read<uint>();
             Assert.NotZero(nameRVA, "NameRVA should never be 0");
@@ -90,7 +93,10 @@
         [Test]
         public void NumberOfImportDirectoryEntriesIsCorrect()
         {
-            var reader = new ArrayStructReaderWriter(_packaged.RawData.ToArray()) {Offset = _packaged.ImportDirectoryTableRVA - _packaged.IdataRVA};
+            var reader = new ArrayStructReaderWriter(_packaged.RawData.ToArray())
+            {
+                Offset = _packaged.ImportDirectoryTableRVA - _packaged.IdataRVA
+            };
             Assert.NotZero(reader.Read<uint>(), "ImportLookupTableRVA should not be 0");
             reader.Offset += 16; // ImportLookupTableRVA of next entry
             Assert.NotZero(reader.Read<uint>(), "ImportLookupTableRVA should not be 0");

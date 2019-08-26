@@ -7,6 +7,6 @@
         uint ImportDirectoryTableRVA { get; }
         uint IAT_RVA { get; }
         uint IdataRVA { get; }
-        uint GetRVAOfIATEntry(string library, string function);
+        IResolveIATEntries IATResolver { get; }
     }
 }

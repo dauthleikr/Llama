@@ -5,7 +5,7 @@
 
     internal interface ISectionInfo
     {
-        ReadOnlySpan<byte> RawSectionData { get; }
+        byte[] RawSectionData { get; }
         ulong Name { get; }
         uint VirtualSize { get; }
         SectionCharacteristics Characteristics { get; }

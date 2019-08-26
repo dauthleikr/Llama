@@ -4,6 +4,6 @@
 
     internal interface IPackagingResult
     {
-        ReadOnlySpan<byte> RawData { get; }
+        byte[] RawData { get; }
     }
 }

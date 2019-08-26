@@ -5,19 +5,19 @@
     using System.Reflection.PortableExecutable;
     using System.Text;
 
-    internal class IdataResult : IIdataResult
+    internal class IdataResult : IIdataResult, IResolveIATEntries
     {
-        public ReadOnlySpan<byte> RawSectionData => _rawData.AsSpan();
+        public byte[] RawSectionData => RawData;
         public ulong Name => BitConverter.ToUInt64(Encoding.ASCII.GetBytes(".idata\0\0"));
-        public uint VirtualSize => (uint)_rawData.Length;
+        public uint VirtualSize => (uint)RawData.Length;
         public SectionCharacteristics Characteristics => SectionCharacteristics.MemRead | SectionCharacteristics.ContainsInitializedData;
         public uint ImportDirectoryTableRVA { get; }
         public uint IAT_RVA { get; }
         public uint IdataRVA { get; }
+        public IResolveIATEntries IATResolver => this;
 
-        public ReadOnlySpan<byte> RawData => RawSectionData;
+        public byte[] RawData { get; }
         private readonly Dictionary<(string lib, string func), uint> _importToRVA;
-        private readonly byte[] _rawData;
 
         public IdataResult(
             uint iatRVA,
@@ -30,7 +30,7 @@
             IAT_RVA = iatRVA;
             IdataRVA = idataRVA;
             ImportDirectoryTableRVA = importDirectoryTableRVA;
-            _rawData = rawData ?? throw new ArgumentNullException(nameof(rawData));
+            RawData = rawData ?? throw new ArgumentNullException(nameof(rawData));
             _importToRVA = importToRVA ?? throw new ArgumentNullException(nameof(importToRVA));
         }
 

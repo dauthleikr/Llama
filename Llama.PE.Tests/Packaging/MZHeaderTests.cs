@@ -1,5 +1,6 @@
 ﻿namespace Llama.PE.Tests.Packaging
 {
+    using System;
     using System.Text;
     using NUnit.Framework;
     using PE.Packaging.PE32Plus.MZHeader;
@@ -21,7 +22,7 @@
         [Test]
         public void MagicIsMZ()
         {
-            Assert.AreEqual("MZ", Encoding.ASCII.GetString(_packaged.RawData.Slice(0, 2)));
+            Assert.AreEqual("MZ", Encoding.ASCII.GetString(_packaged.RawData.AsSpan().Slice(0, 2)));
         }
 
         [Test]

@@ -6,13 +6,12 @@
 
     internal class MZResult : IMZResult
     {
-        public ReadOnlySpan<byte> RawData => _bytes.AsSpan();
+        public byte[] RawData { get; }
         public uint NewHeaderOffset { get; }
-        private readonly byte[] _bytes;
 
         public MZResult(MZHeader header)
         {
-            _bytes = StructConverter.GetBytes(header);
+            RawData = StructConverter.GetBytes(header);
             NewHeaderOffset = header.NewHeaderRVA;
         }
     }
