@@ -19,7 +19,13 @@
         private readonly Dictionary<(string lib, string func), uint> _importToRVA;
         private readonly byte[] _rawData;
 
-        public IdataResult(uint iatRVA, uint importDirectoryTableRVA, uint idataRVA, byte[] rawData, Dictionary<(string lib, string func), uint> importToRVA)
+        public IdataResult(
+            uint iatRVA,
+            uint importDirectoryTableRVA,
+            uint idataRVA,
+            byte[] rawData,
+            Dictionary<(string lib, string func), uint> importToRVA
+        )
         {
             IAT_RVA = iatRVA;
             IdataRVA = idataRVA;

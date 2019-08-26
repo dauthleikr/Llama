@@ -17,7 +17,9 @@
             OptionalHeader = peReader.Read<PE32PlusOptionalHeader>((uint)(MZHeader.NewHeaderRVA + sizeof(PEHeader)));
             SectionHeaders = new SectionHeader[PEHeader.NumberOfSections];
             for (var i = 0; i < SectionHeaders.Length; i++)
-                SectionHeaders[i] = peReader.Read<SectionHeader>((uint)(MZHeader.NewHeaderRVA + PEHeader.OptionalHeaderSize + sizeof(PEHeader) + i * sizeof(SectionHeader)));
+                SectionHeaders[i] = peReader.Read<SectionHeader>(
+                    (uint)(MZHeader.NewHeaderRVA + PEHeader.OptionalHeaderSize + sizeof(PEHeader) + i * sizeof(SectionHeader))
+                );
         }
 
         public ulong GetFileOffset(ulong rva)

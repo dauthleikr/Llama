@@ -7,7 +7,11 @@
         public readonly ImportLookupEntryPE32Plus[][] ImportLookupTables;
         public readonly HintNameEntry[] HintOrNameTable;
 
-        public ImportDirectory(ImportDirectoryEntry[] importDirectoryTable, ImportLookupEntryPE32Plus[][] importLookupTables, HintNameEntry[] hintOrNameTable)
+        public ImportDirectory(
+            ImportDirectoryEntry[] importDirectoryTable,
+            ImportLookupEntryPE32Plus[][] importLookupTables,
+            HintNameEntry[] hintOrNameTable
+        )
         {
             ImportDirectoryTable = importDirectoryTable;
             ImportLookupTables = importLookupTables;
