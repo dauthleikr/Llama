@@ -1,11 +1,11 @@
-﻿namespace Llama.PE.Tests
+﻿namespace Llama.PE.Tests.Structures
 {
     using System.IO;
     using System.Linq;
     using BinaryUtils;
     using Converters;
     using NUnit.Framework;
-    using Structures.Sections.Idata;
+    using PE.Structures.Sections.Idata;
 
     [TestFixture]
     internal unsafe class IdataTests : TestsUsingHeaders

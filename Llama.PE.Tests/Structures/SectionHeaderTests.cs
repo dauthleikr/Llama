@@ -4,6 +4,7 @@
     using System.Linq;
     using System.Reflection.PortableExecutable;
     using NUnit.Framework;
+    using SectionHeader = PE.Structures.Header.SectionHeader;
 
     [TestFixture]
     public class SectionHeaderTests : TestsUsingHeaders
@@ -11,6 +12,20 @@
         public SectionHeaderTests() : base(File.ReadAllBytes("test.exe")) { }
 
         private string[] GetSectionNames() => SectionHeaders.Select(item => item.NameString).ToArray();
+
+        [Test]
+        public unsafe void SizeIsCorrect()
+        {
+            Assert.AreEqual(40, sizeof(SectionHeader));
+        }
+
+        [Test]
+        public void IdataCharacteristicsArePlausible()
+        {
+            var characteristics = SectionHeaders.First(sec => sec.NameString.StartsWith(".idata")).Characteristics;
+            Assert.That(characteristics.HasFlag(SectionCharacteristics.MemRead), ".idata should be readable");
+            Assert.That(characteristics.HasFlag(SectionCharacteristics.ContainsInitializedData), ".idata should contain initialized data");
+        }
 
         [Test]
         public void HasDataSection()
