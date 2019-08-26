@@ -1,9 +1,9 @@
-﻿namespace Llama.PE.Tests
+﻿namespace Llama.PE.Tests.Structures
 {
     using System.Text;
     using BinaryUtils;
     using Converters;
-    using Structures.Header;
+    using PE.Structures.Header;
 
     public abstract class TestsUsingHeaders
     {

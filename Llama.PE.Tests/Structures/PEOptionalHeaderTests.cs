@@ -1,8 +1,8 @@
-﻿namespace Llama.PE.Tests
+﻿namespace Llama.PE.Tests.Structures
 {
     using System.IO;
     using NUnit.Framework;
-    using Structures.Header;
+    using PE.Structures.Header;
 
     [TestFixture]
     public class PEOptionalHeaderTests : TestsUsingHeaders

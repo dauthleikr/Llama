@@ -32,15 +32,6 @@
 
             Assert.That(functionNames.All(func => !string.IsNullOrWhiteSpace(func)));
             Assert.That(functionNames.Contains("HeapAlloc") || functionNames.Contains("WriteFile"));
-
-            // reading IAT:
-            // var reader = new ArrayStructReaderWriter(TestFile);
-            // foreach (var entry in _importDirectory.ImportDirectoryTable)
-            // {
-            //     var name = ReadStringFromRVA(entry.NameRVA);
-            //     reader.Offset = Image.GetFileOffset(entry.IAT_RVA);
-            //     var iat = reader.ReadUntilNull<ImportLookupEntryPE32Plus>();
-            // }
         }
 
         [Test]

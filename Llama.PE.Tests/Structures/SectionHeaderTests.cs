@@ -1,4 +1,4 @@
-﻿namespace Llama.PE.Tests
+﻿namespace Llama.PE.Tests.Structures
 {
     using System.IO;
     using System.Linq;
