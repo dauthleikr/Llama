@@ -13,7 +13,7 @@
     using SectionHeader = PE.Structures.Header.SectionHeader;
 
     [TestFixture]
-    internal class SectionTests
+    internal class SectionsTests
     {
         [SetUp]
         public void SetUp()
