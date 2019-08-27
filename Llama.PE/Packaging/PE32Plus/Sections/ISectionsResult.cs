@@ -8,6 +8,8 @@
     {
         IReadOnlyList<SectionHeader> SectionHeaders { get; }
         uint EntryPointRVA { get; }
+        ImageDataDirectory IAT { get; }
+        ImageDataDirectory ImportTable { get; }
         IResolveIATEntries IATResolver { get; }
     }
 }

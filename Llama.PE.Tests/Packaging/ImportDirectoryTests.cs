@@ -55,7 +55,7 @@
         {
             var reader = new ArrayStructReaderWriter(_packaged.RawData.ToArray())
             {
-                Offset = _packaged.ImportDirectoryTableRVA - _packaged.IdataRVA
+                Offset = _packaged.ImportDirectory.VirtualAddress - _packaged.IdataRVA
             };
             reader.Offset += 12;
             var nameRVA = reader.Read<uint>();
@@ -64,7 +64,7 @@
             var name = Encoding.ASCII.GetString(reader.ReadUntilNull<byte>().ToArray());
             Assert.AreEqual("kernel32.dll", name);
 
-            reader.Offset = _packaged.ImportDirectoryTableRVA - _packaged.IdataRVA + 32;
+            reader.Offset = _packaged.ImportDirectory.VirtualAddress - _packaged.IdataRVA + 32;
             nameRVA = reader.Read<uint>();
             Assert.NotZero(nameRVA, "NameRVA should never be 0");
             reader.Offset = nameRVA - _packaged.IdataRVA;
@@ -75,7 +75,7 @@
         [Test]
         public void IAT_RVAMakesSense()
         {
-            Assert.GreaterOrEqual(_packaged.IAT_RVA, _packaged.IdataRVA, "IAT start should be in idata");
+            Assert.GreaterOrEqual(_packaged.IAT.VirtualAddress, _packaged.IdataRVA, "IAT start should be in idata");
         }
 
         [Test]
@@ -87,7 +87,7 @@
         [Test]
         public void ImportDirectoryTableRVAMakesSense()
         {
-            Assert.GreaterOrEqual(_packaged.ImportDirectoryTableRVA, _packaged.IdataRVA, "Import directory table start should be in idata");
+            Assert.GreaterOrEqual(_packaged.ImportDirectory.VirtualAddress, _packaged.IdataRVA, "Import directory table start should be in idata");
         }
 
         [Test]
@@ -95,7 +95,7 @@
         {
             var reader = new ArrayStructReaderWriter(_packaged.RawData.ToArray())
             {
-                Offset = _packaged.ImportDirectoryTableRVA - _packaged.IdataRVA
+                Offset = _packaged.ImportDirectory.VirtualAddress - _packaged.IdataRVA
             };
             Assert.NotZero(reader.Read<uint>(), "ImportLookupTableRVA should not be 0");
             reader.Offset += 16; // ImportLookupTableRVA of next entry

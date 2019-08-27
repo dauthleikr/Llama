@@ -37,7 +37,9 @@
                 peFile.ToArray().Skip((int)param.FileOffsetAtSectionsHeader).ToArray(),
                 sectionHeaders,
                 param.TextSection.EntryPointOffset + textSection.VirtualAddress,
-                idataPackage.IATResolver
+                idataPackage.IATResolver,
+                idataPackage.ImportDirectory,
+                idataPackage.IAT
             );
         }
 

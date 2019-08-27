@@ -7,6 +7,7 @@
     using System.Text;
     using BinaryUtils;
     using Converters;
+    using Structures.Header;
     using Structures.Sections.Idata;
 
     internal class IdataSectionPackager : IPackage<IIdataInfo, IIdataResult>
@@ -48,7 +49,10 @@
 
                 foreach (var (libName, functionName) in import)
                 {
-                    var lookupEntry = new ImportLookupEntryPE32Plus { HintNameTableRVA = hintNameOffset + param.IdataRVA };
+                    var lookupEntry = new ImportLookupEntryPE32Plus
+                    {
+                        HintNameTableRVA = hintNameOffset + param.IdataRVA
+                    };
                     libAndFuncToRVAOfIATEntry[(libName, functionName)] = iatOffset + param.IdataRVA;
                     WriteAndIncreaseOffset(structWriter, lookupEntry, ref iatOffset);
                     WriteAndIncreaseOffset(structWriter, lookupEntry, ref lookupTableOffset);
@@ -63,7 +67,21 @@
             Debug.Assert(directoryTableOffset <= iatSize + directoryTableSize);
             Debug.Assert(lookupTableOffset <= iatSize + directoryTableSize + lookupTableSize);
 
-            return new IdataResult(param.IdataRVA, param.IdataRVA + (uint)iatSize, param.IdataRVA, dataStream.ToArray(), libAndFuncToRVAOfIATEntry);
+            return new IdataResult(
+                param.IdataRVA,
+                dataStream.ToArray(),
+                libAndFuncToRVAOfIATEntry,
+                new ImageDataDirectory
+                {
+                    VirtualAddress = param.IdataRVA + (uint)iatSize,
+                    Size = (uint)directoryTableSize
+                },
+                new ImageDataDirectory
+                {
+                    VirtualAddress = param.IdataRVA,
+                    Size = (uint)iatSize
+                }
+            );
         }
 
         private void WriteAndIncreaseOffset<T>(IStructWriter writer, T item, ref uint offset) where T : struct

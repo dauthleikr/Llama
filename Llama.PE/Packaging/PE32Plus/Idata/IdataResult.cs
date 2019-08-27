@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Reflection.PortableExecutable;
     using System.Text;
+    using Structures.Header;
 
     internal class IdataResult : IIdataResult, IResolveIATEntries
     {
@@ -11,8 +12,8 @@
         public ulong Name => BitConverter.ToUInt64(Encoding.ASCII.GetBytes(".idata\0\0"));
         public uint VirtualSize => (uint)RawData.Length;
         public SectionCharacteristics Characteristics => SectionCharacteristics.MemRead | SectionCharacteristics.ContainsInitializedData;
-        public uint ImportDirectoryTableRVA { get; }
-        public uint IAT_RVA { get; }
+        public ImageDataDirectory ImportDirectory { get; }
+        public ImageDataDirectory IAT { get; }
         public uint IdataRVA { get; }
         public IResolveIATEntries IATResolver => this;
 
@@ -20,18 +21,18 @@
         private readonly Dictionary<(string lib, string func), uint> _importToRVA;
 
         public IdataResult(
-            uint iatRVA,
-            uint importDirectoryTableRVA,
             uint idataRVA,
             byte[] rawData,
-            Dictionary<(string lib, string func), uint> importToRVA
+            Dictionary<(string lib, string func), uint> importToRVA,
+            ImageDataDirectory importDirectory,
+            ImageDataDirectory iat
         )
         {
-            IAT_RVA = iatRVA;
             IdataRVA = idataRVA;
-            ImportDirectoryTableRVA = importDirectoryTableRVA;
             RawData = rawData ?? throw new ArgumentNullException(nameof(rawData));
             _importToRVA = importToRVA ?? throw new ArgumentNullException(nameof(importToRVA));
+            ImportDirectory = importDirectory;
+            IAT = iat;
         }
 
         public uint GetRVAOfIATEntry(string library, string function)
