@@ -80,6 +80,14 @@
         }
 
         [Test]
+        public void EntryPointIsInTextSection()
+        {
+            var codeSection = _packaged.SectionHeaders.First(sec => sec.NameString.StartsWith(".text"));
+
+            Assert.That(_packaged.EntryPointRVA, Is.InRange(codeSection.VirtualAddress, codeSection.VirtualAddress + codeSection.VirtualSize));
+        }
+
+        [Test]
         public void SectionsDoNotOverlap()
         {
             var reader = new ArrayStructReaderWriter(_packaged.RawData);
