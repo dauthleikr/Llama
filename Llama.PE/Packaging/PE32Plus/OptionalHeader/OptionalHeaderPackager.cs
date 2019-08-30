@@ -10,8 +10,8 @@
         public unsafe IOptionalHeaderResult Package(IOptionalHeaderInfo param)
         {
             var codeSection = param.Sections.SectionHeaders.First(sec => sec.NameString.StartsWith(".text"));
-            var initializedDataSection = param.Sections.SectionHeaders.First(sec => sec.NameString.StartsWith(".data"));
-            var uninitializedDataSection = param.Sections.SectionHeaders.First(sec => sec.NameString.StartsWith(".bss"));
+            var initializedDataSection = param.Sections.SectionHeaders.FirstOrDefault(sec => sec.NameString.StartsWith(".data"));
+            var uninitializedDataSection = param.Sections.SectionHeaders.FirstOrDefault(sec => sec.NameString.StartsWith(".bss"));
             var optHeaderStandard = new PE32PlusOptionalHeaderStandard
             {
                 ExecutableKind = ExecutableKind.PE32Plus,
@@ -20,8 +20,8 @@
                 MajorLinkerVersion = param.MajorLinkerVersion,
                 MinorLinkerVersion = param.MinorLinkerVersion,
                 SizeOfCode = codeSection.VirtualSize,
-                SizeOfInitializedData = initializedDataSection.VirtualSize,
-                SizeOfUninitializedData = uninitializedDataSection.VirtualSize
+                SizeOfInitializedData = initializedDataSection != default ? initializedDataSection.VirtualSize : 0,
+                SizeOfUninitializedData = uninitializedDataSection != default ? uninitializedDataSection.VirtualSize : 0
             };
             var optHeaderWinNT = new PE32PlusOptionalHeaderWinNT
             {
