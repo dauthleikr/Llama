@@ -10,6 +10,8 @@
         uint EntryPointRVA { get; }
         ImageDataDirectory IAT { get; }
         ImageDataDirectory ImportTable { get; }
+        ImageDataDirectory Debug { get; }
+        ImageDataDirectory BaseRelocationTable { get; }
         IResolveIATEntries IATResolver { get; }
     }
 }

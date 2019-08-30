@@ -39,7 +39,9 @@
                 param.TextSection.EntryPointOffset + textSection.VirtualAddress,
                 idataPackage.IATResolver,
                 idataPackage.ImportDirectory,
-                idataPackage.IAT
+                idataPackage.IAT,
+                default, // todo: debug table
+                default // todo: relocation table
             );
         }
 

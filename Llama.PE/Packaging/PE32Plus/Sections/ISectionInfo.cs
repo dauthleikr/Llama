@@ -1,6 +1,5 @@
 ﻿namespace Llama.PE.Packaging.PE32Plus.Sections
 {
-    using System;
     using System.Reflection.PortableExecutable;
 
     internal interface ISectionInfo

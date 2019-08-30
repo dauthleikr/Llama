@@ -50,7 +50,9 @@
             var optHeaderDataDictionary = new PE32PlusOptionalHeaderDataDirectories
             {
                 IAT = param.Sections.IAT,
-                ImportTable = param.Sections.ImportTable
+                ImportTable = param.Sections.ImportTable,
+                Debug = param.Sections.Debug,
+                BaseRelocationTable = param.Sections.BaseRelocationTable
                 //todo
             };
             var rawData = new MemoryStream();
@@ -58,7 +60,11 @@
             structWriter.Write(optHeaderStandard);
             structWriter.Write(optHeaderWinNT);
             structWriter.Write(optHeaderDataDictionary);
-            return new OptionalHeadersResult(rawData.ToArray());
+            return new OptionalHeadersResult(
+                rawData.ToArray(),
+                param.Sections.Debug.VirtualAddress != 0,
+                param.Sections.BaseRelocationTable.VirtualAddress != 0
+            );
         }
     }
 }
