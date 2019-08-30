@@ -8,7 +8,7 @@
     [TestFixture]
     internal class MZHeaderTests
     {
-        [SetUp]
+        [OneTimeSetUp]
         public void SetUp()
         {
             var packager = new MZHeaderPackager();

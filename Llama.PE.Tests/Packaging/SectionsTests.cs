@@ -15,7 +15,7 @@
     [TestFixture]
     internal class SectionsTests
     {
-        [SetUp]
+        [OneTimeSetUp]
         public void SetUp()
         {
             var codeInfo = new Mock<ICodeInfo>();

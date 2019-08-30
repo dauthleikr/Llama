@@ -11,7 +11,7 @@
     [TestFixture]
     internal class ImportDirectoryTests
     {
-        [SetUp]
+        [OneTimeSetUp]
         public void SetUp()
         {
             var idataInfo = new Mock<IIdataInfo>();
