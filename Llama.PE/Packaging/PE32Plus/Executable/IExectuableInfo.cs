@@ -15,7 +15,6 @@
         ushort MajorImageVersion { get; }
         ushort MinorImageVersion { get; }
         Subsystem Subsystem { get; }
-        DllCharacteristics DllCharacteristics { get; }
         uint StackSizeReserve { get; }
         uint StackSizeCommit { get; }
         uint HeapSizeReserve { get; }

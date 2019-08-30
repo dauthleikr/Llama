@@ -58,8 +58,10 @@
                 (uint)(mzResult.NewHeaderOffset + Marshal.SizeOf<PEHeader>() + Marshal.SizeOf<PE32PlusOptionalHeader>())
             );
 
-        private static IOptionalHeaderInfo MakeOptionalHeaderInfo(IExectuableInfo exeInfo, IMZResult mzResult, ISectionsResult sectionsResult) =>
-            new OptionalHeaderInfo(
+        private static IOptionalHeaderInfo MakeOptionalHeaderInfo(IExectuableInfo exeInfo, IMZResult mzResult, ISectionsResult sectionsResult)
+        {
+            var dllCharacteristics = DllCharacteristics.NxCompatible; // todo
+            return new OptionalHeaderInfo(
                 mzResult,
                 sectionsResult,
                 exeInfo.MajorLinkerVersion,
@@ -73,13 +75,14 @@
                 exeInfo.FileAlignment,
                 exeInfo.SectionAlignment,
                 exeInfo.Subsystem,
-                exeInfo.DllCharacteristics,
+                dllCharacteristics,
                 exeInfo.StackSizeReserve,
                 exeInfo.StackSizeCommit,
                 exeInfo.HeapSizeReserve,
                 exeInfo.HeapSizeCommit,
                 exeInfo.ImageBase
             );
+        }
 
         [SuppressMessage("ReSharper", "BitwiseOperatorOnEnumWithoutFlags")]
         private static IPEInfo MakePEHeaderInfo(IExectuableInfo exeInfo, IOptionalHeaderResult optHeaderResult, ISectionsResult sectionsResult)
