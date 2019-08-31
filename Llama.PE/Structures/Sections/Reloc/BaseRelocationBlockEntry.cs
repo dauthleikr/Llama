@@ -8,8 +8,17 @@
     {
         public ushort Entry;
 
-        public BaseRelocationType Type => (BaseRelocationType)((Entry & 0xF000) >> 12);
-        public int Offset => Entry & 0x0FFF;
+        public BaseRelocationType Type
+        {
+            get => (BaseRelocationType)((Entry & 0xF000) >> 12);
+            set => Entry = (ushort)((Entry & 0x0FFF) | (((int)value << 12) & 0xF000));
+        }
+
+        public int Offset
+        {
+            get => Entry & 0x0FFF;
+            set => Entry = (ushort)((Entry & 0xF000) | (value & 0x0FFF));
+        }
 
         public bool Equals(BaseRelocationBlockEntry other) => Entry == other.Entry;
 
