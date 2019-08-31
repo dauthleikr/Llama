@@ -3,7 +3,7 @@
     using System.Collections.Generic;
     using Idata;
 
-    internal interface ISectionHeadersInfo
+    internal interface ISectionsInfo
     {
         IEnumerable<ISectionInfo> OtherSections { get; }
         ICodeInfo TextSection { get; }
