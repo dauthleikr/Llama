@@ -45,7 +45,7 @@
             rawData.Write(peHeaderResult.RawData);
             rawData.Write(optHeaderResult.RawData);
             rawData.Write(sectionsResult.RawData);
-            return new ExecutableResult(rawData.ToArray());
+            return new RawPackagingResult(rawData.ToArray());
         }
 
         private static ISectionHeadersInfo MakeSectionHeadersInfo(IExectuableInfo exeInfo, IMZResult mzResult) =>
