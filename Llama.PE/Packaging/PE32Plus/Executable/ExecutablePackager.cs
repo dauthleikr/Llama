@@ -60,7 +60,13 @@
 
         private static IOptionalHeaderInfo MakeOptionalHeaderInfo(IExectuableInfo exeInfo, IMZResult mzResult, ISectionsResult sectionsResult)
         {
-            var dllCharacteristics = DllCharacteristics.NxCompatible; // todo
+            var dllCharacteristics = DllCharacteristics.NxCompatible | // DEP aware
+                                     DllCharacteristics.NoIsolation | // Do not look for the manifest in rsrc / directory (todo)
+                                     DllCharacteristics.HighEntropyVirtualAddressSpace | // ASLR enabled for 64-bit range
+                                     DllCharacteristics.DynamicBase | // May load image on any address - only does so if relocs are not stripped
+                                     DllCharacteristics.NoSeh | //todo: SEH not implemented
+                                     DllCharacteristics.NoBind; //todo: research 
+
             return new OptionalHeaderInfo(
                 mzResult,
                 sectionsResult,
