@@ -12,6 +12,8 @@
 
         IPE32PlusBuilder AddAdditionalSection(string name, uint size);
 
+        IPE32PlusBuildResult AddRelocation64(string section, uint sectionOffset);
+
         IPE32PlusBuilder ImportFunction(string library, string function);
 
         IPE32PlusBuildResult Build(uint codeSectionSize);

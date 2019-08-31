@@ -29,6 +29,8 @@
             return this;
         }
 
+        public IPE32PlusBuildResult AddRelocation64(string section, uint sectionOffset) => throw new NotImplementedException();
+
         public IPE32PlusBuilder ImportFunction(string library, string function)
         {
             if (string.IsNullOrWhiteSpace(library))
