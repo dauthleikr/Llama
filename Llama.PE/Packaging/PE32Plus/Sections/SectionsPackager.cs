@@ -33,6 +33,12 @@
             structWriter.WriteArray(sectionHeaders.ToArray());
             Debug.Assert(peFile.Position <= sectionDataStart, "Section headers are writing into section data");
 
+            var relocSection = sectionHeaders.FirstOrDefault(sec => sec.NameString == ".reloc\0\0");
+            var relocDataDirectory = new ImageDataDirectory
+            {
+                VirtualAddress = relocSection.VirtualAddress,
+                Size = relocSection.SizeOfRawData
+            };
             return new SectionsResult(
                 peFile.ToArray().Skip((int)param.FileOffsetAtSectionsHeader).ToArray(),
                 sectionHeaders,
@@ -41,7 +47,7 @@
                 idataPackage.ImportDirectory,
                 idataPackage.IAT,
                 default, // todo: debug table
-                default // todo: relocation table
+                relocDataDirectory
             );
         }
 
