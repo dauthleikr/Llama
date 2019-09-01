@@ -35,7 +35,7 @@
                 StackSizeCommit = param.StackSizeCommit,
                 SizeOfImage = param.Sections.SectionHeaders.Max(sec => Round.Up(sec.VirtualAddress + sec.VirtualSize, param.SectionAlignment)),
                 ImageBaseOffset = param.ImageBase,
-                NumberOfDataDirectoryEntries = 10,
+                NumberOfDataDirectoryEntries = 0x10,
                 SizeOfHeaders = (uint)(param.MZHeader.RawData.Length +
                                        sizeof(PEHeader) +
                                        sizeof(PE32PlusOptionalHeader) +
