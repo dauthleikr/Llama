@@ -19,5 +19,14 @@
                 "Bad executable kind (headers corrupt?)"
             );
         }
+
+        [Test]
+        public void SizeOfHeadersIsMultipleOfFileAlignment()
+        {
+            Assert.That(
+                OptionalHeader.WinNT.SizeOfHeaders % OptionalHeader.WinNT.FileAlignment == 0,
+                $"{nameof(OptionalHeader.WinNT.SizeOfHeaders)} has to be a multiple of {nameof(OptionalHeader.WinNT.FileAlignment)}"
+            );
+        }
     }
 }
