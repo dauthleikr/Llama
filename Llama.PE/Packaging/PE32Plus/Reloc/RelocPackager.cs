@@ -20,7 +20,7 @@
             var writer = new ArrayStructReaderWriter(rawData);
             _relocWriter.Write(writer, param.Relocations);
 
-            Debug.Assert((int)writer.Offset == rawData.Length - 1);
+            Debug.Assert((int)writer.Offset == rawData.Length);
             return new RelocResult(
                 rawData,
                 (uint)rawData.Length
