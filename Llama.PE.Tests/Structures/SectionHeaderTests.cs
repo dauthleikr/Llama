@@ -14,20 +14,6 @@
         private string[] GetSectionNames() => SectionHeaders.Select(item => item.NameString).ToArray();
 
         [Test]
-        public unsafe void SizeIsCorrect()
-        {
-            Assert.AreEqual(40, sizeof(SectionHeader));
-        }
-
-        [Test]
-        public void IdataCharacteristicsArePlausible()
-        {
-            var characteristics = SectionHeaders.First(sec => sec.NameString.StartsWith(".idata")).Characteristics;
-            Assert.That(characteristics.HasFlag(SectionCharacteristics.MemRead), ".idata should be readable");
-            Assert.That(characteristics.HasFlag(SectionCharacteristics.ContainsInitializedData), ".idata should contain initialized data");
-        }
-
-        [Test]
         public void HasDataSection()
         {
             Assert.Contains(".data\0\0\0", GetSectionNames(), "Cannot find .data section");
@@ -37,6 +23,14 @@
         public void HasTextSection()
         {
             Assert.Contains(".text\0\0\0", GetSectionNames(), "Cannot find text section (sections corrupt?)");
+        }
+
+        [Test]
+        public void IdataCharacteristicsArePlausible()
+        {
+            var characteristics = SectionHeaders.First(sec => sec.NameString.StartsWith(".idata")).Characteristics;
+            Assert.That(characteristics.HasFlag(SectionCharacteristics.MemRead), ".idata should be readable");
+            Assert.That(characteristics.HasFlag(SectionCharacteristics.ContainsInitializedData), ".idata should contain initialized data");
         }
 
         [Test]
@@ -52,6 +46,22 @@
         }
 
         [Test]
+        public unsafe void SizeIsCorrect()
+        {
+            Assert.AreEqual(40, sizeof(SectionHeader));
+        }
+
+        [Test]
+        public void SizeOfRawDataIsMultipleOfFileAlignment()
+        {
+            foreach (var sectionHeader in SectionHeaders)
+                Assert.That(
+                    sectionHeader.SizeOfRawData % OptionalHeader.WinNT.FileAlignment == 0,
+                    $"{nameof(sectionHeader.SizeOfRawData)} has to be a multiple of {nameof(OptionalHeader.WinNT.FileAlignment)}"
+                );
+        }
+
+        [Test]
         public void TextSectionIsReadableExecutableAndHasCode()
         {
             var textSections = SectionHeaders.Where(item => item.NameString == ".text\0\0\0").ToArray();
@@ -60,7 +70,10 @@
 
             foreach (var sectionHeader in textSections)
             {
-                Assert.That(sectionHeader.Characteristics.HasFlag(SectionCharacteristics.ContainsCode), ".text does not contain code (section flags)");
+                Assert.That(
+                    sectionHeader.Characteristics.HasFlag(SectionCharacteristics.ContainsCode),
+                    ".text does not contain code (section flags)"
+                );
                 Assert.That(sectionHeader.Characteristics.HasFlag(SectionCharacteristics.MemExecute), ".text is not executable (section flags)");
                 Assert.That(sectionHeader.Characteristics.HasFlag(SectionCharacteristics.MemRead), ".text is not readable (section flags)");
             }
