@@ -36,10 +36,13 @@
                 SizeOfImage = param.Sections.SectionHeaders.Max(sec => Round.Up(sec.VirtualAddress + sec.VirtualSize, param.SectionAlignment)),
                 ImageBaseOffset = param.ImageBase,
                 NumberOfDataDirectoryEntries = 0x10,
-                SizeOfHeaders = (uint)(param.MZHeader.RawData.Length +
-                                       sizeof(PEHeader) +
-                                       sizeof(PE32PlusOptionalHeader) +
-                                       sizeof(SectionHeader) * param.Sections.SectionHeaders.Count),
+                SizeOfHeaders = Round.Up(
+                    (uint)(param.MZHeader.RawData.Length +
+                           sizeof(PEHeader) +
+                           sizeof(PE32PlusOptionalHeader) +
+                           sizeof(SectionHeader) * param.Sections.SectionHeaders.Count),
+                    param.FileAlignment
+                ),
                 MajorOSVersion = param.MajorOperatingSystemVersion,
                 MinorOSVersion = param.MinorOperatingSystemVersion,
                 MajorSubsystemVersion = param.MajorSubSystemVersion,
