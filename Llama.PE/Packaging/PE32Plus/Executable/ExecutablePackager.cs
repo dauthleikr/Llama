@@ -17,13 +17,13 @@
         private readonly IPackage<IMZInfo, IMZResult> _mzHeaderPackager;
         private readonly IPackage<IOptionalHeaderInfo, IOptionalHeaderResult> _optHeaderPackager;
         private readonly IPackage<IPEInfo, IPEResult> _peHeaderPackager;
-        private readonly IPackage<ISectionHeadersInfo, ISectionsResult> _sectionsPackager;
+        private readonly IPackage<ISectionsInfo, ISectionsResult> _sectionsPackager;
 
         public ExecutablePackager(
             IPackage<IMZInfo, IMZResult> mzHeaderPackager,
             IPackage<IPEInfo, IPEResult> peHeaderPackager,
             IPackage<IOptionalHeaderInfo, IOptionalHeaderResult> optHeaderPackager,
-            IPackage<ISectionHeadersInfo, ISectionsResult> sectionsPackager
+            IPackage<ISectionsInfo, ISectionsResult> sectionsPackager
         )
         {
             _mzHeaderPackager = mzHeaderPackager ?? throw new ArgumentNullException(nameof(mzHeaderPackager));
@@ -48,14 +48,15 @@
             return new RawPackagingResult(rawData.ToArray());
         }
 
-        private static ISectionHeadersInfo MakeSectionHeadersInfo(IExectuableInfo exeInfo, IMZResult mzResult) =>
-            new SectionHeadersInfo(
+        private static ISectionsInfo MakeSectionHeadersInfo(IExectuableInfo exeInfo, IMZResult mzResult) =>
+            new SectionsInfo(
                 exeInfo.OtherSections,
                 exeInfo.TextSection,
                 exeInfo.Imports,
                 exeInfo.FileAlignment,
                 exeInfo.SectionAlignment,
-                (uint)(mzResult.NewHeaderOffset + Marshal.SizeOf<PEHeader>() + Marshal.SizeOf<PE32PlusOptionalHeader>())
+                (uint)(mzResult.NewHeaderOffset + Marshal.SizeOf<PEHeader>() + Marshal.SizeOf<PE32PlusOptionalHeader>()),
+                exeInfo.Relocations64
             );
 
         private static IOptionalHeaderInfo MakeOptionalHeaderInfo(IExectuableInfo exeInfo, IMZResult mzResult, ISectionsResult sectionsResult)

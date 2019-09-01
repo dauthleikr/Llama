@@ -9,6 +9,7 @@
     using NUnit.Framework;
     using PE.Packaging;
     using PE.Packaging.PE32Plus.Idata;
+    using PE.Packaging.PE32Plus.Reloc;
     using PE.Packaging.PE32Plus.Sections;
     using SectionHeader = PE.Structures.Header.SectionHeader;
 
@@ -26,7 +27,7 @@
             codeInfo.Setup(item => item.Characteristics)
                 .Returns(SectionCharacteristics.MemExecute | SectionCharacteristics.MemRead | SectionCharacteristics.ContainsCode);
 
-            var sectionHeadersInfo = new Mock<ISectionHeadersInfo>();
+            var sectionHeadersInfo = new Mock<ISectionsInfo>();
             sectionHeadersInfo.Setup(info => info.SectionAlignment).Returns(0x1000);
             sectionHeadersInfo.Setup(info => info.FileAlignment).Returns(0x200);
             sectionHeadersInfo.Setup(info => info.TextSection).Returns(codeInfo.Object);
@@ -41,10 +42,20 @@
             idataResult.Setup(item => item.RawData).Returns(Enumerable.Repeat((byte)1, 99).ToArray());
             idataResult.Setup(item => item.RawSectionData).Returns(Enumerable.Repeat((byte)1, 99).ToArray());
 
+            var relocResult = new Mock<IRelocResult>();
+            relocResult.Setup(item => item.Characteristics).Returns(SectionCharacteristics.ContainsInitializedData | SectionCharacteristics.MemRead | SectionCharacteristics.MemDiscardable);
+            relocResult.Setup(item => item.Name).Returns(BitConverter.ToUInt64(Encoding.ASCII.GetBytes(".reloc\0\0")));
+            relocResult.Setup(item => item.VirtualSize).Returns(100);
+            relocResult.Setup(item => item.RawData).Returns(Enumerable.Repeat((byte)2, 99).ToArray());
+            relocResult.Setup(item => item.RawSectionData).Returns(Enumerable.Repeat((byte)2, 99).ToArray());
+
             var idataPackager = new Mock<IPackage<IIdataInfo, IIdataResult>>();
             idataPackager.Setup(item => item.Package(It.IsAny<IIdataInfo>())).Returns(idataResult.Object);
 
-            var packager = new SectionsPackager(idataPackager.Object);
+            var relocPackager = new Mock<IPackage<IRelocInfo, IRelocResult>>();
+            relocPackager.Setup(item => item.Package(It.IsAny<IRelocInfo>())).Returns(relocResult.Object);
+
+            var packager = new SectionsPackager(idataPackager.Object, relocPackager.Object);
             _packaged = packager.Package(sectionHeadersInfo.Object);
         }
 
@@ -58,7 +69,7 @@
         public void CanResolveCodeBytes()
         {
             var reader = new ArrayStructReaderWriter(_packaged.RawData);
-            var sections = reader.ReadArray<SectionHeader>(2);
+            var sections = reader.ReadArray<SectionHeader>(3);
             var codeSection = sections.First(sec => sec.NameString.StartsWith(".text"));
             var codeRaw = _packaged.RawData.AsSpan()
                 .Slice((int)(codeSection.PointerToRawData - FileOffsetAtSectionsHeader), (int)codeSection.SizeOfRawData)
@@ -72,11 +83,12 @@
         public void CanResolveSectionNames()
         {
             var reader = new ArrayStructReaderWriter(_packaged.RawData);
-            var sections = reader.ReadArray<SectionHeader>(2);
+            var sections = reader.ReadArray<SectionHeader>(3);
             var sectionNames = sections.Select(sec => sec.NameString).ToArray();
 
             Assert.Contains(".text\0\0\0", sectionNames);
             Assert.Contains(".idata\0\0", sectionNames);
+            Assert.Contains(".reloc\0\0", sectionNames);
         }
 
         [Test]

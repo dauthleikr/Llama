@@ -4,22 +4,24 @@
     using System.Collections.Generic;
     using Sections;
 
-    internal class SectionHeadersInfo : ISectionHeadersInfo
+    internal class SectionsInfo : ISectionsInfo
     {
         public IEnumerable<ISectionInfo> OtherSections { get; }
         public ICodeInfo TextSection { get; }
         public IEnumerable<(string library, string function)> Imports { get; }
+        public IEnumerable<(string section, uint sectionOffset)> Relocations64 { get; }
         public uint FileAlignment { get; }
         public uint SectionAlignment { get; }
         public uint FileOffsetAtSectionsHeader { get; }
 
-        public SectionHeadersInfo(
+        public SectionsInfo(
             IEnumerable<ISectionInfo> otherSections,
             ICodeInfo textSection,
             IEnumerable<(string library, string function)> imports,
             uint fileAlignment,
             uint sectionAlignment,
-            uint fileOffsetAtSectionsHeader
+            uint fileOffsetAtSectionsHeader,
+            IEnumerable<(string section, uint sectionOffset)> relocations64
         )
         {
             OtherSections = otherSections ?? throw new ArgumentNullException(nameof(otherSections));
@@ -28,6 +30,7 @@
             FileAlignment = fileAlignment;
             SectionAlignment = sectionAlignment;
             FileOffsetAtSectionsHeader = fileOffsetAtSectionsHeader;
+            Relocations64 = relocations64 ?? throw new ArgumentNullException(nameof(relocations64));
         }
     }
 }

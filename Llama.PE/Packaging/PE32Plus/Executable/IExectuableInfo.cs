@@ -25,6 +25,7 @@
         bool MayRunFromRemoveableDrive { get; }
         bool MayRunFromNetwork { get; }
         IEnumerable<(string library, string function)> Imports { get; }
+        IEnumerable<(string section, uint offset)> Relocations64 { get; }
         ICodeInfo TextSection { get; }
         IEnumerable<ISectionInfo> OtherSections { get; }
     }

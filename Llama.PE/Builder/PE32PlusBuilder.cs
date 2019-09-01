@@ -9,14 +9,11 @@
     public class PE32PlusBuilder : IPE32PlusBuilder
     {
         public Architecture Architecture { get; set; } = Architecture.X64;
-
-        // ReSharper disable once BitwiseOperatorOnEnumWithoutFlags
-        public Characteristics Characteristics { get; set; } = Characteristics.ExecutableImage | Characteristics.LargeAddressAware;
         public Subsystem Subsystem { get; set; } = Subsystem.WindowsCui;
-        public DllCharacteristics DllCharacteristics { get; set; }
 
         private readonly HashSet<(string name, uint size)> _additionalSections = new HashSet<(string name, uint size)>();
         private readonly HashSet<(string library, string function)> _imports = new HashSet<(string library, string function)>();
+        private readonly HashSet<(string section, uint sectionOffset)> _relocations = new HashSet<(string section, uint sectionOffset)>();
 
         public IPE32PlusBuilder AddAdditionalSection(string name, uint size)
         {
@@ -29,7 +26,14 @@
             return this;
         }
 
-        public IPE32PlusBuildResult AddRelocation64(string section, uint sectionOffset) => throw new NotImplementedException();
+        public IPE32PlusBuilder AddRelocation64(string section, uint sectionOffset)
+        {
+            if (string.IsNullOrWhiteSpace(section))
+                throw new ArgumentException("Value cannot be null or whitespace.", nameof(section));
+
+            _relocations.Add((section, sectionOffset));
+            return this;
+        }
 
         public IPE32PlusBuilder ImportFunction(string library, string function)
         {
