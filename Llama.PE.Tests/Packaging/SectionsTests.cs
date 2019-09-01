@@ -72,10 +72,10 @@
             var sections = reader.ReadArray<SectionHeader>(3);
             var codeSection = sections.First(sec => sec.NameString.StartsWith(".text"));
             var codeRaw = _packaged.RawData.AsSpan()
-                .Slice((int)(codeSection.PointerToRawData - FileOffsetAtSectionsHeader), (int)codeSection.SizeOfRawData)
+                .Slice((int)(codeSection.PointerToRawData - FileOffsetAtSectionsHeader), (int)codeSection.VirtualSize)
                 .ToArray();
 
-            Assert.AreEqual(CodeSectionSize, codeSection.SizeOfRawData);
+            Assert.AreEqual(CodeSectionSize, codeSection.VirtualSize, "Bad size of code section (header corrupted?)");
             Assert.That(codeRaw, Is.All.EqualTo(CodeSectionContentByte));
         }
 
