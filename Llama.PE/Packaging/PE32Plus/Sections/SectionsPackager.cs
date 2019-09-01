@@ -137,11 +137,11 @@
                 Characteristics = sectionInfo.Characteristics,
                 Name = sectionInfo.Name,
                 PointerToRawData = (uint)target.Position,
-                SizeOfRawData = (uint)sectionInfo.RawSectionData.Length,
+                SizeOfRawData = (uint)Round.Up(sectionInfo.RawSectionData.Length, fileAlignment),
                 VirtualSize = (uint)sectionInfo.RawSectionData.Length,
                 VirtualAddress = va
             };
-            va = Round.Up(va + header.VirtualSize, sectionAlignment);
+            va = Round.Up(va + Math.Max(header.VirtualSize, header.SizeOfRawData), sectionAlignment);
             target.Write(sectionInfo.RawSectionData);
             return header;
         }
