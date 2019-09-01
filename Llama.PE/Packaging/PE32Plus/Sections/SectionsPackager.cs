@@ -87,7 +87,7 @@
                 if (section == default)
                     throw new SectionNotFoundException(sectionName);
 
-                var relocationsInSection = sectionRelocations.Select(item => item.sectionOffset).OrderBy(item => item).ToArray();
+                var relocationsInSection = sectionRelocations.Select(item => item.sectionOffset + section.VirtualAddress).OrderBy(item => item).ToArray();
                 var header = NewBlockFromRVA(relocationsInSection.First());
                 var entries = new List<BaseRelocationBlockEntry>();
                 foreach (var relocation in relocationsInSection)
