@@ -4,7 +4,7 @@
     using System.Reflection.PortableExecutable;
     using Sections;
 
-    internal interface IExectuableInfo
+    internal interface IExecutableInfo
     {
         byte MajorLinkerVersion { get; }
         byte MinorLinkerVersion { get; }

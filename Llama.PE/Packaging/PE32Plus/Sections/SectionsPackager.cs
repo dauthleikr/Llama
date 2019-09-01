@@ -117,7 +117,7 @@
             return new RelocInfo(new RelocationTable(relocationTable));
         }
 
-        private static string StringToSectionName(string str)
+        public static string StringToSectionName(string str)
         {
             var bytes = Encoding.ASCII.GetBytes(str);
             if (bytes.Length > 8)

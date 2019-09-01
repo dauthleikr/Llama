@@ -12,7 +12,7 @@
     using Structures.Header;
     using PEHeader = Structures.Header.PEHeader;
 
-    internal class ExecutablePackager : IPackage<IExectuableInfo, IPackagingResult>
+    internal class ExecutablePackager : IPackage<IExecutableInfo, IExecutableResult>
     {
         private readonly IPackage<IMZInfo, IMZResult> _mzHeaderPackager;
         private readonly IPackage<IOptionalHeaderInfo, IOptionalHeaderResult> _optHeaderPackager;
@@ -32,7 +32,7 @@
             _sectionsPackager = sectionsPackager ?? throw new ArgumentNullException(nameof(sectionsPackager));
         }
 
-        public IPackagingResult Package(IExectuableInfo param)
+        public IExecutableResult Package(IExecutableInfo param)
         {
             var rawData = new MemoryStream();
             var mzResult = _mzHeaderPackager.Package(null);
@@ -45,10 +45,10 @@
             rawData.Write(peHeaderResult.RawData);
             rawData.Write(optHeaderResult.RawData);
             rawData.Write(sectionsResult.RawData);
-            return new RawPackagingResult(rawData.ToArray());
+            return new ExecutableResult(rawData.ToArray(), sectionsResult.IATResolver, sectionsResult.SectionHeaders);
         }
 
-        private static ISectionsInfo MakeSectionHeadersInfo(IExectuableInfo exeInfo, IMZResult mzResult) =>
+        private static ISectionsInfo MakeSectionHeadersInfo(IExecutableInfo exeInfo, IMZResult mzResult) =>
             new SectionsInfo(
                 exeInfo.OtherSections,
                 exeInfo.TextSection,
@@ -59,7 +59,7 @@
                 exeInfo.Relocations64
             );
 
-        private static IOptionalHeaderInfo MakeOptionalHeaderInfo(IExectuableInfo exeInfo, IMZResult mzResult, ISectionsResult sectionsResult)
+        private static IOptionalHeaderInfo MakeOptionalHeaderInfo(IExecutableInfo exeInfo, IMZResult mzResult, ISectionsResult sectionsResult)
         {
             var dllCharacteristics = DllCharacteristics.NxCompatible | // DEP aware
                                      DllCharacteristics.NoIsolation | // Do not look for the manifest in rsrc / directory (todo)
@@ -92,7 +92,7 @@
         }
 
         [SuppressMessage("ReSharper", "BitwiseOperatorOnEnumWithoutFlags")]
-        private static IPEInfo MakePEHeaderInfo(IExectuableInfo exeInfo, IOptionalHeaderResult optHeaderResult, ISectionsResult sectionsResult)
+        private static IPEInfo MakePEHeaderInfo(IExecutableInfo exeInfo, IOptionalHeaderResult optHeaderResult, ISectionsResult sectionsResult)
         {
             var characteristics = Characteristics.ExecutableImage | Characteristics.LargeAddressAware;
             if (!optHeaderResult.HasDebugInfo)
