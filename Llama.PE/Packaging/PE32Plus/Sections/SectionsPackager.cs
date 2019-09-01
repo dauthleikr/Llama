@@ -143,6 +143,12 @@
             };
             va = Round.Up(va + Math.Max(header.VirtualSize, header.SizeOfRawData), sectionAlignment);
             target.Write(sectionInfo.RawSectionData);
+            var roundedPosition = Round.Up(target.Position, fileAlignment);
+            if (target.Position != roundedPosition)
+            {
+                target.Position = roundedPosition - 1;
+                target.WriteByte(0); // Write zeroes to fill section
+            }
             return header;
         }
     }
