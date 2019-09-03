@@ -1,0 +1,37 @@
+https://docs.microsoft.com/en-us/windows/win32/debug/pe-format#ms-dos-stub-image-only
+https://github.com/libyal/libexe/blob/master/documentation/Executable%20(EXE)%20file%20format.asciidoc
+https://en.wikibooks.org/wiki/X86_Disassembly/Windows_Executable_Files
+https://docs.microsoft.com/en-us/previous-versions/ms809762(v=msdn.10)
+https://www.garykessler.net/library/file_sigs.html
+http://www.pinvoke.net/default.aspx/Structures.IMAGE_DOS_HEADER
+http://source.roslyn.io/#System.Reflection.Metadata/System/Reflection/PortableExecutable/ManagedPEBuilder.cs,02af9111f2c237e4
+http://sandsprite.com/CodeStuff/Understanding_imports.html
+https://stackoverflow.com/questions/41910841/what-is-the-isolated-image-attribute-in-a-pe
+https://autohotkey.com/board/topic/14700-terminal-server-awareness-flag-bad-idea/
+https://stackoverflow.com/questions/41792848/possible-to-hook-iat-function-by-ordinal
+https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&cad=rja&uact=8&ved=2ahUKEwiejfe6g67kAhUrxMQBHfu8C2YQFjAAegQIARAC&url=https%3A%2F%2Fdigi.lib.ttu.ee%2Fi%2Ffile.php%3FDLID%3D7129%26t%3D1&usg=AOvVaw3kM4u4J1j7B8qYVRVtD8df
+https://stackoverflow.com/questions/872072/whats-the-differences-between-virtualalloc-and-heapalloc
+https://docs.microsoft.com/en-us/windows/win32/secbp/control-flow-guard
+https://stackoverflow.com/questions/9794547/structures-contained-in-the-pdata-section
+
+
+https://reverseengineering.stackexchange.com/questions/22013/what-does-bindimageex-actually-do
+https://reverseengineering.stackexchange.com/questions/22016/pe-header-what-do-sizeofheapcommit-and-sizeofheapreserve-do
+
+http://source.roslyn.io/#Microsoft.CodeAnalysis/Emit/ModulePropertiesForSerialization.cs,dd69cb2b8550cbdb,references
+
+
+why is go stripping relocs? is it ok? 
+https://github.com/golang/go/blob/master/src/cmd/link/internal/ld/pe.go#L776
+
+NX_COMBAT is DEP? 
+https://www.cyberbit.com/blog/endpoint-security/new-ursnif-malware-variant/
+
+
+
+
+X64 conventions:
+https://docs.microsoft.com/en-us/cpp/build/x64-software-conventions?view=vs-2019
+SEH impl
+http://www.osronline.com/article.cfm%5earticle=469.htm
+
