@@ -14,6 +14,12 @@
         private string[] GetSectionNames() => SectionHeaders.Select(item => item.NameString).ToArray();
 
         [Test]
+        public void LastSectionIsInFile()
+        {
+            Assert.GreaterOrEqual(TestFile.Length, SectionHeaders.Max(sec => sec.PointerToRawData + sec.SizeOfRawData));
+        }
+
+        [Test]
         public void HasDataSection()
         {
             Assert.Contains(".data\0\0\0", GetSectionNames(), "Cannot find .data section");
