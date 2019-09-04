@@ -8,7 +8,7 @@
 
     internal class RelocationTableTests : TestsUsingHeaders
     {
-        public RelocationTableTests() : base(File.ReadAllBytes("test.exe")) { }
+        public RelocationTableTests() : base(File.ReadAllBytes(@"ValidPEs\test.exe")) { }
 
         [Test]
         public void CanParseHeaderAndEntries()

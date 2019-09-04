@@ -20,10 +20,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="syncthing.exe">
+    <None Update="ValidPEs\ninow.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="test.exe">
+    <None Update="ValidPEs\syncthing.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ValidPEs\test.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

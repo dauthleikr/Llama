@@ -7,7 +7,7 @@
     [TestFixture]
     public unsafe class MZHeaderTests : TestsUsingHeaders
     {
-        public MZHeaderTests() : base(File.ReadAllBytes("test.exe")) { }
+        public MZHeaderTests() : base(File.ReadAllBytes(@"ValidPEs\ninow.exe")) { }
 
         [Test]
         public void HasPlausiblePeHeaderOffset()

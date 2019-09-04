@@ -7,7 +7,7 @@
     [TestFixture]
     public class PEOptionalHeaderTests : TestsUsingHeaders
     {
-        public PEOptionalHeaderTests() : base(File.ReadAllBytes("test.exe")) { }
+        public PEOptionalHeaderTests() : base(File.ReadAllBytes(@"ValidPEs\ninow.exe")) { }
 
         [Test]
         public void ExecutableKindIsValid()

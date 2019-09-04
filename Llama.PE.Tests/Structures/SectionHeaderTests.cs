@@ -9,7 +9,7 @@
     [TestFixture]
     public class SectionHeaderTests : TestsUsingHeaders
     {
-        public SectionHeaderTests() : base(File.ReadAllBytes("test.exe")) { }
+        public SectionHeaderTests() : base(File.ReadAllBytes(@"ValidPEs\ninow.exe")) { }
 
         private string[] GetSectionNames() => SectionHeaders.Select(item => item.NameString).ToArray();
 

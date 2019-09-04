@@ -7,7 +7,7 @@
     [TestFixture]
     public class PEHeaderTests : TestsUsingHeaders
     {
-        public PEHeaderTests() : base(File.ReadAllBytes("test.exe")) { }
+        public PEHeaderTests() : base(File.ReadAllBytes(@"ValidPEs\ninow.exe")) { }
 
         [Test]
         public unsafe void HeaderHasExpectedSize()

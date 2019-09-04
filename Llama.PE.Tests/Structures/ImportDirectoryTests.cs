@@ -12,7 +12,7 @@
     {
         private ImportDirectory _importDirectory;
 
-        public IdataTests() : base(File.ReadAllBytes("test.exe")) { }
+        public IdataTests() : base(File.ReadAllBytes(@"ValidPEs\ninow.exe")) { }
 
         [OneTimeSetUp]
         public void Init()
