@@ -8,6 +8,7 @@
         Span<byte> GetSectionBuffer(string sectionName);
         long GetIATEntryOffsetToStartOfCode(string library, string function);
         long GetSectionOffsetFromStartOfCode(string sectionName);
+        ulong GetSectionRVA(string sectionName);
 
         void Finish(Stream output);
     }

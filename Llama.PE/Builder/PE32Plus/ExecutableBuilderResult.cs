@@ -50,6 +50,18 @@
             return otherSection.VirtualAddress - (long)codeSection.VirtualAddress;
         }
 
+        public ulong GetSectionRVA(string sectionName)
+        {
+            if (sectionName == null)
+                throw new ArgumentNullException(nameof(sectionName));
+
+            var section = _packagedExecutable.SectionHeaders.FirstOrDefault(sec => sec.NameString.StartsWith(sectionName));
+            if (section == default)
+                throw new SectionNotFoundException(sectionName);
+
+            return section.VirtualAddress;
+        }
+
         public void Finish(Stream output)
         {
             if (output == null)
