@@ -57,7 +57,7 @@
             var relocDataDirectory = new ImageDataDirectory
             {
                 VirtualAddress = relocSection.VirtualAddress,
-                Size = relocSection.SizeOfRawData
+                Size = relocPackage.RelocationDirectorySize
             };
             return new SectionsResult(
                 peFile.ToArray().Skip((int)param.FileOffsetAtSectionsHeader).ToArray(),
@@ -87,7 +87,9 @@
                 if (section == default)
                     throw new SectionNotFoundException(sectionName);
 
-                var relocationsInSection = sectionRelocations.Select(item => item.sectionOffset + section.VirtualAddress).OrderBy(item => item).ToArray();
+                var relocationsInSection = sectionRelocations.Select(item => item.sectionOffset + section.VirtualAddress)
+                    .OrderBy(item => item)
+                    .ToArray();
                 var header = NewBlockFromRVA(relocationsInSection.First());
                 var entries = new List<BaseRelocationBlockEntry>();
                 foreach (var relocation in relocationsInSection)
@@ -109,7 +111,8 @@
                         }
                     );
                 }
-                if(entries.Count % 2 != 0)
+
+                if (entries.Count % 2 != 0)
                     entries.Add(new BaseRelocationBlockEntry()); // Add dummy entry to align next block
 
                 header.BlockSize = (uint)(8 + entries.Count * 2);
@@ -151,6 +154,7 @@
                 target.Position = roundedPosition - 1;
                 target.WriteByte(0); // Write zeroes to fill section
             }
+
             return header;
         }
     }

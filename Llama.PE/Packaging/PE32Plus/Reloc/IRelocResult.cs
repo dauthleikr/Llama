@@ -8,5 +8,6 @@ namespace Llama.PE.Packaging.PE32Plus.Reloc
 
     interface IRelocResult : IPackagingResult, ISectionInfo
     {
+        uint RelocationDirectorySize { get; }
     }
 }

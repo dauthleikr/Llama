@@ -1,9 +1,6 @@
 ﻿namespace Llama.PE.Packaging.PE32Plus.Reloc
 {
-    using System;
     using System.Diagnostics;
-    using System.Reflection.PortableExecutable;
-    using System.Text;
     using BinaryUtils;
     using Converters;
     using Structures.Sections.Reloc;
@@ -21,10 +18,7 @@
             _relocWriter.Write(writer, param.Relocations);
 
             Debug.Assert((int)writer.Offset == rawData.Length);
-            return new RelocResult(
-                rawData,
-                (uint)rawData.Length
-            );
+            return new RelocResult(rawData, (uint)rawData.Length, (uint)rawData.Length);
         }
     }
 }
