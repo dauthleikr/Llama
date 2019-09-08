@@ -109,6 +109,8 @@
                         }
                     );
                 }
+                if(entries.Count % 2 != 0)
+                    entries.Add(new BaseRelocationBlockEntry()); // Add dummy entry to align next block
 
                 header.BlockSize = (uint)(8 + entries.Count * 2);
                 relocationTable[header] = entries.ToArray();
