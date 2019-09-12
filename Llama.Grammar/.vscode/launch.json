@@ -1,0 +1,15 @@
+{
+  "version": "2.0.0",
+  "configurations": [
+      {
+          "name": "antlr4-mysql",
+          "type": "antlr-debug",
+          "request": "launch",
+          "input": "input.txt",
+          "grammar": "Llama.g4",
+          "startRule": "root",
+          "printParseTree": true,
+          "visualParseTree": true
+      }
+  ]
+}
