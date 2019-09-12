@@ -5,6 +5,8 @@ root: (functionImplementation | functionImport)*;
 
 declaration: Type Identifier (Assignment expression)?;
 
+assignment: Identifier Assignment expression;
+
 methodCall:
 	expression methodCallParameters;
 
@@ -23,6 +25,7 @@ statementBlock: OpenBraces statementSingle* CloseBraces;
 
 statementSingle: (
 		declaration
+		| assignment
 		| ifControl
 		| whileControl
 		| forControl
