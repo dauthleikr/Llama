@@ -3,9 +3,9 @@ grammar Llama;
 // Parser rules
 root: (functionImplementation | functionImport)*;
 
-declaration: Type Identifier (Assignment expression)?;
+declaration: type Identifier (Assignment expression)?;
 
-assignment: Identifier Assignment expression;
+assignment: expression Assignment expression;
 
 methodCall: expression methodCallParameters;
 
@@ -30,21 +30,33 @@ statementSingle: (declaration | assignment | methodCall) SemiColon
 expression:
 	OpenParanthesis expression CloseParanthesis
 	| expression methodCallParameters
-	| expression BinaryOperator expression
-	| atomicExpression;
+	| expression binaryOperator expression
+	| expression OpenSquareBracket expression CloseSquareBracket
+	| typeCast expression
+	| unaryOperator expression
+	| New PrimitiveType OpenSquareBracket expression CloseSquareBracket
+	| literal;
 
-atomicExpression:
-	String
-	| IntegerLiteral
-	| FloatLiteral
-	| Identifier;
+binaryOperator: Plus | Minus;
+
+unaryOperator: Minus | AddressOf;
+
+typeCast: OpenParanthesis type CloseParanthesis;
+
+literal: String | IntegerLiteral | FloatLiteral | Identifier;
+
+type:
+	PrimitiveType (
+		Pointer
+		| OpenSquareBracket CloseSquareBracket
+	)*; 
 
 methodCallParameters:
 	OpenParanthesis ((expression Comma)*? expression)? CloseParanthesis;
 
 functionDeclaration:
-	Type Identifier OpenParanthesis (
-		(Type Identifier Comma)*? Type Identifier
+	type Identifier OpenParanthesis (
+		(type Identifier Comma)*? type Identifier
 	)? CloseParanthesis;
 
 functionImplementation: functionDeclaration statementBlock;
@@ -58,21 +70,22 @@ OpenParanthesis: '(';
 CloseParanthesis: ')';
 OpenBraces: '{';
 CloseBraces: '}';
+OpenSquareBracket: '[';
+CloseSquareBracket: ']';
 Comma: ',';
 SemiColon: ';';
+Pointer: '*';
+Plus: '+';
+Minus: '-';
+AddressOf: '&';
 
+New: 'new';
+Delete: 'delete';
 Import: 'import';
 If: 'if';
 Else: 'else';
 While: 'while';
 For: 'for';
-Type: PrimitiveType '*'*;
-Identifier: [_A-Za-z][_A-Za-z0-9]*;
-BinaryOperator: Assignment | '+' | '-';
-
-String: '"' .*? '"';
-IntegerLiteral: [0-9]+ [0-9_]*;
-FloatLiteral: IntegerLiteral? '.' IntegerLiteral;
 PrimitiveType:
 	'void'
 	| 'int'
@@ -83,6 +96,11 @@ PrimitiveType:
 	| 'cstr'
 	| 'float'
 	| 'double';
+
+String: '"' .*? '"';
+IntegerLiteral: [0-9]+ [0-9_]*;
+FloatLiteral: IntegerLiteral? '.' IntegerLiteral;
+Identifier: [_A-Za-z][_A-Za-z0-9]*;
 
 // Trivia rules
 WhitespaceOrControl: [ \r\n\t]+ -> skip;
