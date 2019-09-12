@@ -1,30 +1,56 @@
 grammar Llama;
 
 // Parser rules
-root: functionDeclaration*;
+root: (functionImplementation | functionImport)*;
 
 declaration: Type Identifier (Assignment expression)?;
-methodCall: expression OpenParanthesis ((expression Comma)* expression)? CloseParanthesis;
-ifControl: If OpenParanthesis expression CloseParanthesis statementAny;
-whileControl: While OpenParanthesis expression CloseParanthesis statementAny;
-forControl: For OpenParanthesis declaration ';' expression ';' expression CloseParanthesis statementAny;
+
+methodCall:
+	expression methodCallParameters;
+
+ifControl:
+	If OpenParanthesis expression CloseParanthesis statementAny;
+
+whileControl:
+	While OpenParanthesis expression CloseParanthesis statementAny;
+
+forControl:
+	For OpenParanthesis declaration ';' expression ';' expression CloseParanthesis statementAny;
+
 statementAny: (statementSingle | statementBlock);
+
 statementBlock: OpenBraces statementSingle* CloseBraces;
-statementSingle: (declaration | ifControl | whileControl | forControl | methodCall) SemiColon;
+
+statementSingle: (
+		declaration
+		| ifControl
+		| whileControl
+		| forControl
+		| methodCall
+	) SemiColon;
+
 expression:
 	OpenParanthesis expression CloseParanthesis
-    | expression OpenParanthesis ((expression Comma)* expression)? CloseParanthesis
+	| expression methodCallParameters
 	| expression BinaryOperator expression
 	| atomicExpression;
+
 atomicExpression:
 	String
 	| IntegerLiteral
 	| FloatLiteral
 	| Identifier;
-functionDeclaration:
-	Type Identifier OpenParanthesis (
-		(PrimitiveType Identifier Comma)* PrimitiveType Identifier
-	)? CloseParanthesis statementBlock;
+
+methodCallParameters: OpenParanthesis (
+		(expression Comma)*? expression
+	)? CloseParanthesis;
+
+functionDeclaration: Type Identifier OpenParanthesis (
+		(Type Identifier Comma)*? Type Identifier
+	)? CloseParanthesis;
+
+functionImplementation: functionDeclaration statementBlock;
+functionImport: Import OpenParanthesis String CloseParanthesis functionDeclaration SemiColon;
 
 // Lexer rules
 Assignment: '=';
@@ -35,6 +61,7 @@ CloseBraces: '}';
 Comma: ',';
 SemiColon: ';';
 
+Import: 'import';
 If: 'if';
 Else: 'else';
 While: 'while';

@@ -3,3 +3,10 @@ void main()
     int type = 0;
     MsgBox(0, "wow", "hi", type + 16);
 }
+
+import("user32.dll") void MessageBoxA(int hwnd, cstr title, cstr text, int type);
+
+void ShowInfoBox(cstr title, cstr text)
+{
+    MessageBoxA(0, title, text, 0);
+}
