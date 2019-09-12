@@ -7,8 +7,7 @@ declaration: Type Identifier (Assignment expression)?;
 
 assignment: Identifier Assignment expression;
 
-methodCall:
-	expression methodCallParameters;
+methodCall: expression methodCallParameters;
 
 ifControl:
 	If OpenParanthesis expression CloseParanthesis statementAny;
@@ -23,14 +22,10 @@ statementAny: (statementSingle | statementBlock);
 
 statementBlock: OpenBraces statementSingle* CloseBraces;
 
-statementSingle: (
-		declaration
-		| assignment
-		| ifControl
-		| whileControl
-		| forControl
-		| methodCall
-	) SemiColon;
+statementSingle: (declaration | assignment | methodCall) SemiColon
+	| ifControl
+	| whileControl
+	| forControl;
 
 expression:
 	OpenParanthesis expression CloseParanthesis
@@ -44,16 +39,18 @@ atomicExpression:
 	| FloatLiteral
 	| Identifier;
 
-methodCallParameters: OpenParanthesis (
-		(expression Comma)*? expression
-	)? CloseParanthesis;
+methodCallParameters:
+	OpenParanthesis ((expression Comma)*? expression)? CloseParanthesis;
 
-functionDeclaration: Type Identifier OpenParanthesis (
+functionDeclaration:
+	Type Identifier OpenParanthesis (
 		(Type Identifier Comma)*? Type Identifier
 	)? CloseParanthesis;
 
 functionImplementation: functionDeclaration statementBlock;
-functionImport: Import OpenParanthesis String CloseParanthesis functionDeclaration SemiColon;
+
+functionImport:
+	Import OpenParanthesis String CloseParanthesis functionDeclaration SemiColon;
 
 // Lexer rules
 Assignment: '=';
