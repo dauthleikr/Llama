@@ -46,10 +46,9 @@ typeCast: OpenAngularBracket type CloseAngularBracket;
 literal: String | IntegerLiteral | FloatLiteral | Identifier;
 
 type:
-	PrimitiveType (
-		Pointer
-		| OpenSquareBracket CloseSquareBracket
-	)*; 
+	type Pointer
+	| type OpenSquareBracket CloseSquareBracket
+	| PrimitiveType; 
 
 methodCallParameters:
 	OpenParanthesis ((expression Comma)*? expression)? CloseParanthesis;
