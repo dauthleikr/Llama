@@ -1,5 +1,5 @@
 void main()
 {
     int type = 0;
-    MsgBox(0, "hi", "dude", type);
+    MsgBox(0, "wow", "hi", type + 16);
 }
