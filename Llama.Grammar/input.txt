@@ -1,1 +1,5 @@
-if while // wowzers else
+void main()
+{
+    int type = 0;
+    MsgBox(0, "hi", "dude", type);
+}
