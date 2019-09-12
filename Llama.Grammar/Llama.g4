@@ -41,7 +41,7 @@ binaryOperator: Plus | Minus;
 
 unaryOperator: Minus | AddressOf;
 
-typeCast: OpenParanthesis type CloseParanthesis;
+typeCast: OpenAngularBracket type CloseAngularBracket;
 
 literal: String | IntegerLiteral | FloatLiteral | Identifier;
 
@@ -72,6 +72,8 @@ OpenBraces: '{';
 CloseBraces: '}';
 OpenSquareBracket: '[';
 CloseSquareBracket: ']';
+OpenAngularBracket: '<';
+CloseAngularBracket: '>';
 Comma: ',';
 SemiColon: ';';
 Pointer: '*';

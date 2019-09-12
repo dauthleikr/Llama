@@ -3,9 +3,10 @@ void main()
     int num = 10;
     while(num)
     {
-        num = num - 1;
+        num = <int>(num - 1);
         ShowInfoBox("Hi", "dood");
     }
+    int[] arr = new int[123 - 3];
 }
 
 import("user32.dll") void MessageBoxA(int hwnd, cstr title, cstr text, int type);
