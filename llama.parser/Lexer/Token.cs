@@ -1,6 +1,8 @@
 ﻿namespace Llama.Parser.Lexer
 {
-    public readonly struct Token : IToken<TokenKind>
+    using System;
+
+    public readonly struct Token : IEquatable<Token>
     {
         public readonly string RawText;
 
@@ -12,5 +14,21 @@
             Kind = kind;
             RawText = rawText;
         }
+
+        public bool Equals(Token other) => RawText == other.RawText && Kind == other.Kind;
+
+        public override bool Equals(object obj) => obj is Token other && Equals(other);
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return ((RawText != null ? RawText.GetHashCode() : 0) * 397) ^ (int)Kind;
+            }
+        }
+
+        public static bool operator ==(Token left, Token right) => left.Equals(right);
+
+        public static bool operator !=(Token left, Token right) => !left.Equals(right);
     }
 }

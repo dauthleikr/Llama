@@ -1,13 +1,12 @@
 ﻿namespace Llama.Parser
 {
-    using System;
     using Lexer;
 
-    public interface IParseContext<out T> where T : Enum
+    public interface IParseContext
     {
-        IToken<T> NextCodeToken { get; }
+        Token NextCodeToken { get; }
 
-        IToken<T> ReadCodeToken();
+        Token ReadCodeToken();
         TNode ReadNode<TNode>();
         void Panic(string message);
     }

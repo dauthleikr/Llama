@@ -2,9 +2,9 @@
 {
     using Lexer;
 
-    internal class ParseContext : IParseContext<TokenKind>
+    internal class ParseContext : IParseContext
     {
-        public IToken<TokenKind> NextCodeToken { get; private set; }
+        public Token NextCodeToken { get; private set; }
         private readonly Lexer.Lexer _lexer;
         private readonly IParseStore _parseStore;
         private readonly string _source;
@@ -19,16 +19,16 @@
             PrepareNextToken();
         }
 
-        public IToken<TokenKind> ReadCodeToken()
+        public TNode ReadNode<TNode>() => _parseStore.GetStrategyFor<TNode>().Read(this);
+
+        public void Panic(string message) => throw new ParserException(message);
+
+        public Token ReadCodeToken()
         {
             var token = NextCodeToken;
             PrepareNextToken();
             return token;
         }
-
-        public TNode ReadNode<TNode>() => _parseStore.GetStrategyFor<TNode>().Read(this);
-
-        public void Panic(string message) => throw new ParserException(message);
 
         private void PrepareNextToken() => NextCodeToken = _lexer.NextNonTriviaToken(_source, ref _sourcePosition);
     }
