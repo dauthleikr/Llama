@@ -1,21 +1,16 @@
 ﻿namespace Llama.Parser.Parsers
 {
-    using Lexer;
     using Nodes;
 
     internal class UnaryOperatorParser : IParse<UnaryOperator>
     {
         public UnaryOperator Read(IParseContext context)
         {
-            switch (context.NextCodeToken.Kind)
-            {
-                case TokenKind.AddressOf:
-                case TokenKind.Pointer:
-                    return new UnaryOperator(context.ReadCodeToken());
-                default:
-                    context.Panic($"Expected {nameof(UnaryOperatorParser)}");
-                    return null;
-            }
+            if (UnaryOperator.IsTokenKindValid(context.NextCodeToken.Kind))
+                return new UnaryOperator(context.ReadCodeToken());
+
+            context.Panic($"Expected {nameof(UnaryOperator)}");
+            return null;
         }
     }
 }
