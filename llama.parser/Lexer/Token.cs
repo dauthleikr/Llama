@@ -1,4 +1,4 @@
-﻿namespace Llama.Parser
+﻿namespace Llama.Parser.Lexer
 {
     public readonly struct Token : IToken<TokenKind>
     {

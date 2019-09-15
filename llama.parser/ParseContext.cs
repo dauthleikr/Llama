@@ -1,14 +1,16 @@
 ﻿namespace Llama.Parser
 {
+    using Lexer;
+
     internal class ParseContext : IParseContext<TokenKind>
     {
         public IToken<TokenKind> NextCodeToken { get; private set; }
-        private readonly Lexer _lexer;
+        private readonly Lexer.Lexer _lexer;
         private readonly IParseStore _parseStore;
         private readonly string _source;
         private int _sourcePosition;
 
-        public ParseContext(IParseStore parseStore, Lexer lexer, string source)
+        public ParseContext(IParseStore parseStore, Lexer.Lexer lexer, string source)
         {
             _parseStore = parseStore;
             _lexer = lexer;

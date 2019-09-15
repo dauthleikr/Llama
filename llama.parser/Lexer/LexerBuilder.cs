@@ -1,4 +1,4 @@
-﻿namespace Llama.Parser
+﻿namespace Llama.Parser.Lexer
 {
     using System.Collections.Generic;
     using System.Text.RegularExpressions;

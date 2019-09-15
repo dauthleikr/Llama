@@ -1,6 +1,7 @@
 ﻿namespace Llama.Parser
 {
     using System;
+    using Lexer;
 
     public interface IParseContext<out T> where T : Enum
     {
