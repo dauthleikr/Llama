@@ -13,15 +13,12 @@
             ArrayOf
         }
 
-        public Token PrimitiveType { get; }
+        public string PrimitiveType { get; }
         public WrappingType ChildRelation { get; }
         public TypeNode Child { get; }
 
-        public TypeNode(Token primitiveType)
+        public TypeNode(string primitiveType)
         {
-            if (primitiveType.Kind != TokenKind.PrimitiveType)
-                throw new ArgumentException($"{nameof(primitiveType)} has to be of kind: {nameof(TokenKind.PrimitiveType)}");
-
             PrimitiveType = primitiveType;
         }
 

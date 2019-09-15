@@ -7,7 +7,7 @@
     {
         public TypeNode Read(IParseContext context)
         {
-            var type = new TypeNode(context.ReadOrPanic(TokenKind.PrimitiveType));
+            var type = new TypeNode(context.ReadOrPanic(TokenKind.PrimitiveType).RawText);
 
             while (true)
                 switch (context.NextCodeToken.Kind)
