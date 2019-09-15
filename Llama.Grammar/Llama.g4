@@ -30,11 +30,11 @@ statementSingle: (declaration | assignment | methodCall) SemiColon
 expression:
 	OpenParanthesis expression CloseParanthesis
 	| expression methodCallParameters
-	| expression binaryOperator expression
 	| expression OpenSquareBracket expression CloseSquareBracket
+	| expression binaryOperator expression
 	| typeCast expression
 	| unaryOperator expression
-	| New PrimitiveType OpenSquareBracket expression CloseSquareBracket
+	| New type OpenSquareBracket expression CloseSquareBracket
 	| literal;
 
 binaryOperator: Plus | Minus;
