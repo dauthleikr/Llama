@@ -1,10 +1,13 @@
 ﻿namespace Llama.Parser.Abstractions
 {
-    public interface IParseContext
+    using System;
+
+    public interface IParseContext<out T> where T : Enum
     {
-        bool TryRead<T>(out T result) where T : class, IEntity;
-        IParseResult<T> TryRead<T>() where T : class, IEntity;
-        bool IsPlausible<T>() where T : class, IEntity;
-        void Panic<T>() where T : IPanicResolver;
+        IToken<T> NextToken { get; }
+
+        IToken<T> ReadToken();
+        TNode ReadNode<TNode>();
+        void Panic();
     }
 }

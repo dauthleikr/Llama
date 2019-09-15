@@ -1,0 +1,37 @@
+﻿namespace Llama.Parser
+{
+    public enum TokenKind
+    {
+        EndOfStream,
+        Assignment,
+        OpenParanthesis,
+        CloseParanthesis,
+        OpenBraces,
+        CloseBraces,
+        OpenSquareBracket,
+        CloseSquareBracket,
+        OpenAngularBracket,
+        CloseAngularBracket,
+        Comma,
+        SemiColon,
+        Pointer,
+        Plus,
+        Minus,
+        AddressOf,
+        New,
+        Delete,
+        Import,
+        If,
+        Else,
+        While,
+        For,
+        PrimitiveType,
+        StringLiteral,
+        IntegerLiteral,
+        FloatLiteral,
+        Identifier,
+        WhitespaceOrControl,
+        LineComment,
+        BlockComment
+    }
+}
