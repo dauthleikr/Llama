@@ -16,7 +16,7 @@
             foreach (var tokenizer in _tokenizes)
                 if (tokenizer.TryRead(source, ref position, out var token))
                     return token;
-            throw new TokenException("No matching token");
+            throw new LexerException("No matching token");
         }
 
         public Token NextNonTriviaToken(string source, ref int position)
