@@ -1,7 +1,5 @@
 ﻿namespace Llama.Parser
 {
-    using Abstractions;
-
     internal class ParseContext : IParseContext<TokenKind>
     {
         public IToken<TokenKind> NextCodeToken { get; private set; }

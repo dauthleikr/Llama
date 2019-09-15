@@ -1,7 +1,5 @@
 ﻿namespace Llama.Parser
 {
-    using Abstractions;
-
     public readonly struct Token : IToken<TokenKind>
     {
         public readonly string RawText;
