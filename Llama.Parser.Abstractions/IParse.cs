@@ -1,7 +1,9 @@
 ﻿namespace Llama.Parser.Abstractions
 {
+    using System;
+
     public interface IParse<out T>
     {
-        T Read(IParseContext context);
+        T Read<TKindEnum>(IParseContext<TKindEnum> context) where TKindEnum : Enum;
     }
 }
