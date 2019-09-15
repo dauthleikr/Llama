@@ -8,6 +8,6 @@
 
         IToken<T> ReadCodeToken();
         TNode ReadNode<TNode>();
-        void Panic();
+        void Panic(string message);
     }
 }
