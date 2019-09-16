@@ -5,10 +5,6 @@ root: (functionImplementation | functionImport)*;
 
 declaration: type Identifier (Assignment expression)?;
 
-assignment: expression Assignment expression;
-
-methodCall: expression methodCallParameters;
-
 ifControl:
 	If OpenParanthesis expression CloseParanthesis statementAny;
 
@@ -22,7 +18,7 @@ statementAny: (statementSingle | statementBlock);
 
 statementBlock: OpenBraces statementSingle* CloseBraces;
 
-statementSingle: (declaration | assignment | methodCall) SemiColon
+statementSingle: (declaration | expression) SemiColon
 	| ifControl
 	| whileControl
 	| forControl;
@@ -35,15 +31,15 @@ expression:
 	| typeCast expression
 	| unaryOperator expression
 	| New type OpenSquareBracket expression CloseSquareBracket
-	| literal;
+	| atomicExpression;
 
-binaryOperator: Plus | Minus;
+binaryOperator: Plus | Minus | Assignment;
 
 unaryOperator: Minus | AddressOf;
 
 typeCast: OpenAngularBracket type CloseAngularBracket;
 
-literal: String | IntegerLiteral | FloatLiteral | Identifier;
+atomicExpression: String | IntegerLiteral | FloatLiteral | Identifier;
 
 type:
 	type Pointer
