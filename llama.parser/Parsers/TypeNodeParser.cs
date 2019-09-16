@@ -3,23 +3,23 @@
     using Lexer;
     using Nodes;
 
-    internal class TypeNodeParser : IParse<TypeNode>
+    internal class TypeNodeParser : IParse<Type>
     {
-        public TypeNode Read(IParseContext context)
+        public Type Read(IParseContext context)
         {
-            var type = new TypeNode(context.ReadOrPanic(TokenKind.PrimitiveType).RawText);
+            var type = new Type(context.ReadOrPanic(TokenKind.PrimitiveType).RawText);
 
             while (true)
                 switch (context.NextCodeToken.Kind)
                 {
                     case TokenKind.Pointer:
                         context.ReadCodeToken();
-                        type = new TypeNode(type, TypeNode.WrappingType.PointerOf);
+                        type = new Type(type, Type.WrappingType.PointerOf);
                         break;
                     case TokenKind.OpenSquareBracket:
                         context.ReadCodeToken();
                         context.ReadOrPanic(TokenKind.CloseSquareBracket);
-                        type = new TypeNode(type, TypeNode.WrappingType.ArrayOf);
+                        type = new Type(type, Type.WrappingType.ArrayOf);
                         break;
                     default:
                         return type;

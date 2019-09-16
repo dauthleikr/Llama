@@ -2,10 +2,10 @@
 {
     internal class ArrayAllocationExpression : IExpression
     {
-        public TypeNode Type { get; }
+        public Type Type { get; }
         public IExpression Count { get; }
 
-        public ArrayAllocationExpression(TypeNode type, IExpression count)
+        public ArrayAllocationExpression(Type type, IExpression count)
         {
             Type = type;
             Count = count;

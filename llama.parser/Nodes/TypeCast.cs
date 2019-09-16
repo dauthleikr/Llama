@@ -2,10 +2,10 @@
 {
     internal class TypeCast : IExpression
     {
-        public TypeNode Type { get; }
+        public Type Type { get; }
         public IExpression CastExpression { get; }
 
-        public TypeCast(TypeNode type, IExpression castExpression)
+        public TypeCast(Type type, IExpression castExpression)
         {
             Type = type;
             CastExpression = castExpression;

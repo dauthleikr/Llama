@@ -51,7 +51,7 @@
         private IExpression ReadArrayAllocationExpression(IParseContext context)
         {
             context.ReadOrPanic(TokenKind.New);
-            var allocationType = context.ReadNode<TypeNode>();
+            var allocationType = context.ReadNode<Type>();
             context.ReadOrPanic(TokenKind.OpenSquareBracket);
             var count = Read(context);
             context.ReadOrPanic(TokenKind.CloseSquareBracket);
@@ -67,7 +67,7 @@
         private IExpression ReadTypeCastExpression(IParseContext context)
         {
             context.ReadOrPanic(TokenKind.OpenAngularBracket);
-            var type = context.ReadNode<TypeNode>();
+            var type = context.ReadNode<Type>();
             context.ReadOrPanic(TokenKind.CloseAngularBracket);
             return new TypeCast(type, ReadUncontinuedExpression(context));
         }
