@@ -2,7 +2,6 @@
 {
     using System;
     using System.ComponentModel;
-    using Lexer;
 
     internal class TypeNode
     {
@@ -17,10 +16,7 @@
         public WrappingType ChildRelation { get; }
         public TypeNode Child { get; }
 
-        public TypeNode(string primitiveType)
-        {
-            PrimitiveType = primitiveType;
-        }
+        public TypeNode(string primitiveType) => PrimitiveType = primitiveType;
 
         public TypeNode(TypeNode underlying, WrappingType wrappingType)
         {
