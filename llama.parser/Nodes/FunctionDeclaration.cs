@@ -2,7 +2,7 @@
 {
     using Lexer;
 
-    internal class FunctionDeclaration
+    public class FunctionDeclaration
     {
         public class Parameter
         {

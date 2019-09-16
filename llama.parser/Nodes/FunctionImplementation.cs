@@ -1,6 +1,6 @@
 ﻿namespace Llama.Parser.Nodes
 {
-    internal class FunctionImplementation
+    public class FunctionImplementation
     {
         public FunctionDeclaration Declaration { get; }
         public IStatement Body { get; }

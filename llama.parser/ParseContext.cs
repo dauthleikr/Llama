@@ -2,7 +2,7 @@
 {
     using Lexer;
 
-    internal class ParseContext : IParseContext
+    public class ParseContext : IParseContext
     {
         public Token NextCodeToken { get; private set; }
         private readonly Lexer.Lexer _lexer;
@@ -19,7 +19,17 @@
             PrepareNextToken();
         }
 
-        public TNode ReadNode<TNode>() => _parseStore.GetStrategyFor<TNode>().Read(this);
+        public TNode ReadNode<TNode>()
+        {
+            var parser = _parseStore.GetStrategyFor<TNode>();
+            if (parser == null)
+            {
+                Panic($"No parser found for: {typeof(TNode).Name}");
+                return default;
+            }
+
+            return parser.Read(this);
+        }
 
         public void Panic(string message) => throw new ParserException(message);
 

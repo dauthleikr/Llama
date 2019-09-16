@@ -1,6 +1,6 @@
 ﻿namespace Llama.Parser.Nodes
 {
-    internal class LlamaDocument
+    public class LlamaDocument
     {
         public FunctionImplementation[] Functions { get; }
         public FunctionImport[] Imports { get; }

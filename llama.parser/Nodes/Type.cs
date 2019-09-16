@@ -3,7 +3,7 @@
     using System;
     using System.ComponentModel;
 
-    internal class Type
+    public class Type
     {
         public enum WrappingType
         {

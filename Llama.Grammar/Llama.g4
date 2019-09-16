@@ -30,7 +30,7 @@ expression:
 	| expression binaryOperator expression
 	| typeCast expression
 	| unaryOperator expression
-	| New type OpenSquareBracket expression CloseSquareBracket
+	| New type OpenParanthesis expression CloseParanthesis
 	| atomicExpression;
 
 binaryOperator: Plus | Minus | Assignment;

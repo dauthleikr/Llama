@@ -3,7 +3,7 @@
     using Lexer;
     using Nodes;
 
-    internal class TypeNodeParser : IParse<Type>
+    internal class TypeParser : IParse<Type>
     {
         public Type Read(IParseContext context)
         {

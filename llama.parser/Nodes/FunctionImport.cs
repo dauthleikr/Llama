@@ -2,7 +2,7 @@
 {
     using Lexer;
 
-    internal class FunctionImport
+    public class FunctionImport
     {
         public Token LibraryName { get; }
         public FunctionDeclaration Declaration { get; }

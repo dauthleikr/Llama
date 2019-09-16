@@ -52,9 +52,9 @@
         {
             context.ReadOrPanic(TokenKind.New);
             var allocationType = context.ReadNode<Type>();
-            context.ReadOrPanic(TokenKind.OpenSquareBracket);
+            context.ReadOrPanic(TokenKind.OpenParanthesis);
             var count = Read(context);
-            context.ReadOrPanic(TokenKind.CloseSquareBracket);
+            context.ReadOrPanic(TokenKind.CloseParanthesis);
             return new ArrayAllocationExpression(allocationType, count);
         }
 
@@ -85,7 +85,12 @@
             context.ReadOrPanic(TokenKind.OpenParanthesis);
             var parameters = new List<IExpression>();
             while (context.NextCodeToken.Kind != TokenKind.CloseParanthesis)
+            {
                 parameters.Add(Read(context));
+                if (context.NextCodeToken.Kind == TokenKind.Comma)
+                    context.ReadCodeToken();
+            }
+
             context.ReadOrPanic(TokenKind.CloseParanthesis);
             return new MethodCallExpression(called, parameters.ToArray());
         }
