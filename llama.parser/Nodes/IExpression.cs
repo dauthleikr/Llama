@@ -1,4 +1,4 @@
 ﻿namespace Llama.Parser.Nodes
 {
-    internal interface IExpression { }
+    internal interface IExpression : IStatement { }
 }

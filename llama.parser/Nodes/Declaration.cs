@@ -2,7 +2,7 @@
 {
     using Lexer;
 
-    internal class Declaration
+    internal class Declaration : IStatement
     {
         public Type Type { get; }
         public Token Identifier { get; }
