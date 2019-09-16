@@ -6,13 +6,13 @@ root: (functionImplementation | functionImport)*;
 declaration: type Identifier (Assignment expression)?;
 
 ifControl:
-	If OpenParanthesis expression CloseParanthesis statementAny;
+	If OpenParanthesis expression CloseParanthesis statementAny (Else statementAny)?;
 
 whileControl:
 	While OpenParanthesis expression CloseParanthesis statementAny;
 
 forControl:
-	For OpenParanthesis declaration ';' expression ';' expression CloseParanthesis statementAny;
+	For OpenParanthesis declaration SemiColon expression SemiColon expression CloseParanthesis statementAny;
 
 statementAny: (statementSingle | statementBlock);
 
