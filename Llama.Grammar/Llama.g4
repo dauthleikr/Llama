@@ -57,7 +57,7 @@ functionDeclaration:
 functionImplementation: functionDeclaration statementBlock;
 
 functionImport:
-	Import OpenParanthesis String CloseParanthesis functionDeclaration SemiColon;
+	Import OpenParanthesis String CloseParanthesis functionDeclaration;
 
 // Lexer rules
 Assignment: '=';
