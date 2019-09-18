@@ -1,6 +1,6 @@
-﻿namespace Llama.PE
+﻿namespace Llama.BinaryUtils
 {
-    internal static class Round
+    public static class Round
     {
         public static uint AlwaysUp(uint number, uint blockSize) => number + blockSize - number % blockSize;
         public static uint Up(uint number, uint blockSize) => number % blockSize == 0 ? number : AlwaysUp(number, blockSize);
