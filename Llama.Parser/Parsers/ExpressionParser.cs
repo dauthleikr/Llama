@@ -69,7 +69,7 @@
             context.ReadOrPanic(TokenKind.OpenAngularBracket);
             var type = context.ReadNode<Type>();
             context.ReadOrPanic(TokenKind.CloseAngularBracket);
-            return new TypeCast(type, ReadUncontinuedExpression(context));
+            return new TypeCastExpression(type, ReadUncontinuedExpression(context));
         }
 
         private IExpression ReadParanthesisExpression(IParseContext context)
