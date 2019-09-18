@@ -1,6 +1,6 @@
 ﻿namespace Llama.Parser.Nodes
 {
-    internal class ArrayAccessExpression : IExpression
+    public class ArrayAccessExpression : IExpression
     {
         public IExpression Array { get; }
         public IExpression Index { get; }

@@ -1,6 +1,6 @@
 ﻿namespace Llama.Parser.Nodes
 {
-    internal class If : IStatement
+    public class If : IStatement
     {
         public IStatement ElseInstruction { get; }
         public IExpression Condition { get; }

@@ -1,6 +1,6 @@
 ﻿namespace Llama.Parser.Nodes
 {
-    internal class CodeBlock : IStatement
+    public class CodeBlock : IStatement
     {
         public IStatement[] Statements { get; }
 

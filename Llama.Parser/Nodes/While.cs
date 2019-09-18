@@ -1,6 +1,6 @@
 ﻿namespace Llama.Parser.Nodes
 {
-    internal class While : IStatement
+    public class While : IStatement
     {
         public IExpression Condition { get; }
         public IStatement Instruction { get; }

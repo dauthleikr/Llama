@@ -1,6 +1,6 @@
 ﻿namespace Llama.Parser.Nodes
 {
-    internal class MethodCallExpression : IExpression
+    public class MethodCallExpression : IExpression
     {
         public IExpression Expression { get; }
         public IExpression[] Parameters { get; }

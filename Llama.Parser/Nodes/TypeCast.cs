@@ -1,6 +1,6 @@
 ﻿namespace Llama.Parser.Nodes
 {
-    internal class TypeCast : IExpression
+    public class TypeCast : IExpression
     {
         public Type Type { get; }
         public IExpression CastExpression { get; }

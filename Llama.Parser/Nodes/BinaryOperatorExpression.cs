@@ -1,6 +1,6 @@
 ﻿namespace Llama.Parser.Nodes
 {
-    internal class BinaryOperatorExpression : IExpression
+    public class BinaryOperatorExpression : IExpression
     {
         public IExpression Left { get; internal set; }
         public BinaryOperator Operator { get; }
