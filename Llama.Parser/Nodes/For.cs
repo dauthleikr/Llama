@@ -1,6 +1,6 @@
 ﻿namespace Llama.Parser.Nodes
 {
-    internal class For : IStatement
+    public class For : IStatement
     {
         public IStatement Instruction { get; }
         public Declaration Variable { get; }

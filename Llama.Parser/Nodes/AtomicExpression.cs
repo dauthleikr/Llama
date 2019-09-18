@@ -2,7 +2,7 @@
 {
     using Lexer;
 
-    internal class AtomicExpression : IExpression
+    public class AtomicExpression : IExpression
     {
         public Token Token { get; }
 

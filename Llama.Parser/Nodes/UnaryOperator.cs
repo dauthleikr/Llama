@@ -2,7 +2,7 @@
 {
     using Lexer;
 
-    internal class UnaryOperator
+    public class UnaryOperator
     {
         public Token Operator { get; }
 

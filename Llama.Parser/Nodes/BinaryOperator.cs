@@ -3,7 +3,7 @@
     using System;
     using Lexer;
 
-    internal class BinaryOperator
+    public class BinaryOperator
     {
         public Token Operator { get; }
 
