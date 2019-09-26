@@ -2,7 +2,7 @@
 {
     using spit;
 
-    internal readonly struct Register
+    public readonly struct Register
     {
         public readonly Register64 IntegerRegister;
         public readonly XmmRegister FloatRegister;
