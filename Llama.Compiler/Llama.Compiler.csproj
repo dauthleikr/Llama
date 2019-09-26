@@ -16,7 +16,6 @@
 
   <ItemGroup>
     <Folder Include="ExpressionCompilers\" />
-    <Folder Include="StatementCompilers\" />
   </ItemGroup>
 
 </Project>
