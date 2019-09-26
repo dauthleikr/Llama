@@ -4,6 +4,6 @@
 
     internal interface ICompileStatements<in T> where T : IStatement
     {
-        void Compile(T statement, IFunctionContext function, IAddressFixer addressFixer);
+        void Compile(T statement, IFunctionContext function, IAddressFixer addressFixer, ICompilationContext context);
     }
 }

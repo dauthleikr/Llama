@@ -4,6 +4,6 @@
 
     internal interface ICompileExpressions<in T> where T : IExpression
     {
-        Type Compile(T expression, Register target, IFunctionContext function, IAddressFixer addressFixer);
+        Type Compile(T expression, Register target, IFunctionContext function, IAddressFixer addressFixer, ICompilationContext context);
     }
 }
