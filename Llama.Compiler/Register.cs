@@ -1,5 +1,6 @@
 ﻿namespace Llama.Compiler
 {
+    using System.Linq;
     using spit;
 
     public readonly struct Register
@@ -8,6 +9,9 @@
         public readonly XmmRegister FloatRegister;
         public readonly bool IsIntegerRegister;
         public readonly bool EitherRegisterIsFine;
+
+        private static readonly Register[] RegistersXmm = Enumerable.Range(0, 16).Select(num => new Register((XmmRegister)num)).ToArray();
+        private static readonly Register[] Registers64 = Enumerable.Range(0, 16).Select(num => new Register((Register64)num)).ToArray();
 
         public Register(Register64 integerRegister)
         {
@@ -32,6 +36,9 @@
             IsIntegerRegister = false;
             EitherRegisterIsFine = true;
         }
+
+        public static implicit operator Register(Register64 reg) => Registers64[(int)reg];
+        public static implicit operator Register(XmmRegister reg) => RegistersXmm[(int)reg];
 
         public void AssertIsInteger()
         {
