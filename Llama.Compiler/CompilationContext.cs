@@ -2,7 +2,7 @@
 {
     using Parser.Nodes;
 
-    internal class CompilationContext : ICompilationContext
+    public class CompilationContext : ICompilationContext
     {
         private readonly IAddressFixer _addressFixer;
         private readonly ICompilerStore _store;

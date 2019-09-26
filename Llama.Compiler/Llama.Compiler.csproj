@@ -14,4 +14,9 @@
     <ProjectReference Include="..\Llama.PE\Llama.PE.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ExpressionCompilers\" />
+    <Folder Include="StatementCompilers\" />
+  </ItemGroup>
+
 </Project>
