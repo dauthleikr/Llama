@@ -5,17 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="spit" Version="0.0.5" />
+    <PackageReference Include="spit" Version="0.0.7" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Llama.BinaryUtils\Llama.BinaryUtils.csproj" />
     <ProjectReference Include="..\Llama.parser\Llama.Parser.csproj" />
     <ProjectReference Include="..\Llama.PE\Llama.PE.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="ExpressionCompilers\" />
   </ItemGroup>
 
 </Project>

@@ -5,7 +5,7 @@
 
     public interface ICompileExpressions<in T> where T : IExpression
     {
-        Type Compile(
+        void Compile(
             T expression,
             Register target,
             CodeGen codeGen,
