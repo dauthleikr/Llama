@@ -1,10 +1,11 @@
 ﻿namespace Llama.Compiler
 {
     using Parser.Nodes;
+    using spit;
 
-    internal interface ICompilationContext
+    public interface ICompilationContext
     {
-        Type CompileExpression<T>(T expression, Register target, IFunctionContext function) where T : IExpression;
-        void CompileStatement<T>(T statement, IFunctionContext function) where T : IStatement;
+        Type CompileExpression<T>(T expression, CodeGen codeGen, Register target, IFunctionContext function) where T : IExpression;
+        void CompileStatement<T>(T statement, CodeGen codeGen, IFunctionContext function) where T : IStatement;
     }
 }
