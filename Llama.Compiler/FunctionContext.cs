@@ -3,7 +3,7 @@
     using System;
     using System.Diagnostics;
 
-    internal class FunctionContext : IFunctionContext
+    public class FunctionContext : IFunctionContext
     {
         private readonly int _calleeParameterSpace;
         private readonly string[] _locals;
