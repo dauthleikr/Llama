@@ -4,7 +4,7 @@
 
     internal interface ICompilationContext
     {
-        Type CompileExpression<T>(T expression, Register target, IFunctionContext function, IAddressFixer addressFixer) where T : IExpression;
-        void CompileStatement<T>(T statement, IFunctionContext function, IAddressFixer addressFixer) where T : IStatement;
+        Type CompileExpression<T>(T expression, Register target, IFunctionContext function) where T : IExpression;
+        void CompileStatement<T>(T statement, IFunctionContext function) where T : IStatement;
     }
 }
