@@ -10,6 +10,9 @@
         public readonly bool IsIntegerRegister;
         public readonly bool EitherRegisterIsFine;
 
+        public bool CanUseIntegerRegister => IsIntegerRegister || EitherRegisterIsFine;
+        public bool CanUseFloatRegister => !IsIntegerRegister || EitherRegisterIsFine;
+
         private static readonly Register[] RegistersXmm = Enumerable.Range(0, 16).Select(num => new Register((XmmRegister)num)).ToArray();
         private static readonly Register[] Registers64 = Enumerable.Range(0, 16).Select(num => new Register((Register64)num)).ToArray();
 
