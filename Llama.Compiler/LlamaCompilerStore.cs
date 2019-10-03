@@ -1,6 +1,8 @@
 ﻿namespace Llama.Compiler
 {
+    using ExpressionCompilers;
     using Parser.Nodes;
+    using StatementCompilers;
 
     public sealed class LlamaCompilerStore : ICompilerStore
     {
@@ -16,10 +18,16 @@
 
         public static LlamaCompilerStore Instance { get; } = new LlamaCompilerStore();
 
-        private LlamaCompilerStore()
+        static LlamaCompilerStore()
         {
-            // todo
+            ExpressionCompilerStore<IExpression>.Compiler = new GenericExpressionCompiler();
+            ExpressionCompilerStore<ArrayAllocationExpression>.Compiler = new ArrayAllocationCompiler();
+            ExpressionCompilerStore<AtomicExpression>.Compiler = new AtomicExpressionCompiler();
+
+            StatementCompilerStore<CodeBlock>.Compiler = new CodeBlockCompiler();
         }
+
+        private LlamaCompilerStore() { }
 
         public ICompileExpressions<T> GetExpressionCompiler<T>() where T : IExpression => ExpressionCompilerStore<T>.Compiler;
 
