@@ -85,9 +85,9 @@
             if (scope.IsLocalDefined(expression.Token.RawText))
             {
                 if (target.CanUseIntegerRegister)
-                    codeGen.MovFromDereferenced(target.IntegerRegister, Register64.RSP, scope.GetLocalOffset(expression.Token.RawText));
+                    codeGen.MovFromDereferenced(target.IntegerRegister, Register64.RSP, scope.GetLocalOffset(expression.Token.RawText), segment: Segment.SS);
                 else
-                    codeGen.MovsdFromDereferenced(target.FloatRegister, Register64.RSP, scope.GetLocalOffset(expression.Token.RawText));
+                    codeGen.MovsdFromDereferenced(target.FloatRegister, Register64.RSP, scope.GetLocalOffset(expression.Token.RawText), segment: Segment.SS);
 
                 return scope.GetLocalType(expression.Token.RawText);
             }
