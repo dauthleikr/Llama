@@ -54,5 +54,16 @@
             if (!EitherRegisterIsFine && IsIntegerRegister)
                 throw new TypeMismatchException("floating point", "integer");
         }
+
+        public override string ToString()
+        {
+            if (EitherRegisterIsFine)
+                return $"{IntegerRegister} or {FloatRegister}";
+            if (IsIntegerRegister)
+                return IntegerRegister.ToString();
+            if (!IsIntegerRegister)
+                return FloatRegister.ToString();
+            return base.ToString();
+        }
     }
 }
