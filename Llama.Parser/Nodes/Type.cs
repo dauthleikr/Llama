@@ -26,5 +26,14 @@
             Child = underlying ?? throw new ArgumentNullException(nameof(underlying));
             ChildRelation = wrappingType;
         }
+
+        public override string ToString() =>
+            ChildRelation switch
+            {
+                WrappingType.None => PrimitiveType,
+                WrappingType.ArrayOf => $"{Child}[]",
+                WrappingType.PointerOf => $"{Child}*",
+                _ => throw new ArgumentOutOfRangeException(ChildRelation.ToString())
+            };
     }
 }
