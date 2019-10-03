@@ -5,15 +5,35 @@
 
     internal static class TypeExtensions
     {
-        public static bool CanAssign(this Type type, Type other)
+        public static bool IsIntegerType(this Type type)
         {
-            if (type.ChildRelation != other.ChildRelation)
+            if (type.ChildRelation == Type.WrappingType.PointerOf)
+                return true;
+            if (type.ChildRelation == Type.WrappingType.ArrayOf)
                 return false;
 
-            if (type.ChildRelation == Type.WrappingType.None)
+            switch (type.PrimitiveType)
+            {
+                case "long":
+                case "int":
+                case "short":
+                case "sbyte":
+                case "byte":
+                case "cstr":
+                    return true;
+            }
+            return false;
+        }
+
+        public static bool CanAssign(this Type type, Type other)
+        {
+            if (type.ChildRelation != other.ChildRelation) // cannot do weird stuff implicitly
+                return false;
+
+            if (type.ChildRelation == Type.WrappingType.None) // if they are the same type, or can be promoted to the same type, we are good
                 return type.PrimitiveType == other.PrimitiveType || CanPromote(type.PrimitiveType, other.PrimitiveType);
 
-            return CanAssign(type.Child, other.Child);
+            return CanAssign(type.Child, other.Child); // unwrap pointer/array/... and check type underneath
         }
 
         private static bool CanPromote(string targetType, string sourceType)
