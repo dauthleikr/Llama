@@ -1,7 +1,6 @@
 ﻿namespace Llama.Compiler
 {
     using System.Collections.Generic;
-    using System.Linq;
     using Parser.Nodes;
 
     internal static class StatementAndExpressionExtension
@@ -9,6 +8,7 @@
         public static IEnumerable<IExpression> GetExpressions(this IStatement block)
         {
             foreach (var statement in GetStatements(block))
+            {
                 switch (statement)
                 {
                     case Declaration declaration:
@@ -37,6 +37,7 @@
                             yield return expression;
                         break;
                 }
+            }
         }
 
         public static IEnumerable<IExpression> GetExpressions(this IExpression expr)
@@ -64,8 +65,11 @@
                     foreach (var subExpression in GetExpressions(methodCallExpression.Expression))
                         yield return subExpression;
                     foreach (var paramExpression in methodCallExpression.Parameters)
+                    {
                         foreach (var subExpression in GetExpressions(paramExpression))
                             yield return subExpression;
+                    }
+
                     break;
                 case TypeCastExpression typeCast:
                     foreach (var subExpression in GetExpressions(typeCast.CastExpression))
