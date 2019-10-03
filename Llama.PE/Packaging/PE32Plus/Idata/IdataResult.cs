@@ -11,7 +11,7 @@
         public byte[] RawSectionData => RawData;
         public ulong Name => BitConverter.ToUInt64(Encoding.ASCII.GetBytes(".idata\0\0"));
         public uint VirtualSize => (uint)RawData.Length;
-        public SectionCharacteristics Characteristics => SectionCharacteristics.MemRead | SectionCharacteristics.ContainsInitializedData;
+        public SectionCharacteristics Characteristics => SectionCharacteristics.MemRead | SectionCharacteristics.ContainsInitializedData | SectionCharacteristics.MemWrite;
         public ImageDataDirectory ImportDirectory { get; }
         public ImageDataDirectory IAT { get; }
         public uint IdataRVA { get; }
