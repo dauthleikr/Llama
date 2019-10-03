@@ -81,13 +81,13 @@
                             SetLocalOffsets(startOffset, childBlock);
                             break;
                         case Declaration declaration:
-                            {
-                                var declarationName = declaration.Identifier.RawText;
-                                if (localToOffset.ContainsKey(declarationName))
-                                    throw new Exception($"Cannot redefine {declarationName}");
-                                localToOffset[declarationName] = startOffset;
-                                startOffset += declaration.Type.SizeOf();
-                            }
+                        {
+                            var declarationName = declaration.Identifier.RawText;
+                            if (localToOffset.ContainsKey(declarationName))
+                                throw new Exception($"Cannot redefine {declarationName}");
+                            localToOffset[declarationName] = startOffset;
+                            startOffset += declaration.Type.SizeOf();
+                        }
                             break;
                         default:
                             Debug.Fail($"{nameof(GetDeclarationsAndBlocks)} returned neither declaration nor block");
@@ -114,14 +114,14 @@
                 switch (statement)
                 {
                     case For @for:
-                        {
-                            var forScopeStatements = new[]
-                                {
+                    {
+                        var forScopeStatements = new[]
+                            {
                                 @for.Instruction
                             }.Concat(@for.Instruction.StatementAsBlock().Statements)
-                                .ToArray();
-                            yield return new CodeBlock(forScopeStatements);
-                        }
+                            .ToArray();
+                        yield return new CodeBlock(forScopeStatements);
+                    }
                         break;
                     case If @if:
                         yield return @if.Instruction.StatementAsBlock();
