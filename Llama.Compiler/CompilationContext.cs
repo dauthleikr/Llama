@@ -14,10 +14,10 @@
             _addressFixer = addressFixer;
         }
 
-        public void CompileStatement<T>(T statement, CodeGen codeGen, IFunctionContext function) where T : IStatement =>
-            _store.GetStatementCompiler<T>().Compile(statement, codeGen, function, _addressFixer, this);
+        public void CompileStatement<T>(T statement, CodeGen codeGen, IScopeContext scope) where T : IStatement =>
+            _store.GetStatementCompiler<T>().Compile(statement, codeGen, scope, _addressFixer, this);
 
-        public Type CompileExpression<T>(T expression, CodeGen codeGen, Register target, IFunctionContext function) where T : IExpression =>
-            _store.GetExpressionCompiler<T>().Compile(expression, target, codeGen, function, _addressFixer, this);
+        public Type CompileExpression<T>(T expression, CodeGen codeGen, Register target, IScopeContext scope) where T : IExpression =>
+            _store.GetExpressionCompiler<T>().Compile(expression, target, codeGen, scope, _addressFixer, this);
     }
 }

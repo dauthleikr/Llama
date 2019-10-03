@@ -5,11 +5,11 @@
 
     public interface ICompileExpressions<in T> where T : IExpression
     {
-        void Compile(
+        Type Compile(
             T expression,
             Register target,
             CodeGen codeGen,
-            IFunctionContext function,
+            IScopeContext scope,
             IAddressFixer addressFixer,
             ICompilationContext context
         );
