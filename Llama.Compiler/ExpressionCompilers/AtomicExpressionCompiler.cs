@@ -84,14 +84,20 @@
         {
             if (scope.IsLocalDefined(expression.Token.RawText))
             {
-                if (target.CanUseIntegerRegister)
+                var localType = scope.GetLocalType(expression.Token.RawText);
+                if (localType.IsIntegerType() && target.CanUseIntegerRegister)
                     codeGen.MovFromDereferenced(target.IntegerRegister, Register64.RSP, scope.GetLocalOffset(expression.Token.RawText), segment: Segment.SS);
-                else
+                else if (localType == Constants.DoubleType && target.CanUseFloatRegister)
                     codeGen.MovsdFromDereferenced(target.FloatRegister, Register64.RSP, scope.GetLocalOffset(expression.Token.RawText), segment: Segment.SS);
+                else if (localType == Constants.FloatType && target.CanUseFloatRegister)
+                    codeGen.MovssFromDereferenced(target.FloatRegister, Register64.RSP, scope.GetLocalOffset(expression.Token.RawText), segment: Segment.SS);
+                else
+                    throw new NotImplementedException($"{nameof(AtomicExpressionCompiler)}: I do not know how to compile this type: {localType} with target register: {target}");
 
-                return scope.GetLocalType(expression.Token.RawText);
+                return localType;
             }
 
+            // it's a function pointer
             target.AssertIsInteger();
             codeGen.Mov(target.IntegerRegister, Constants.DummyAddress);
             addressFixer.FixFunctionAddress(codeGen, expression.Token.RawText);
