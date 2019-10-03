@@ -5,6 +5,36 @@
 
     internal static class TypeExtensions
     {
+        public static bool CanAssign(this Type type, Type other)
+        {
+            if (type.ChildRelation != other.ChildRelation)
+                return false;
+
+            if (type.ChildRelation == Type.WrappingType.None)
+                return type.PrimitiveType == other.PrimitiveType || CanPromote(type.PrimitiveType, other.PrimitiveType);
+
+            return CanAssign(type.Child, other.Child);
+        }
+
+        private static bool CanPromote(string targetType, string sourceType)
+        {
+            switch (sourceType)
+            {
+                case "int" when targetType == "long":
+                case "short" when targetType == "int" || targetType == "long":
+                case "byte" when targetType == "short" || targetType == "int" || targetType == "long":
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        public static void AssertCanAssign(this Type type, Type other)
+        {
+            if (!type.CanAssign(other))
+                throw new TypeMismatchException(type.ToString(), other.ToString());
+        }
+
         public static int SizeOf(this Type type)
         {
             switch (type.ChildRelation)
