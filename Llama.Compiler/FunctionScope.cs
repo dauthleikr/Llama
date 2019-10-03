@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using Parser.Nodes;
     using Type = Parser.Nodes.Type;
@@ -52,38 +53,56 @@
 
         public void PushScope() => _scope = new LocalScope(_scope);
 
-        public void PopScope() => _scope = _scope.Parent;
+        public void PopScope() => _scope = _scope.Parent ?? throw new InvalidOperationException();
 
-        public static FunctionScope FromBlock(CodeBlock block)
+        public static FunctionScope FromBlock(FunctionImplementation function)
         {
             var localToOffset = new Dictionary<string, int>();
 
+            void DeclareLocal(Type type, string name, ref int offset)
+            {
+                if (localToOffset.ContainsKey(name))
+                    throw new Exception($"Cannot redefine {name}");
+                localToOffset[name] = offset;
+                offset += type.SizeOf();
+            }
+
+            var offset = 0;
+            foreach (var parameter in function.Declaration.Parameters)
+                DeclareLocal(parameter.ParameterType, parameter.ParameterIdentifier.RawText, ref offset);
+
             void SetLocalOffsets(int startOffset, IStatement code)
             {
-                var offset = startOffset;
                 foreach (var statement in GetDeclarationsAndBlocks(code))
+                {
                     switch (statement)
                     {
                         case CodeBlock childBlock:
-                            SetLocalOffsets(offset, childBlock);
+                            SetLocalOffsets(startOffset, childBlock);
                             break;
                         case Declaration declaration:
-                        {
-                            var declarationName = declaration.Identifier.RawText;
-                            if (localToOffset.ContainsKey(declarationName))
-                                throw new Exception($"Cannot redefine {declarationName}");
-                            localToOffset[declarationName] = offset;
-                            offset += declaration.Type.SizeOf();
-                        }
+                            {
+                                var declarationName = declaration.Identifier.RawText;
+                                if (localToOffset.ContainsKey(declarationName))
+                                    throw new Exception($"Cannot redefine {declarationName}");
+                                localToOffset[declarationName] = startOffset;
+                                startOffset += declaration.Type.SizeOf();
+                            }
+                            break;
+                        default:
+                            Debug.Fail($"{nameof(GetDeclarationsAndBlocks)} returned neither declaration nor block");
                             break;
                     }
+                }
             }
 
-            SetLocalOffsets(0, block);
+            SetLocalOffsets(offset, function.Body);
             var maxCalleeParameters = 4; // R9, R8, RDX, RCX home is guaranteed
-            foreach (var methodCallExpression in block.GetExpressions().OfType<MethodCallExpression>())
+            foreach (var methodCallExpression in function.Body.GetExpressions().OfType<MethodCallExpression>())
+            {
                 if (methodCallExpression.Parameters.Length > maxCalleeParameters)
                     maxCalleeParameters = methodCallExpression.Parameters.Length;
+            }
 
             return new FunctionScope(localToOffset, maxCalleeParameters);
         }
@@ -91,17 +110,18 @@
         private static IEnumerable<IStatement> GetDeclarationsAndBlocks(IStatement block)
         {
             foreach (var statement in block.StatementAsBlock().Statements)
+            {
                 switch (statement)
                 {
                     case For @for:
-                    {
-                        var forScopeStatements = new[]
-                            {
+                        {
+                            var forScopeStatements = new[]
+                                {
                                 @for.Instruction
                             }.Concat(@for.Instruction.StatementAsBlock().Statements)
-                            .ToArray();
-                        yield return new CodeBlock(forScopeStatements);
-                    }
+                                .ToArray();
+                            yield return new CodeBlock(forScopeStatements);
+                        }
                         break;
                     case If @if:
                         yield return @if.Instruction.StatementAsBlock();
@@ -118,6 +138,7 @@
                         yield return codeBlock;
                         break;
                 }
+            }
         }
     }
 }
