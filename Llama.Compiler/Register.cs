@@ -1,9 +1,10 @@
 ﻿namespace Llama.Compiler
 {
+    using System;
     using System.Linq;
     using spit;
 
-    public readonly struct Register
+    public readonly struct Register : IEquatable<Register>
     {
         public readonly Register64 IntegerRegister;
         public readonly XmmRegister FloatRegister;
@@ -43,15 +44,15 @@
         public static implicit operator Register(Register64 reg) => Registers64[(int)reg];
         public static implicit operator Register(XmmRegister reg) => RegistersXmm[(int)reg];
 
-        public void AssertIsInteger()
+        public void AssertCanUseInteger()
         {
-            if (!EitherRegisterIsFine && !IsIntegerRegister)
+            if (!CanUseIntegerRegister)
                 throw new TypeMismatchException("integer", "floating point");
         }
 
-        public void AssertIsFloat()
+        public void AssertCanUseFloat()
         {
-            if (!EitherRegisterIsFine && IsIntegerRegister)
+            if (!CanUseFloatRegister)
                 throw new TypeMismatchException("floating point", "integer");
         }
 
@@ -65,5 +66,32 @@
                 return FloatRegister.ToString();
             return base.ToString();
         }
+
+        public bool Equals(Register other)
+        {
+            if (CanUseIntegerRegister && other.CanUseIntegerRegister && IntegerRegister != other.IntegerRegister)
+                return false;
+            if (CanUseFloatRegister && other.CanUseFloatRegister && FloatRegister != other.FloatRegister)
+                return false;
+            return true;
+        }
+
+        public override bool Equals(object obj) => obj is Register other && Equals(other);
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = (int)IntegerRegister;
+                hashCode = (hashCode * 397) ^ (int)FloatRegister;
+                hashCode = (hashCode * 397) ^ IsIntegerRegister.GetHashCode();
+                hashCode = (hashCode * 397) ^ EitherRegisterIsFine.GetHashCode();
+                return hashCode;
+            }
+        }
+
+        public static bool operator ==(Register left, Register right) => left.Equals(right);
+
+        public static bool operator !=(Register left, Register right) => !left.Equals(right);
     }
 }
