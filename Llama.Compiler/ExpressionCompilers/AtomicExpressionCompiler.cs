@@ -9,54 +9,54 @@
 
     internal class AtomicExpressionCompiler : ICompileExpressions<AtomicExpression>
     {
-        public Type Compile(
+        public ExpressionResult Compile(
             AtomicExpression expression,
-            Register target,
+            PreferredRegister target,
             CodeGen codeGen,
+            StorageManager storageManager,
             IScopeContext scope,
             IAddressFixer addressFixer,
             ICompilationContext context
         )
         {
             if (expression.Token.Kind == TokenKind.Identifier)
-                return CompileIdentifier(expression, target, codeGen, scope, addressFixer);
+                return CompileIdentifier(expression, codeGen, scope);
             if (expression.Token.Kind == TokenKind.FloatLiteral)
-                return CompileFloatLiteral(expression, target, codeGen);
+                return CompileFloatLiteral(expression);
             if (expression.Token.Kind == TokenKind.IntegerLiteral)
-                return CompileIntegerLiteral(expression, target, codeGen);
+                return CompileIntegerLiteral(expression);
             if (expression.Token.Kind == TokenKind.StringLiteral)
-                return CompileStringLiteral(expression, target, codeGen, addressFixer);
+                return CompileStringLiteral(expression, codeGen, target, addressFixer);
 
             throw new NotImplementedException($"Atomic expression type {expression.Token.Kind} not implemented");
         }
 
-        private static Type CompileFloatLiteral(AtomicExpression expression, Register target, CodeGen codeGen)
+        private static ExpressionResult CompileFloatLiteral(AtomicExpression expression)
         {
-            target.AssertIsFloat();
             if (!double.TryParse(expression.Token.RawText, out var result))
                 throw new BadLiteralException(expression.Token.RawText);
 
-            codeGen.Mov(Register64.RAX, BitConverter.ToInt64(BitConverter.GetBytes(result)));
-            codeGen.Movq(target.FloatRegister, Register64.RAX);
-            return Constants.DoubleType;
+            return new ExpressionResult(Constants.DoubleType, (fixer, gen) => fixer.FixConstantDataOffset(gen, BitConverter.GetBytes(result)));
         }
 
-        private static Type CompileIntegerLiteral(AtomicExpression expression, Register target, CodeGen codeGen)
+        private static ExpressionResult CompileIntegerLiteral(AtomicExpression expression)
         {
-            target.AssertIsInteger();
             if (!long.TryParse(expression.Token.RawText, out var result))
                 throw new BadLiteralException(expression.Token.RawText);
 
-            if (result <= int.MaxValue && result >= int.MinValue)
-                codeGen.Mov(target.IntegerRegister, (int)result);
-            else
-                codeGen.Mov(target.IntegerRegister, result);
-            return GetMostNarrowSignedType(result);
+            return new ExpressionResult(
+                GetMostNarrowSignedType(result),
+                (fixer, gen) => fixer.FixConstantDataOffset(gen, BitConverter.GetBytes(result))
+            );
         }
 
-        private static Type CompileStringLiteral(AtomicExpression expression, Register target, CodeGen codeGen, IAddressFixer addressFixer)
+        private static ExpressionResult CompileStringLiteral(
+            AtomicExpression expression,
+            CodeGen codeGen,
+            PreferredRegister target,
+            IAddressFixer fixer
+        )
         {
-            target.AssertIsInteger();
             var literalContent = expression.Token.RawText.Substring(1, expression.Token.RawText.Length - 2);
             literalContent = literalContent.Replace(@"\n", "\n");
             literalContent = literalContent.Replace(@"\r", "\r");
@@ -67,41 +67,24 @@
             // literalContent = literalContent.Replace(@"\a", "\a");
             // literalContent = literalContent.Replace(@"\b", "\b");
             // literalContent = literalContent.Replace(@"\f", "\f");
-            var literalBytes = Encoding.ASCII.GetBytes(literalContent + "\0");
 
-            codeGen.Mov(target.IntegerRegister, Constants.DummyAddress);
-            addressFixer.FixConstantDataAddress(codeGen, literalBytes);
-            return Constants.CstrType;
+            var literalBytes = Encoding.ASCII.GetBytes(literalContent + "\0");
+            var targetRegister = target.MakeFor(Constants.CstrType);
+            codeGen.LeaFromDereferenced4(targetRegister, Constants.DummyOffsetInt);
+            fixer.FixConstantDataOffset(codeGen, literalBytes);
+            return new ExpressionResult(Constants.CstrType, targetRegister);
         }
 
-        private static Type CompileIdentifier(
-            AtomicExpression expression,
-            Register target,
-            CodeGen codeGen,
-            IScopeContext scope,
-            IAddressFixer addressFixer
-        )
+        private static ExpressionResult CompileIdentifier(AtomicExpression expression, CodeGen codeGen, IScopeContext scope)
         {
             if (scope.IsLocalDefined(expression.Token.RawText))
             {
                 var localType = scope.GetLocalType(expression.Token.RawText);
-                if (localType.IsIntegerType() && target.CanUseIntegerRegister)
-                    codeGen.MovFromDereferenced(target.IntegerRegister, Register64.RSP, scope.GetLocalOffset(expression.Token.RawText), segment: Segment.SS);
-                else if (localType == Constants.DoubleType && target.CanUseFloatRegister)
-                    codeGen.MovsdFromDereferenced(target.FloatRegister, Register64.RSP, scope.GetLocalOffset(expression.Token.RawText), segment: Segment.SS);
-                else if (localType == Constants.FloatType && target.CanUseFloatRegister)
-                    codeGen.MovssFromDereferenced(target.FloatRegister, Register64.RSP, scope.GetLocalOffset(expression.Token.RawText), segment: Segment.SS);
-                else
-                    throw new NotImplementedException($"{nameof(AtomicExpressionCompiler)}: I do not know how to compile this type: {localType} with target register: {target}");
-
-                return localType;
+                return new ExpressionResult(localType, Register64.RSP, scope.GetLocalOffset(expression.Token.RawText));
             }
 
-            // it's a function pointer
-            target.AssertIsInteger();
-            codeGen.Mov(target.IntegerRegister, Constants.DummyAddress);
-            addressFixer.FixFunctionAddress(codeGen, expression.Token.RawText);
-            return Constants.FunctionPointerType;
+            // it should be a function pointer
+            return new ExpressionResult(Constants.FunctionPointerType, (fixer, gen) => fixer.FixFunctionAddress(codeGen, expression.Token.RawText));
         }
 
         private static Type GetMostNarrowSignedType(long value)

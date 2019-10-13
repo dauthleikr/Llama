@@ -1,38 +1,44 @@
 ﻿namespace Llama.Compiler.ExpressionCompilers
 {
+    using System;
     using Parser.Nodes;
     using spit;
+    using Type = Parser.Nodes.Type;
 
     internal class ArrayAllocationCompiler : ICompileExpressions<ArrayAllocationExpression>
     {
-        public Type Compile(
+        public ExpressionResult Compile(
             ArrayAllocationExpression expression,
-            Register target,
+            PreferredRegister target,
             CodeGen codeGen,
+            StorageManager storageManager,
             IScopeContext scope,
             IAddressFixer addressFixer,
             ICompilationContext context
         )
         {
-            var indexType = context.CompileExpression(expression.Count, codeGen, Register64.RAX, scope);
+            var index = context.CompileExpression(expression.Count, codeGen, storageManager, new PreferredRegister(Register64.R8), scope);
+            var indexType = index.ValueType;
+            var valueTypeSize = (sbyte)expression.Type.SizeOf();
             Constants.LongType.AssertCanAssign(indexType);
 
-            // if the original value is less than 4 byte, the asm instructions do not guarantee that the upper part of the target register is cleared
-            if (indexType.SizeOf() < 4)
-                codeGen.And(Register64.RAX, (1 << (8 * indexType.SizeOf())) - 1);
-
             // Array allocation compiles to function call of HeapAlloc (kernel32)
-            codeGen.MovFromDereferenced(Register64.RCX, Constants.DummyOffsetInt);
+            index.GenerateMoveTo(Register64.R8, Constants.LongType, codeGen, addressFixer); // Parameter 3: byte count
+            if (valueTypeSize > 1)
+                codeGen.Shl(Register64.R8, (sbyte)Math.Log(valueTypeSize, 2)); // 8 byte type -> multiply count by 8 by shifting left 3
+            codeGen.Add(Register64.R8, (sbyte)8); // llama length value
+
+
+            codeGen.MovFromDereferenced4(Register64.RCX, Constants.DummyOffsetInt);
             addressFixer.FixDataOffset(codeGen, Constants.HeapHandleIdentifier); // Parameter 1: DefaultHeapHandle
 
             codeGen.Xor(Register64.RDX, Register64.RDX);
             codeGen.Add(Register64.RDX, (sbyte)(0x8 + 0x4)); // Parameter 2: HEAP_ZERO_MEMORY + HEAP_GENERATE_EXCEPTIONS
-            // todo: rework if adding structs:
-            codeGen.Imul(Register64.R8, Register64.RAX, (sbyte)expression.Type.SizeOf()); // Parameter 3: byte count 
 
             codeGen.CallRelative(Constants.DummyOffsetInt);
             addressFixer.FixIATEntryOffset(codeGen, "kernel32.dll", "HeapAlloc");
-            return new Type(expression.Type, Type.WrappingType.ArrayOf);
+
+            return new ExpressionResult(new Type(expression.Type, Type.WrappingType.ArrayOf), Register64.RAX);
         }
     }
 }

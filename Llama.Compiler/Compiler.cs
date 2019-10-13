@@ -23,15 +23,18 @@
             if (function == null)
                 throw new ArgumentNullException(nameof(function));
 
+            _codeGen.Write(0xCC);
             _codeGen.Write(
                 Enumerable.Repeat((byte)0xCC, (int)(_codeGen.StreamPosition % 16)).ToArray()
             ); // 16-byte align function with int3 breakpoints
 
-
             var scope = FunctionScope.FromBlock(function);
-            _codeGen.Sub(Register64.RSP, scope.TotalStackSpace);
+            var storageManager = new StorageManager(scope);
 
-            _context.CompileStatement(function.Body.StatementAsBlock(), _codeGen, scope);
+            storageManager.CreatePrologue(_codeGen);
+            _context.CompileStatement(function.Body.StatementAsBlock(), _codeGen, storageManager, scope);
+            storageManager.CreateEpilogue(_codeGen);
+            _codeGen.Ret();
         }
 
         public byte[] Finish() => _rawStream.ToArray();
