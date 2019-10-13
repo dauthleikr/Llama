@@ -3,30 +3,38 @@
     using System;
     using Parser.Nodes;
     using spit;
-    using Type = Parser.Nodes.Type;
 
     internal class GenericExpressionCompiler : ICompileExpressions<IExpression>
     {
-        public Type Compile(
+        public ExpressionResult Compile(
             IExpression expression,
-            Register target,
+            PreferredRegister target,
             CodeGen codeGen,
+            StorageManager storageManager,
             IScopeContext scope,
             IAddressFixer addressFixer,
             ICompilationContext context
-        ) =>
-            expression switch
+        )
+        {
+            switch (expression)
             {
-                ArrayAccessExpression arrayAccessExpression         => context.CompileExpression(arrayAccessExpression, codeGen, target, scope),
-                ArrayAllocationExpression arrayAllocationExpression => context.CompileExpression(arrayAllocationExpression, codeGen, target, scope),
-                AtomicExpression atomicExpression                   => context.CompileExpression(atomicExpression, codeGen, target, scope),
-                BinaryOperatorExpression binaryOperatorExpression   => context.CompileExpression(binaryOperatorExpression, codeGen, target, scope),
-                MethodCallExpression methodCallExpression           => context.CompileExpression(methodCallExpression, codeGen, target, scope),
-                TypeCastExpression typeCastExpression               => context.CompileExpression(typeCastExpression, codeGen, target, scope),
-                UnaryOperatorExpression unaryOperatorExpression     => context.CompileExpression(unaryOperatorExpression, codeGen, target, scope),
-                _ => throw new NotImplementedException(
-                    $"Compiler for expression type \"{expression.GetType().Name}\" has not yet been implemented"
-                )
-            };
+                case ArrayAccessExpression arrayAccessExpression:
+                    return context.CompileExpression(arrayAccessExpression, codeGen, storageManager, target, scope);
+                case ArrayAllocationExpression arrayAllocationExpression:
+                    return context.CompileExpression(arrayAllocationExpression, codeGen, storageManager, target, scope);
+                case AtomicExpression atomicExpression:
+                    return context.CompileExpression(atomicExpression, codeGen, storageManager, target, scope);
+                case BinaryOperatorExpression binaryOperatorExpression:
+                    return context.CompileExpression(binaryOperatorExpression, codeGen, storageManager, target, scope);
+                case MethodCallExpression methodCallExpression:
+                    return context.CompileExpression(methodCallExpression, codeGen, storageManager, target, scope);
+                case TypeCastExpression typeCastExpression:
+                    return context.CompileExpression(typeCastExpression, codeGen, storageManager, target, scope);
+                case UnaryOperatorExpression unaryOperatorExpression:
+                    return context.CompileExpression(unaryOperatorExpression, codeGen, storageManager, target, scope);
+                default:
+                    throw new NotImplementedException($"Compiler for expression type \"{expression.GetType().Name}\" has not yet been implemented");
+            }
+        }
     }
 }

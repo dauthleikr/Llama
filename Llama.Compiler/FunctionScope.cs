@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
+    using BinaryUtils;
     using Parser.Nodes;
     using Type = Parser.Nodes.Type;
 
@@ -37,10 +38,7 @@
         public FunctionScope(Dictionary<string, int> localToOffset, int calleeParameterSpace)
         {
             _localToOffset = localToOffset ?? throw new ArgumentNullException(nameof(localToOffset));
-            var neededSpace = calleeParameterSpace + localToOffset.Values.Max() + 8;
-            if (neededSpace % 16 != 8) // make aligned by 8 but not by 16 (call will align)
-                neededSpace += 16 - neededSpace % 16;
-            TotalStackSpace = neededSpace;
+            TotalStackSpace = _localToOffset.Values.Max() + 8 + calleeParameterSpace;
         }
 
         public int GetLocalOffset(string identifier) => _localToOffset[identifier];

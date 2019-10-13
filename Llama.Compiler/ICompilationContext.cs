@@ -5,7 +5,14 @@
 
     public interface ICompilationContext
     {
-        Type CompileExpression<T>(T expression, CodeGen codeGen, Register target, IScopeContext scope) where T : IExpression;
-        void CompileStatement<T>(T statement, CodeGen codeGen, IScopeContext scope) where T : IStatement;
+        ExpressionResult CompileExpression<T>(
+            T expression,
+            CodeGen codeGen,
+            StorageManager storageManager,
+            PreferredRegister target,
+            IScopeContext scope
+        ) where T : IExpression;
+
+        void CompileStatement<T>(T statement, CodeGen codeGen, StorageManager storageManager, IScopeContext scope) where T : IStatement;
     }
 }
