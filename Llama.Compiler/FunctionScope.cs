@@ -4,9 +4,9 @@
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
-    using BinaryUtils;
     using Extensions;
     using Parser.Nodes;
+    using spit;
     using Type = Parser.Nodes.Type;
 
     public class FunctionScope : IScopeContext
@@ -45,6 +45,9 @@
         public int GetLocalOffset(string identifier) => _localToOffset[identifier];
 
         public Type GetLocalType(string identifier) => _scope.GetLocalType(identifier);
+
+        public ExpressionResult GetLocalReference(string identifier) =>
+            new ExpressionResult(GetLocalType(identifier), Register64.RSP, GetLocalOffset(identifier));
 
         public bool IsLocalDefined(string identifier) => _scope.IsLocalDefined(identifier);
 
