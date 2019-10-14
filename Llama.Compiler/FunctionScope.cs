@@ -5,6 +5,7 @@
     using System.Diagnostics;
     using System.Linq;
     using BinaryUtils;
+    using Extensions;
     using Parser.Nodes;
     using Type = Parser.Nodes.Type;
 

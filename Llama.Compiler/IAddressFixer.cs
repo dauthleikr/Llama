@@ -10,5 +10,7 @@
         void FixDataOffset(CodeGen generator, string identifier, int length = 8);
         void FixFunctionOffset(CodeGen generator, string identifier);
         void FixFunctionAddress(CodeGen generator, string identifier);
+        void Insert(long position, int count);
+        void CopyTo(IAddressFixer other, long offset);
     }
 }

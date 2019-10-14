@@ -5,6 +5,8 @@
 
     public interface ICompilationContext
     {
+        IAddressFixer AddressLinker { get; }
+
         ExpressionResult CompileExpression<T>(
             T expression,
             CodeGen codeGen,
