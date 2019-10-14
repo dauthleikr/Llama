@@ -5,6 +5,89 @@
 
     public partial class ExpressionResult
     {
+        public delegate void GenericToDref2Action(
+            Register64 ptr,
+            Register source,
+            Register64 structOffset,
+            byte offsetMul = 1,
+            int offsetFlat = 0,
+            Segment segment = Segment.DS
+        );
+
+        public delegate void GenericToDref3Action(
+            Register64 ptr,
+            Register source,
+            byte offsetMul = 1,
+            int offsetFlat = 0,
+            Segment segment = Segment.DS
+        );
+
+        public delegate void GenericToDref4Action(int sourceOffset, Register source, Segment segment = Segment.DS);
+
+        public delegate void GenericToDrefAction(Register64 ptr, Register source, int offsetFlat = 0, Segment segment = Segment.DS);
+
+        public void DereferenceFromRegister(
+           CodeGen codeGen,
+           Register source,
+           IAddressFixer fixer,
+           GenericBrotherAction brotherAction,
+           GenericToDrefAction drefAction,
+           GenericToDref2Action dref2Action,
+           GenericToDref3Action dref3Action,
+           GenericToDref4Action dref4Action
+       )
+        {
+            switch (Kind)
+            {
+                case ResultKind.Value:
+                    DereferenceFromRegister(brotherAction, source);
+                    return;
+                case ResultKind.Pointer:
+                    DereferenceFromRegister(drefAction, source);
+                    return;
+                case ResultKind.Pointer2:
+                    DereferenceFromRegister(dref2Action, source);
+                    return;
+                case ResultKind.Pointer3:
+                    DereferenceFromRegister(dref3Action, source);
+                    return;
+                case ResultKind.Offset:
+                    DereferenceFromRegister(codeGen, source, dref4Action, fixer);
+                    return;
+                default:
+                    throw new NotImplementedException($"{nameof(ExpressionResult)}: {nameof(GenerateMoveTo)} has not implemented kind: {Kind}");
+            }
+        }
+
+        private void DereferenceFromRegister(CodeGen codeGen, Register source, GenericToDref4Action action, IAddressFixer fixer)
+        {
+            action(Offset, source);
+            OffsetFixup(fixer, codeGen);
+        }
+
+        private void DereferenceFromRegister(GenericToDref3Action action, Register source)
+        {
+            action(Ptr, source, OffsetMul, Offset, Ptr == Register64.RSP || Ptr == Register64.RBP ? Segment.SS : Segment.DS);
+        }
+
+        private void DereferenceFromRegister(GenericToDref2Action action, Register source)
+        {
+            action(Ptr, source, StructOffset, OffsetMul, Offset, Ptr == Register64.RSP || Ptr == Register64.RBP ? Segment.SS : Segment.DS);
+        }
+
+        private void DereferenceFromRegister(GenericToDrefAction action, Register source)
+        {
+            action(Ptr, source, Offset, Ptr == Register64.RSP || Ptr == Register64.RBP ? Segment.SS : Segment.DS);
+        }
+
+        private void DereferenceFromRegister(GenericBrotherAction action, Register source)
+        {
+            if (source.BitSize != Value.BitSize)
+                throw new ArgumentException($"Action only allowed with registers of identical size; {source} does not match {Value}");
+
+            action(source, Value);
+        }
+
         private void GenerateAssignOffset(Register register, CodeGen codeGen, IAddressFixer fixer)
         {
             if (!register.FloatingPoint)

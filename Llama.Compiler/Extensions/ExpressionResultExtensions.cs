@@ -4,9 +4,23 @@
 
     internal static class ExpressionResultExtensions
     {
+        public static void TestTo(this ExpressionResult source, Register other, CodeGen codeGen, IAddressFixer fixer)
+        {
+            source.DereferenceFromRegister(
+                codeGen,
+                other,
+                fixer,
+                codeGen.Test,
+                codeGen.TestToDereferenced,
+                codeGen.TestToDereferenced2,
+                codeGen.TestToDereferenced3,
+                codeGen.TestToDereferenced4
+            );
+        }
+
         public static void AddTo(this ExpressionResult source, Register target, CodeGen codeGen, IAddressFixer fixer)
         {
-            source.DereferenceTo(
+            source.DereferenceToRegister(
                 target,
                 codeGen,
                 fixer,
@@ -20,7 +34,7 @@
 
         public static void AddssTo(this ExpressionResult source, Register target, CodeGen codeGen, IAddressFixer fixer)
         {
-            source.DereferenceTo(
+            source.DereferenceToRegister(
                 target,
                 codeGen,
                 fixer,
@@ -34,7 +48,7 @@
 
         public static void AddsdTo(this ExpressionResult source, Register target, CodeGen codeGen, IAddressFixer fixer)
         {
-            source.DereferenceTo(
+            source.DereferenceToRegister(
                 target,
                 codeGen,
                 fixer,
@@ -48,7 +62,7 @@
 
         public static void SubTo(this ExpressionResult source, Register target, CodeGen codeGen, IAddressFixer fixer)
         {
-            source.DereferenceTo(
+            source.DereferenceToRegister(
                 target,
                 codeGen,
                 fixer,
@@ -62,7 +76,7 @@
 
         public static void SubssTo(this ExpressionResult source, Register target, CodeGen codeGen, IAddressFixer fixer)
         {
-            source.DereferenceTo(
+            source.DereferenceToRegister(
                 target,
                 codeGen,
                 fixer,
@@ -76,7 +90,7 @@
 
         public static void SubsdTo(this ExpressionResult source, Register target, CodeGen codeGen, IAddressFixer fixer)
         {
-            source.DereferenceTo(
+            source.DereferenceToRegister(
                 target,
                 codeGen,
                 fixer,

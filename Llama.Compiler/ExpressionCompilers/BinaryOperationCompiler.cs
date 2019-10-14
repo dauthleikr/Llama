@@ -27,6 +27,8 @@
                     return CompileSubtract(expression.Left, expression.Right, target, codeGen, storageManager, scope, addressFixer, context);
                 case TokenKind.Assignment:
                     return CompileAssign(expression.Left, expression.Right, target, codeGen, storageManager, scope, addressFixer, context);
+                case TokenKind.Equals:
+                    return CompileEquals(expression.Left, expression.Right, target, codeGen, storageManager, scope, addressFixer, context);
                 default:
                     throw new NotImplementedException($"Compilation for Operator {expression.Operator.Operator.Kind} is not implemented");
             }
@@ -104,6 +106,23 @@
             var (expression, assign, type) = PrepareBinaryExpression(right, left, target, codeGen, storageManager, scope, addressFixer, context);
             assign.GenerateAssign(expression, codeGen, addressFixer);
             return new ExpressionResult(type, expression);
+        }
+
+        private static ExpressionResult CompileEquals(
+            IExpression left,
+            IExpression right,
+            PreferredRegister target,
+            CodeGen codeGen,
+            StorageManager storageManager,
+            IScopeContext scope,
+            IAddressFixer addressFixer,
+            ICompilationContext context
+        )
+        {
+            var (leftReg, rightExpr, type) = PrepareBinaryExpression(left, right, target, codeGen, storageManager, scope, addressFixer, context);
+            rightExpr.TestTo(leftReg, codeGen, addressFixer);
+            //todo
+            throw new NotImplementedException();
         }
 
         private static (Register first, ExpressionResult second, Type type) PrepareBinaryExpression(

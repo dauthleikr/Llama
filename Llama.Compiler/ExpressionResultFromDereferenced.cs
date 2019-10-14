@@ -226,7 +226,7 @@
             }
         }
 
-        public void DereferenceTo(
+        public void DereferenceToRegister(
             Register target,
             CodeGen codeGen,
             IAddressFixer fixer,
@@ -240,47 +240,47 @@
             switch (Kind)
             {
                 case ResultKind.Value:
-                    DereferenceTo(target, brotherAction);
+                    DereferenceToRegister(target, brotherAction);
                     return;
                 case ResultKind.Pointer:
-                    DereferenceTo(target, drefAction);
+                    DereferenceToRegister(target, drefAction);
                     return;
                 case ResultKind.Pointer2:
-                    DereferenceTo(target, dref2Action);
+                    DereferenceToRegister(target, dref2Action);
                     return;
                 case ResultKind.Pointer3:
-                    DereferenceTo(target, dref3Action);
+                    DereferenceToRegister(target, dref3Action);
                     return;
                 case ResultKind.Offset:
-                    DereferenceTo(target, codeGen, dref4Action, fixer);
+                    DereferenceToRegister(target, codeGen, dref4Action, fixer);
                     return;
                 default:
                     throw new NotImplementedException($"{nameof(ExpressionResult)}: {nameof(GenerateMoveTo)} has not implemented kind: {Kind}");
             }
         }
 
-        private void DereferenceTo(Register target, CodeGen codeGen, GenericFromDref4Action action, IAddressFixer fixer)
+        private void DereferenceToRegister(Register target, CodeGen codeGen, GenericFromDref4Action action, IAddressFixer fixer)
         {
             action(target, Offset);
             OffsetFixup(fixer, codeGen);
         }
 
-        private void DereferenceTo(Register target, GenericFromDref3Action action)
+        private void DereferenceToRegister(Register target, GenericFromDref3Action action)
         {
             action(target, Ptr, OffsetMul, Offset, Ptr == Register64.RSP || Ptr == Register64.RBP ? Segment.SS : Segment.DS);
         }
 
-        private void DereferenceTo(Register target, GenericFromDref2Action action)
+        private void DereferenceToRegister(Register target, GenericFromDref2Action action)
         {
             action(target, Ptr, StructOffset, OffsetMul, Offset, Ptr == Register64.RSP || Ptr == Register64.RBP ? Segment.SS : Segment.DS);
         }
 
-        private void DereferenceTo(Register target, GenericFromDrefAction action)
+        private void DereferenceToRegister(Register target, GenericFromDrefAction action)
         {
             action(target, Ptr, Offset, Ptr == Register64.RSP || Ptr == Register64.RBP ? Segment.SS : Segment.DS);
         }
 
-        private void DereferenceTo(Register target, GenericBrotherAction action)
+        private void DereferenceToRegister(Register target, GenericBrotherAction action)
         {
             if (target.BitSize != Value.BitSize)
                 throw new ArgumentException($"Action only allowed with registers of identical size; {target} does not match {Value}");
