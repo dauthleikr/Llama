@@ -33,9 +33,9 @@ expression:
 	| New type OpenParanthesis expression CloseParanthesis
 	| atomicExpression;
 
-binaryOperator: Plus | Minus | Equals | NotEquals | OpenAngularBracket | CloseAngularBracket | Assignment;
+binaryOperator: Plus | Minus | Equals | NotEquals | OpenAngularBracket | CloseAngularBracket | Assignment | GreaterEquals | SmallerEquals;
 
-unaryOperator: Minus | AddressOf;
+unaryOperator: Minus | AddressOf | Not;
 
 typeCast: OpenAngularBracket type CloseAngularBracket;
 
@@ -76,6 +76,9 @@ Plus: '+';
 Minus: '-';
 Equals: '==';
 NotEquals: '!=';
+GreaterEquals: '>=';
+SmallerEquals: '<=';
+Not: '!';
 AddressOf: '&';
 
 New: 'new';
