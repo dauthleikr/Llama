@@ -7,6 +7,7 @@
     {
         public void Compile(CodeBlock statement, CodeGen codeGen, StorageManager storageManager, IScopeContext scope, IAddressFixer addressFixer, ICompilationContext context)
         {
+            scope.PushScope();
             foreach (var subStatement in statement.Statements)
             {
                 switch (subStatement)
@@ -31,6 +32,7 @@
                         break;
                 }
             }
+            scope.PopScope();
         }
     }
 }
