@@ -7,15 +7,20 @@
     {
         public IAddressFixer AddressLinker { get; }
         private readonly ICompilerStore _store;
+        private readonly IFactory<IAddressFixer> _linkerFactory;
 
-        public CompilationContext(ICompilerStore store, IAddressFixer addressLinker)
+        public CompilationContext(ICompilerStore store, IFactory<IAddressFixer> linkerFactory)
         {
             _store = store;
-            AddressLinker = addressLinker;
+            _linkerFactory = linkerFactory;
+            AddressLinker = linkerFactory.Create();
+
         }
 
         public void CompileStatement<T>(T statement, CodeGen codeGen, StorageManager storageManager, IScopeContext scope) where T : IStatement =>
             _store.GetStatementCompiler<T>().Compile(statement, codeGen, storageManager, scope, AddressLinker, this);
+
+        public ICompilationContext CreateChildContext() => new CompilationContext(_store, _linkerFactory);
 
         public ExpressionResult CompileExpression<T>(
             T expression,

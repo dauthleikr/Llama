@@ -7,6 +7,8 @@
     {
         IAddressFixer AddressLinker { get; }
 
+        ICompilationContext CreateChildContext();
+
         ExpressionResult CompileExpression<T>(
             T expression,
             CodeGen codeGen,
