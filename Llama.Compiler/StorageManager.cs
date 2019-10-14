@@ -74,13 +74,14 @@
 
         public void CreatePrologue(CodeGen codeGen)
         {
-            foreach (var register in _borrowedRegisters.Where(reg => !reg.FloatingPoint).OrderBy(reg => reg.AsR64()))
+            var borrowedRegisters = _borrowedRegisters.Where(reg => !reg.FloatingPoint).OrderBy(reg => reg.AsR64()).ToArray();
+            foreach (var register in borrowedRegisters)
                 codeGen.Push(register.AsR64());
 
             //for now we assume llama only uses the scalar operating mode, thus we save and restore only the first 8 bytes
             var stackForFloatRegisters = _borrowedRegisters.Count(reg => reg.FloatingPoint) * 8;
             var totalStack = stackForFloatRegisters + _stackNeededForFunction;
-            while (totalStack % 16 != 8) // make aligned by 8 but not by 16 (call will align)
+            while ((totalStack + borrowedRegisters.Length * 8) % 16 != 8) // make aligned by 8 but not by 16 (call will align)
                 totalStack = Round.AlwaysUp(totalStack, 8);
             if (totalStack == 0)
                 return;
@@ -95,14 +96,16 @@
 
         public void CreateEpilogue(CodeGen codeGen)
         {
+            var borrowedRegister = _borrowedRegisters.Where(reg => reg.FloatingPoint).OrderByDescending(reg => reg.AsFloat()).ToArray();
+
             //for now we assume llama only uses the scalar operating mode, thus we save and restore only the first 8 bytes
             var stackForFloatRegisters = _borrowedRegisters.Count(reg => reg.FloatingPoint) * 8;
             var totalStack = stackForFloatRegisters + _stackNeededForFunction;
-            while (totalStack % 16 != 8) // make aligned by 8 but not by 16 (call will align)
+            while ((totalStack + borrowedRegister.Length * 8) % 16 != 8) // make aligned by 8 but not by 16 (call will align)
                 totalStack = Round.AlwaysUp(totalStack, 8);
 
             var totalStackCopy = totalStack;
-            foreach (var register in _borrowedRegisters.Where(reg => reg.FloatingPoint).OrderByDescending(reg => reg.AsFloat()))
+            foreach (var register in borrowedRegister)
                 codeGen.MovqToDereferenced(Register64.RSP, register.AsFloat(), totalStackCopy -= 8);
 
 
