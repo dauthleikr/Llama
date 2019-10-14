@@ -1,4 +1,4 @@
-﻿namespace Llama.Compiler
+﻿namespace Llama.Compiler.Extensions
 {
     using System;
     using System.Linq;

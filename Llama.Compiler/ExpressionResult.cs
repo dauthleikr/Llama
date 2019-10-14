@@ -1,7 +1,9 @@
 ﻿namespace Llama.Compiler
 {
     using System;
+    using Extensions;
     using spit;
+    using RegisterExtensions = Extensions.RegisterExtensions;
     using Type = Parser.Nodes.Type;
 
     public partial class ExpressionResult

@@ -1,6 +1,7 @@
 ﻿namespace Llama.Compiler.ExpressionCompilers
 {
     using System;
+    using Extensions;
     using Parser.Nodes;
     using spit;
     using Type = Parser.Nodes.Type;

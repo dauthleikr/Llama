@@ -1,5 +1,6 @@
 ﻿namespace Llama.Compiler
 {
+    using Extensions;
     using Parser.Nodes;
     using spit;
 
