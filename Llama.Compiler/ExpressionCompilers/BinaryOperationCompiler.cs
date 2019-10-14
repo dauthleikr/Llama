@@ -28,7 +28,80 @@
                 case TokenKind.Assignment:
                     return CompileAssign(expression.Left, expression.Right, target, codeGen, storageManager, scope, addressFixer, context);
                 case TokenKind.Equals:
-                    return CompileEquals(expression.Left, expression.Right, target, codeGen, storageManager, scope, addressFixer, context);
+                    return CompileComparison(
+                        expression.Left,
+                        expression.Right,
+                        target,
+                        codeGen,
+                        storageManager,
+                        scope,
+                        addressFixer,
+                        context,
+                        codeGen.Je
+                    );
+                case TokenKind.NotEquals:
+                    return CompileComparison(
+                        expression.Left,
+                        expression.Right,
+                        target,
+                        codeGen,
+                        storageManager,
+                        scope,
+                        addressFixer,
+                        context,
+                        codeGen.Je,
+                        true
+                    );
+                case TokenKind.OpenAngularBracket:
+                    return CompileComparison(
+                        expression.Left,
+                        expression.Right,
+                        target,
+                        codeGen,
+                        storageManager,
+                        scope,
+                        addressFixer,
+                        context,
+                        codeGen.Jb
+                    );
+                case TokenKind.CloseAngularBracket:
+                    return CompileComparison(
+                        expression.Left,
+                        expression.Right,
+                        target,
+                        codeGen,
+                        storageManager,
+                        scope,
+                        addressFixer,
+                        context,
+                        codeGen.Jbe,
+                        true
+                    );
+                case TokenKind.GreaterEquals:
+                    return CompileComparison(
+                        expression.Left,
+                        expression.Right,
+                        target,
+                        codeGen,
+                        storageManager,
+                        scope,
+                        addressFixer,
+                        context,
+                        codeGen.Jb,
+                        true
+                    );
+                case TokenKind.SmallerEquals:
+                    return CompileComparison(
+                        expression.Left,
+                        expression.Right,
+                        target,
+                        codeGen,
+                        storageManager,
+                        scope,
+                        addressFixer,
+                        context,
+                        codeGen.Jbe
+                    );
                 default:
                     throw new NotImplementedException($"Compilation for Operator {expression.Operator.Operator.Kind} is not implemented");
             }
@@ -108,7 +181,7 @@
             return new ExpressionResult(type, expression);
         }
 
-        private static ExpressionResult CompileEquals(
+        private static ExpressionResult CompileComparison(
             IExpression left,
             IExpression right,
             PreferredRegister target,
@@ -116,13 +189,37 @@
             StorageManager storageManager,
             IScopeContext scope,
             IAddressFixer addressFixer,
-            ICompilationContext context
+            ICompilationContext context,
+            Action<sbyte> comparisonJmp,
+            bool inverted = false
         )
         {
             var (leftReg, rightExpr, type) = PrepareBinaryExpression(left, right, target, codeGen, storageManager, scope, addressFixer, context);
-            rightExpr.TestTo(leftReg, codeGen, addressFixer);
-            //todo
-            throw new NotImplementedException();
+            if (type.IsIntegerRegisterType())
+                rightExpr.TestTo(leftReg, codeGen, addressFixer);
+            else if (type == Constants.DoubleType)
+                rightExpr.ComisdTo(leftReg, codeGen, addressFixer);
+            else if (type == Constants.FloatType)
+                rightExpr.ComissTo(leftReg, codeGen, addressFixer);
+            else
+            {
+                throw new NotImplementedException(
+                    $"{nameof(BinaryOperationCompiler)}: {nameof(CompileComparison)}: I do not know how to compile this type: {type}"
+                );
+            }
+
+            var targetRegister = target.MakeFor(Constants.BoolType);
+
+            var mov1CodeGen = new CodeGen();
+            mov1CodeGen.Mov(targetRegister.AsR32(), inverted ? 0 : 1);
+            var mov0CodeGen = new CodeGen();
+            mov0CodeGen.Mov(targetRegister.AsR32(), inverted ? 1 : 0);
+            mov0CodeGen.Jmp(mov1CodeGen.GetDataSpan().Length);
+
+            comparisonJmp((sbyte)mov0CodeGen.GetDataSpan().Length);
+            codeGen.Write(mov0CodeGen.GetDataSpan());
+            codeGen.Write(mov1CodeGen.GetDataSpan());
+            return new ExpressionResult(type, targetRegister);
         }
 
         private static (Register first, ExpressionResult second, Type type) PrepareBinaryExpression(
@@ -151,7 +248,6 @@
             storageManager.Release(firstTemp);
             return (firstRegister, secondResult, type);
         }
-
 
         private static Type GetOrPromoteToSame(Type leftType, Type rightType)
         {
