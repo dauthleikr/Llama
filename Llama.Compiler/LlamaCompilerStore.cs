@@ -26,6 +26,7 @@
             ExpressionCompilerStore<BinaryOperatorExpression>.Compiler = new BinaryOperationCompiler();
 
             StatementCompilerStore<CodeBlock>.Compiler = new CodeBlockCompiler();
+            StatementCompilerStore<Declaration>.Compiler = new DeclarationCompiler();
         }
 
         private LlamaCompilerStore() { }
