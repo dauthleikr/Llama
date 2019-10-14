@@ -16,5 +16,6 @@
         public static readonly Type DoubleType = new Type("double");
         public static readonly Type FloatType = new Type("float");
         public static readonly Type FunctionPointerType = new Type("!FunctionPointer");
+        public static readonly Type BoolType = new Type("bool");
     }
 }
