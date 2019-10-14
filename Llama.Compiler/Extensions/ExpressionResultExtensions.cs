@@ -18,6 +18,34 @@
             );
         }
 
+        public static void ComisdTo(this ExpressionResult source, Register target, CodeGen codeGen, IAddressFixer fixer)
+        {
+            source.DereferenceToRegister(
+                target,
+                codeGen,
+                fixer,
+                codeGen.Comisd,
+                codeGen.ComisdFromDereferenced,
+                codeGen.ComisdFromDereferenced2,
+                codeGen.ComisdFromDereferenced3,
+                codeGen.ComisdFromDereferenced4
+            );
+        }
+
+        public static void ComissTo(this ExpressionResult source, Register target, CodeGen codeGen, IAddressFixer fixer)
+        {
+            source.DereferenceToRegister(
+                target,
+                codeGen,
+                fixer,
+                codeGen.Comiss,
+                codeGen.ComissFromDereferenced,
+                codeGen.ComissFromDereferenced2,
+                codeGen.ComissFromDereferenced3,
+                codeGen.ComissFromDereferenced4
+            );
+        }
+
         public static void AddTo(this ExpressionResult source, Register target, CodeGen codeGen, IAddressFixer fixer)
         {
             source.DereferenceToRegister(
