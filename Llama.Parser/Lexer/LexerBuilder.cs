@@ -84,6 +84,9 @@
             builder.AddStaticToken(TokenKind.Minus, "-");
             builder.AddStaticToken(TokenKind.Equals, "==");
             builder.AddStaticToken(TokenKind.NotEquals, "!=");
+            builder.AddStaticToken(TokenKind.GreaterEquals, ">=");
+            builder.AddStaticToken(TokenKind.SmallerEquals, "<=");
+            builder.AddStaticToken(TokenKind.Not, "!");
             builder.AddStaticToken(TokenKind.AddressOf, "&");
             builder.AddStaticToken(TokenKind.New, "new");
             builder.AddStaticToken(TokenKind.Delete, "delete");

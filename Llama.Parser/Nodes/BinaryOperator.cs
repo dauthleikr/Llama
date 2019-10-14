@@ -17,6 +17,18 @@
                         return 96;
                     case TokenKind.Minus:
                         return 96;
+                    case TokenKind.Equals:
+                        return 90;
+                    case TokenKind.NotEquals:
+                        return 90;
+                    case TokenKind.OpenAngularBracket:
+                        return 92;
+                    case TokenKind.CloseAngularBracket:
+                        return 92;
+                    case TokenKind.GreaterEquals:
+                        return 92;
+                    case TokenKind.SmallerEquals:
+                        return 92;
                     case TokenKind.Assignment:
                         return 49;
                     default:
@@ -34,6 +46,8 @@
             kind == TokenKind.Equals ||
             kind == TokenKind.NotEquals ||
             kind == TokenKind.OpenAngularBracket ||
-            kind == TokenKind.CloseAngularBracket;
+            kind == TokenKind.CloseAngularBracket ||
+            kind == TokenKind.GreaterEquals ||
+            kind == TokenKind.SmallerEquals;
     }
 }
