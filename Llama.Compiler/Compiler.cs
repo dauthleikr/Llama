@@ -1,22 +1,17 @@
 ﻿namespace Llama.Compiler
 {
     using System;
-    using System.IO;
     using System.Linq;
+    using Extensions;
     using Parser.Nodes;
     using spit;
 
     public class Compiler
     {
-        private readonly CodeGen _codeGen;
+        private readonly CodeGen _codeGen = new CodeGen();
         private readonly ICompilationContext _context;
-        private readonly MemoryStream _rawStream = new MemoryStream();
 
-        public Compiler(ICompilationContext context)
-        {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _codeGen = new CodeGen(_rawStream);
-        }
+        public Compiler(ICompilationContext context) => _context = context ?? throw new ArgumentNullException(nameof(context));
 
         public void AddFunction(FunctionImplementation function)
         {
@@ -31,12 +26,13 @@
             var scope = FunctionScope.FromBlock(function);
             var storageManager = new StorageManager(scope);
 
-            storageManager.CreatePrologue(_codeGen);
+            var prologuePosition = _codeGen.StreamPosition;
             _context.CompileStatement(function.Body.StatementAsBlock(), _codeGen, storageManager, scope);
+            _codeGen.InsertCode(_context.AddressLinker, prologuePosition, gen => storageManager.CreatePrologue(gen));
             storageManager.CreateEpilogue(_codeGen);
             _codeGen.Ret();
         }
 
-        public byte[] Finish() => _rawStream.ToArray();
+        public ReadOnlySpan<byte> Finish() => _codeGen.GetDataSpan();
     }
 }
