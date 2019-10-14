@@ -27,6 +27,13 @@
 
         public BinaryOperator(Token @operator) => Operator = @operator;
 
-        public static bool IsTokenKindValid(TokenKind kind) => kind == TokenKind.Plus || kind == TokenKind.Minus || kind == TokenKind.Assignment;
+        public static bool IsTokenKindValid(TokenKind kind) =>
+            kind == TokenKind.Plus ||
+            kind == TokenKind.Minus ||
+            kind == TokenKind.Assignment ||
+            kind == TokenKind.Equals ||
+            kind == TokenKind.NotEquals ||
+            kind == TokenKind.OpenAngularBracket ||
+            kind == TokenKind.CloseAngularBracket;
     }
 }
