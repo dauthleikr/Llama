@@ -23,6 +23,7 @@
             ExpressionCompilerStore<IExpression>.Compiler = new GenericExpressionCompiler();
             ExpressionCompilerStore<ArrayAllocationExpression>.Compiler = new ArrayAllocationCompiler();
             ExpressionCompilerStore<AtomicExpression>.Compiler = new AtomicExpressionCompiler();
+            ExpressionCompilerStore<BinaryOperatorExpression>.Compiler = new BinaryOperationCompiler();
 
             StatementCompilerStore<CodeBlock>.Compiler = new CodeBlockCompiler();
         }
