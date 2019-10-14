@@ -17,6 +17,8 @@
         Pointer,
         Plus,
         Minus,
+        Equals,
+        NotEquals,
         AddressOf,
         New,
         Delete,
