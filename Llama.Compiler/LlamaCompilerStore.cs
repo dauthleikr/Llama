@@ -1,5 +1,6 @@
 ﻿namespace Llama.Compiler
 {
+    using System;
     using ExpressionCompilers;
     using Parser.Nodes;
     using StatementCompilers;
@@ -24,9 +25,15 @@
             ExpressionCompilerStore<ArrayAllocationExpression>.Compiler = new ArrayAllocationCompiler();
             ExpressionCompilerStore<AtomicExpression>.Compiler = new AtomicExpressionCompiler();
             ExpressionCompilerStore<BinaryOperatorExpression>.Compiler = new BinaryOperationCompiler();
+            ExpressionCompilerStore<ArrayAccessExpression>.Compiler = new ArrayAccessCompiler();
+            ExpressionCompilerStore<MethodCallExpression>.Compiler = new MethodCallCompiler();
+            ExpressionCompilerStore<TypeCastExpression>.Compiler = new TypeCastCompiler();
 
             StatementCompilerStore<CodeBlock>.Compiler = new CodeBlockCompiler();
             StatementCompilerStore<Declaration>.Compiler = new DeclarationCompiler();
+            StatementCompilerStore<For>.Compiler = new ForCompiler();
+            StatementCompilerStore<If>.Compiler = new IfCompiler();
+            StatementCompilerStore<While>.Compiler = new WhileCompiler();
         }
 
         private LlamaCompilerStore() { }
