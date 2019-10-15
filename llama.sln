@@ -3,9 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28803.352
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "test", "test\test.csproj", "{33C77A4F-820A-4851-9910-41A7DD97169B}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Llama.Parser", "Llama.parser\Llama.Parser.csproj", "{F3203166-973A-4AEF-863F-6F0AE0EBFB72}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Llama.Parser", "Llama.Parser\Llama.Parser.csproj", "{F3203166-973A-4AEF-863F-6F0AE0EBFB72}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Llama.PE", "Llama.PE\Llama.PE.csproj", "{1326D3B0-EC93-4C8D-AC90-684335A655C2}"
 EndProject
@@ -21,10 +19,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{33C77A4F-820A-4851-9910-41A7DD97169B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{33C77A4F-820A-4851-9910-41A7DD97169B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{33C77A4F-820A-4851-9910-41A7DD97169B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{33C77A4F-820A-4851-9910-41A7DD97169B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F3203166-973A-4AEF-863F-6F0AE0EBFB72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F3203166-973A-4AEF-863F-6F0AE0EBFB72}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F3203166-973A-4AEF-863F-6F0AE0EBFB72}.Release|Any CPU.ActiveCfg = Release|Any CPU
