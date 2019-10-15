@@ -9,6 +9,7 @@
         int GetLocalOffset(string identifier);
         Type GetLocalType(string identifier);
         ExpressionResult GetLocalReference(string identifier);
+        FunctionDeclaration GetFunctionDeclaration(string identifier);
         bool IsLocalDefined(string identifier);
         void DefineLocal(string identifier, Type type);
         void PushScope();

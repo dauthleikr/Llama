@@ -36,12 +36,17 @@
         public int TotalStackSpace { get; }
         private readonly Dictionary<string, int> _localToOffset;
         private readonly int _calleeParameterSpace;
+        private readonly IEnumerable<FunctionDeclaration> _declarations;
         private LocalScope _scope = new LocalScope();
 
-        public FunctionScope(Dictionary<string, int> localToOffset, int calleeParameterSpace)
+        private FunctionScope(Dictionary<string, int> localToOffset, int calleeParameterSpace, IEnumerable<FunctionDeclaration> declarations)
         {
+            if (declarations == null)
+                throw new ArgumentNullException(nameof(declarations));
+
             _localToOffset = localToOffset ?? throw new ArgumentNullException(nameof(localToOffset));
             _calleeParameterSpace = calleeParameterSpace;
+            _declarations = declarations.ToArray();
             TotalStackSpace = _localToOffset.Values.Max() + 8;
         }
 
@@ -60,6 +65,8 @@
         public ExpressionResult GetLocalReference(string identifier) =>
             new ExpressionResult(GetLocalType(identifier), Register64.RSP, GetLocalOffset(identifier));
 
+        public FunctionDeclaration GetFunctionDeclaration(string identifier) => throw new NotImplementedException();
+
         public bool IsLocalDefined(string identifier) => _scope.IsLocalDefined(identifier);
 
         public void DefineLocal(string identifier, Type type) => _scope.DefineLocal(identifier, type);
@@ -68,8 +75,13 @@
 
         public void PopScope() => _scope = _scope.Parent ?? throw new InvalidOperationException();
 
-        public static FunctionScope FromBlock(FunctionImplementation function)
+        public static FunctionScope FromBlock(FunctionImplementation function, IEnumerable<FunctionDeclaration> declarations)
         {
+            if (function == null)
+                throw new ArgumentNullException(nameof(function));
+            if (declarations == null)
+                throw new ArgumentNullException(nameof(declarations));
+
             var localToOffset = new Dictionary<string, int>();
 
             void DeclareLocal(Type type, string name, ref int offset)
@@ -121,7 +133,7 @@
             var calleeParameterSpace = maxCalleeParameters * 8;
 
             SetLocalOffsets(calleeParameterSpace, function.Body);
-            return new FunctionScope(localToOffset, calleeParameterSpace);
+            return new FunctionScope(localToOffset, calleeParameterSpace, declarations);
         }
 
         private static IEnumerable<IStatement> GetDeclarationsAndBlocks(IStatement block)
