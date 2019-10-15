@@ -5,13 +5,12 @@
 
     public class Storage
     {
+        private const Register64 TempIntRegister = Register64.RAX;
+        private const XmmRegister TempFloatRegister = XmmRegister.XMM0;
+        public readonly bool IsIntegerType;
         public readonly bool IsRegister;
         public readonly Register Register;
         public readonly int StackOffset;
-        public readonly bool IsIntegerType;
-
-        private const Register64 TempIntRegister = Register64.RAX;
-        private const XmmRegister TempFloatRegister = XmmRegister.XMM0;
 
         public Storage(Register register)
         {

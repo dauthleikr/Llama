@@ -24,7 +24,8 @@
         }
 
         /// <summary>
-        /// Returns if a value of this type should be stored in general purpose (int) registers, or SSE2 registers (e.g. float, double)
+        ///     Returns if a value of this type should be stored in general purpose (int) registers, or SSE2 registers (e.g. float,
+        ///     double)
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>

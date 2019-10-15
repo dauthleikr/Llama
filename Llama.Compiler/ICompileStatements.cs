@@ -5,6 +5,13 @@
 
     public interface ICompileStatements<in T> where T : IStatement
     {
-        void Compile(T statement, CodeGen codeGen, StorageManager storageManager, IScopeContext scope, IAddressFixer addressFixer, ICompilationContext context);
+        void Compile(
+            T statement,
+            CodeGen codeGen,
+            StorageManager storageManager,
+            IScopeContext scope,
+            IAddressFixer addressFixer,
+            ICompilationContext context
+        );
     }
 }

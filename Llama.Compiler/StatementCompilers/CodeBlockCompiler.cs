@@ -5,7 +5,14 @@
 
     internal class CodeBlockCompiler : ICompileStatements<CodeBlock>
     {
-        public void Compile(CodeBlock statement, CodeGen codeGen, StorageManager storageManager, IScopeContext scope, IAddressFixer addressFixer, ICompilationContext context)
+        public void Compile(
+            CodeBlock statement,
+            CodeGen codeGen,
+            StorageManager storageManager,
+            IScopeContext scope,
+            IAddressFixer addressFixer,
+            ICompilationContext context
+        )
         {
             scope.PushScope();
             foreach (var subStatement in statement.Statements)
@@ -28,10 +35,17 @@
                         context.CompileStatement(@while, codeGen, storageManager, scope);
                         break;
                     case IExpression expression:
-                        context.CompileExpression(expression, codeGen, storageManager, new PreferredRegister(Register64.RAX, XmmRegister.XMM0), scope);
+                        context.CompileExpression(
+                            expression,
+                            codeGen,
+                            storageManager,
+                            new PreferredRegister(Register64.RAX, XmmRegister.XMM0),
+                            scope
+                        );
                         break;
                 }
             }
+
             scope.PopScope();
         }
     }

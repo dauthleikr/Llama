@@ -8,9 +8,9 @@
     public class StorageManager
     {
         private readonly HashSet<Register> _borrowedRegisters = new HashSet<Register>();
-        private int _stackNeededForFunction;
         private readonly Stack<Storage> _registerStorageFloat = new Stack<Storage>();
         private readonly Stack<Storage> _registerStorageInt = new Stack<Storage>();
+        private int _stackNeededForFunction;
 
         public StorageManager(IScopeContext functionScope)
         {
