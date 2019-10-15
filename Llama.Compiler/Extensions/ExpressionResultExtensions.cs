@@ -60,6 +60,20 @@
             );
         }
 
+        public static void LeaTo(this ExpressionResult source, Register target, CodeGen codeGen, IAddressFixer fixer)
+        {
+            source.DereferenceToRegister(
+                target,
+                codeGen,
+                fixer,
+                codeGen.Mov,
+                codeGen.LeaFromDereferenced,
+                codeGen.LeaFromDereferenced2,
+                codeGen.LeaFromDereferenced3,
+                codeGen.LeaFromDereferenced4
+            );
+        }
+
         public static void AddssTo(this ExpressionResult source, Register target, CodeGen codeGen, IAddressFixer fixer)
         {
             source.DereferenceToRegister(

@@ -22,7 +22,7 @@
 
         public delegate void GenericBrotherAction(Register target, Register source);
 
-        public Type ValueType { get; }
+        public Type ValueType { get; private set; }
         public Register Value { get; }
         public bool IsReference => Kind != ResultKind.Value;
 
@@ -94,6 +94,8 @@
             Kind = ResultKind.Pointer3;
         }
 
+        public void ChangeTypeUnsafe(Type newTypeUnsafe) => ValueType = newTypeUnsafe;
+
         public Register GetUnoccupiedVolatile(bool integerType)
         {
             var getRegisterAction = integerType ?
@@ -102,24 +104,24 @@
 
             return Kind switch
             {
-                ResultKind.Value    => getRegisterAction(Value),
-                ResultKind.Pointer  => getRegisterAction(Ptr),
+                ResultKind.Value => getRegisterAction(Value),
+                ResultKind.Pointer => getRegisterAction(Ptr),
                 ResultKind.Pointer3 => getRegisterAction(Ptr),
                 ResultKind.Pointer2 => getRegisterAction(Ptr, StructOffset),
-                ResultKind.Offset   => getRegisterAction(),
-                _                   => throw new ArgumentOutOfRangeException()
+                ResultKind.Offset => getRegisterAction(),
+                _ => throw new ArgumentOutOfRangeException()
             };
         }
 
         public bool IsOccopied(Register register) =>
             Kind switch
             {
-                ResultKind.Value    => register.IsSameRegister(Value),
-                ResultKind.Pointer  => register.IsSameRegister(Ptr),
+                ResultKind.Value => register.IsSameRegister(Value),
+                ResultKind.Pointer => register.IsSameRegister(Ptr),
                 ResultKind.Pointer3 => register.IsSameRegister(Ptr),
                 ResultKind.Pointer2 => register.IsSameRegister(Ptr) || register.IsSameRegister(StructOffset),
-                ResultKind.Offset   => false,
-                _                   => throw new ArgumentOutOfRangeException()
+                ResultKind.Offset => false,
+                _ => throw new ArgumentOutOfRangeException()
             };
     }
 }
