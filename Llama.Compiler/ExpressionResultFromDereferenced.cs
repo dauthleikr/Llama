@@ -183,7 +183,7 @@
                         if (signed)
                             codeGen.Movsxd(target.AsR64(), Value.AsR32());
                         else
-                            codeGen.Mov(target.AsR64(), Value.AsR32());
+                            codeGen.Mov(target.AsR32(), Value.AsR32());
                         break;
                     case 16:
                         if (signed)
