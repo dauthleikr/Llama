@@ -13,16 +13,25 @@
                 {
                     case Declaration declaration:
                         if (declaration.InitialValue != null)
+                        {
                             foreach (var expression in GetExpressions(declaration.InitialValue))
                                 yield return expression;
+                        }
+
                         break;
                     case For @for:
                         if (@for.Condition != null)
+                        {
                             foreach (var expression in GetExpressions(@for.Condition))
                                 yield return expression;
+                        }
+
                         if (@for.Increment != null)
+                        {
                             foreach (var expression in GetExpressions(@for.Increment))
                                 yield return expression;
+                        }
+
                         break;
                     case IExpression expr:
                         foreach (var expression in GetExpressions(expr))
@@ -98,21 +107,33 @@
                     case For @for:
                         yield return @for.Instruction;
                         if (@for.Instruction is CodeBlock forBlock)
+                        {
                             foreach (var codeBlockStatement in GetStatements(forBlock))
                                 yield return codeBlockStatement;
+                        }
+
                         break;
                     case If @if:
                         if (@if.Instruction is CodeBlock ifBlock)
+                        {
                             foreach (var codeBlockStatement in GetStatements(ifBlock))
                                 yield return codeBlockStatement;
+                        }
+
                         if (@if.ElseInstruction != null && @if.ElseInstruction is CodeBlock elseBlock)
+                        {
                             foreach (var codeBlockStatement in GetStatements(elseBlock))
                                 yield return codeBlockStatement;
+                        }
+
                         break;
                     case While @while:
                         if (@while.Instruction is CodeBlock whileBlock)
+                        {
                             foreach (var codeBlockStatement in GetStatements(whileBlock))
                                 yield return codeBlockStatement;
+                        }
+
                         break;
                 }
             }

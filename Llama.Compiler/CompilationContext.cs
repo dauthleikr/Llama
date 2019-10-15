@@ -6,15 +6,14 @@
     public class CompilationContext : ICompilationContext
     {
         public IAddressFixer AddressLinker { get; }
-        private readonly ICompilerStore _store;
         private readonly IFactory<IAddressFixer> _linkerFactory;
+        private readonly ICompilerStore _store;
 
         public CompilationContext(ICompilerStore store, IFactory<IAddressFixer> linkerFactory)
         {
             _store = store;
             _linkerFactory = linkerFactory;
             AddressLinker = linkerFactory.Create();
-
         }
 
         public void CompileStatement<T>(T statement, CodeGen codeGen, StorageManager storageManager, IScopeContext scope) where T : IStatement =>

@@ -14,7 +14,7 @@
             Register64.R8,
             Register64.R9,
             Register64.R10,
-            Register64.R11,
+            Register64.R11
         };
 
         private static readonly Register[] VolatileFloatRegisters =
@@ -29,6 +29,7 @@
 
         public static Register OtherVolatileIntRegister(params Register[] occupiedRegisters) =>
             VolatileIntRegisters.FirstOrDefault(vol => occupiedRegisters.All(occ => !occ.IsSameRegister(vol)));
+
         public static Register OtherVolatileFloatRegister(params Register[] occupiedRegisters) =>
             VolatileFloatRegisters.FirstOrDefault(vol => occupiedRegisters.All(occ => !occ.IsSameRegister(vol)));
 

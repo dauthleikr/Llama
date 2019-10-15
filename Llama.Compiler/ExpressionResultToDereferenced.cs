@@ -27,15 +27,15 @@
         public delegate void GenericToDrefAction(Register64 ptr, Register source, int offsetFlat = 0, Segment segment = Segment.DS);
 
         public void DereferenceFromRegister(
-           CodeGen codeGen,
-           Register source,
-           IAddressFixer fixer,
-           GenericBrotherAction brotherAction,
-           GenericToDrefAction drefAction,
-           GenericToDref2Action dref2Action,
-           GenericToDref3Action dref3Action,
-           GenericToDref4Action dref4Action
-       )
+            CodeGen codeGen,
+            Register source,
+            IAddressFixer fixer,
+            GenericBrotherAction brotherAction,
+            GenericToDrefAction drefAction,
+            GenericToDref2Action dref2Action,
+            GenericToDref3Action dref3Action,
+            GenericToDref4Action dref4Action
+        )
         {
             switch (Kind)
             {

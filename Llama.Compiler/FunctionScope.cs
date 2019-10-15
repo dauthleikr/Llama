@@ -34,9 +34,9 @@
         }
 
         public int TotalStackSpace { get; }
-        private readonly Dictionary<string, int> _localToOffset;
         private readonly int _calleeParameterSpace;
         private readonly IEnumerable<FunctionDeclaration> _declarations;
+        private readonly Dictionary<string, int> _localToOffset;
         private LocalScope _scope = new LocalScope();
 
         private FunctionScope(Dictionary<string, int> localToOffset, int calleeParameterSpace, IEnumerable<FunctionDeclaration> declarations)
@@ -54,7 +54,9 @@
         {
             var offset = _calleeParameterSpace - (index + 1) * 8;
             if (offset < 0)
-                throw new ArgumentException($"{nameof(FunctionScope)}: {nameof(GetCalleeParameterOffset)}: Cannot get paramter for index {index} (bad index)");
+                throw new ArgumentException(
+                    $"{nameof(FunctionScope)}: {nameof(GetCalleeParameterOffset)}: Cannot get paramter for index {index} (bad index)"
+                );
             return offset;
         }
 
@@ -106,16 +108,16 @@
                             SetLocalOffsets(startOffset, childBlock);
                             break;
                         case Declaration declaration:
-                            {
-                                var declarationName = declaration.Identifier.RawText;
-                                if (localToOffset.ContainsKey(declarationName))
-                                    throw new Exception($"Cannot redefine {declarationName}");
+                        {
+                            var declarationName = declaration.Identifier.RawText;
+                            if (localToOffset.ContainsKey(declarationName))
+                                throw new Exception($"Cannot redefine {declarationName}");
 
-                                if (!declaration.Type.IsIntegerRegisterType())
-                                    startOffset = Round.Up(startOffset, 16); // todo: use wasted space
-                                localToOffset[declarationName] = startOffset;
-                                startOffset += 8; //declaration.Type.SizeOf();
-                            }
+                            if (!declaration.Type.IsIntegerRegisterType())
+                                startOffset = Round.Up(startOffset, 16); // todo: use wasted space
+                            localToOffset[declarationName] = startOffset;
+                            startOffset += 8; //declaration.Type.SizeOf();
+                        }
                             break;
                         default:
                             Debug.Fail($"{nameof(GetDeclarationsAndBlocks)} returned neither declaration nor block");
@@ -130,6 +132,7 @@
                 if (methodCallExpression.Parameters.Length > maxCalleeParameters)
                     maxCalleeParameters = methodCallExpression.Parameters.Length;
             }
+
             var calleeParameterSpace = maxCalleeParameters * 8;
 
             SetLocalOffsets(calleeParameterSpace, function.Body);
@@ -143,14 +146,14 @@
                 switch (statement)
                 {
                     case For @for:
-                        {
-                            var forScopeStatements = new[]
-                                {
+                    {
+                        var forScopeStatements = new[]
+                            {
                                 @for.Instruction
                             }.Concat(@for.Instruction.StatementAsBlock().Statements)
-                                .ToArray();
-                            yield return new CodeBlock(forScopeStatements);
-                        }
+                            .ToArray();
+                        yield return new CodeBlock(forScopeStatements);
+                    }
                         break;
                     case If @if:
                         yield return @if.Instruction.StatementAsBlock();
