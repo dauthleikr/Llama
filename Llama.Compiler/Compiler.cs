@@ -1,6 +1,7 @@
 ﻿namespace Llama.Compiler
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using Extensions;
     using Parser.Nodes;
@@ -13,17 +14,19 @@
 
         public Compiler(ICompilationContext context) => _context = context ?? throw new ArgumentNullException(nameof(context));
 
-        public void AddFunction(FunctionImplementation function)
+        public void AddFunction(FunctionImplementation function, IEnumerable<FunctionDeclaration> declarations)
         {
             if (function == null)
                 throw new ArgumentNullException(nameof(function));
+            if (declarations == null)
+                throw new ArgumentNullException(nameof(declarations));
 
             _codeGen.Write(0xCC);
             _codeGen.Write(
                 Enumerable.Repeat((byte)0xCC, (int)(_codeGen.StreamPosition % 16)).ToArray()
             ); // 16-byte align function with int3 breakpoints
 
-            var scope = FunctionScope.FromBlock(function);
+            var scope = FunctionScope.FromBlock(function, declarations);
             var storageManager = new StorageManager(scope);
 
             var prologuePosition = _codeGen.StreamPosition;
