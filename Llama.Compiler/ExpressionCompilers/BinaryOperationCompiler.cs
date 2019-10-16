@@ -178,7 +178,7 @@
         {
             var (expression, assign, type) = PrepareBinaryExpression(right, left, target, codeGen, storageManager, scope, addressFixer, context);
             assign.GenerateAssign(expression, codeGen, addressFixer);
-            return new ExpressionResult(type, expression);
+            return assign;
         }
 
         private static ExpressionResult CompileComparison(
@@ -237,12 +237,12 @@
             var isfirstIntegerType = firstResult.ValueType.IsIntegerRegisterType();
             var firstTemp = storageManager.Allocate(isfirstIntegerType);
             firstTemp.Store(firstResult, codeGen, addressFixer);
-
+            
             var secondResult = context.CompileExpression(second, codeGen, storageManager, preferredFirst, scope);
             var type = GetOrPromoteToSame(firstResult.ValueType, secondResult.ValueType);
             var preferredRegister = preferredFirst.MakeFor(type);
             var firstRegister = secondResult.IsOccopied(preferredRegister) ?
-                secondResult.GetUnoccupiedVolatile(isfirstIntegerType) :
+                secondResult.GetUnoccupiedVolatile(firstResult.ValueType) :
                 preferredRegister;
             firstTemp.AsExpressionResult(firstResult.ValueType).GenerateMoveTo(firstRegister, type, codeGen, addressFixer);
             storageManager.Release(firstTemp);

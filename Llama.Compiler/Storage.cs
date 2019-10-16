@@ -1,5 +1,6 @@
 ﻿namespace Llama.Compiler
 {
+    using Extensions;
     using Parser.Nodes;
     using spit;
 
@@ -39,13 +40,20 @@
                     codeGen.MovqToDereferenced(Register64.RSP, tempRegister, StackOffset, Segment.SS);
             }
             else
-                expressionResult.GenerateMoveTo(Register, expressionResult.ValueType, codeGen, addressFixer);
+            {
+                expressionResult.GenerateMoveTo(
+                    expressionResult.ValueType.MakeRegisterWithCorrectSize(Register),
+                    expressionResult.ValueType,
+                    codeGen,
+                    addressFixer
+                );
+            }
         }
 
         public ExpressionResult AsExpressionResult(Type typeUnsafe)
         {
             if (IsRegister)
-                return new ExpressionResult(typeUnsafe, Register);
+                return new ExpressionResult(typeUnsafe, typeUnsafe.MakeRegisterWithCorrectSize(Register));
             return new ExpressionResult(typeUnsafe, Register64.RSP, StackOffset, Segment.SS);
         }
     }

@@ -1,11 +1,33 @@
 ﻿namespace Llama.Compiler.Extensions
 {
     using System;
+    using System.Linq;
     using spit;
     using Type = Parser.Nodes.Type;
 
     internal static class TypeExtensions
     {
+        private static readonly Register[] VolatileIntRegisters =
+        {
+            Register64.RAX,
+            Register64.RCX,
+            Register64.RDX,
+            Register64.R8,
+            Register64.R9,
+            Register64.R10,
+            Register64.R11
+        };
+
+        private static readonly Register[] VolatileFloatRegisters =
+        {
+            XmmRegister.XMM0,
+            XmmRegister.XMM1,
+            XmmRegister.XMM2,
+            XmmRegister.XMM3,
+            XmmRegister.XMM4,
+            XmmRegister.XMM5
+        };
+
         public static bool IsSignedInteger(this Type type)
         {
             if (type.ChildRelation != Type.WrappingType.None)
@@ -57,24 +79,12 @@
             }
         }
 
-        public static Register MakeRegisterWithCorrectSize(this Type type, Register64 intRegister)
+        public static Register MakeRegisterWithCorrectSize(this Type type, Register register)
         {
-            if (!type.IsIntegerRegisterType())
-                throw new InvalidOperationException("Cannot make int register from float-register type");
-
-            return MakeRegisterWithCorrectSize(type, intRegister, default);
+            if (register.FloatingPoint)
+                return register;
+            return MakeRegisterWithCorrectSize(type, register.AsR64(), default);
         }
-
-        public static Register MakeRegisterWithCorrectSize(this Type type, XmmRegister floatRegister)
-        {
-            if (type.IsIntegerRegisterType())
-                throw new InvalidOperationException("Cannot make float register from int-register type");
-
-            return MakeRegisterWithCorrectSize(type, default, floatRegister);
-        }
-
-        public static Register MakeRegisterWithCorrectSize(this Type type, Register register) =>
-            MakeRegisterWithCorrectSize(type, register.AsR64(), register.AsFloat());
 
         public static Register MakeRegisterWithCorrectSize(this Type type, Register64 intRegister, XmmRegister floatRegister)
         {
@@ -153,6 +163,23 @@
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        public static Register OtherVolatileIntRegister(this Type targetType, params Register[] occupiedRegisters)
+        {
+            if (targetType == null)
+                throw new ArgumentNullException(nameof(targetType));
+            return Register.IntRegisterFromSize(
+                targetType.SizeOf(),
+                VolatileIntRegisters.FirstOrDefault(vol => occupiedRegisters.All(occ => !occ.IsSameRegister(vol)))
+            );
+        }
+
+        public static Register OtherVolatileFloatRegister(this Type targetType, params Register[] occupiedRegisters)
+        {
+            if (targetType == null)
+                throw new ArgumentNullException(nameof(targetType));
+            return VolatileFloatRegisters.FirstOrDefault(vol => occupiedRegisters.All(occ => !occ.IsSameRegister(vol)));
         }
     }
 }

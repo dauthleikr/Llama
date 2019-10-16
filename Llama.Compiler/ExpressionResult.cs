@@ -1,15 +1,13 @@
 ﻿namespace Llama.Compiler
 {
     using System;
+    using System.Diagnostics;
     using Extensions;
     using spit;
-    using RegisterExtensions = Extensions.RegisterExtensions;
     using Type = Parser.Nodes.Type;
 
     public partial class ExpressionResult
     {
-        private delegate Register GetRegisterFunction(params Register[] not);
-
         public enum ResultKind
         {
             Invalid,
@@ -46,6 +44,7 @@
             if (valueType.IsIntegerRegisterType() == valueRegister.FloatingPoint)
                 throw new ArgumentException("Type does not match register");
 
+            Debug.Assert(valueType.SizeOf() == valueRegister.BitSize / 8);
             ValueType = valueType ?? throw new ArgumentNullException(nameof(valueType));
             Value = valueRegister;
             Kind = ResultKind.Value;
@@ -96,20 +95,29 @@
 
         public void ChangeTypeUnsafe(Type newTypeUnsafe) => ValueType = newTypeUnsafe;
 
-        public Register GetUnoccupiedVolatile(bool integerType)
+        public Register GetUnoccupiedVolatile(Type type)
         {
-            var getRegisterAction = integerType ?
-                (GetRegisterFunction)RegisterExtensions.OtherVolatileIntRegister :
-                RegisterExtensions.OtherVolatileFloatRegister;
+            if (type.IsIntegerRegisterType())
+            {
+                return Kind switch
+                {
+                    ResultKind.Value    => type.OtherVolatileIntRegister(Value),
+                    ResultKind.Pointer  => type.OtherVolatileIntRegister(Ptr),
+                    ResultKind.Pointer3 => type.OtherVolatileIntRegister(Ptr),
+                    ResultKind.Pointer2 => type.OtherVolatileIntRegister(Ptr, StructOffset),
+                    ResultKind.Offset   => type.OtherVolatileIntRegister(),
+                    _                   => throw new ArgumentOutOfRangeException()
+                };
+            }
 
             return Kind switch
             {
-                ResultKind.Value => getRegisterAction(Value),
-                ResultKind.Pointer => getRegisterAction(Ptr),
-                ResultKind.Pointer3 => getRegisterAction(Ptr),
-                ResultKind.Pointer2 => getRegisterAction(Ptr, StructOffset),
-                ResultKind.Offset => getRegisterAction(),
-                _ => throw new ArgumentOutOfRangeException()
+                ResultKind.Value    => type.OtherVolatileFloatRegister(Value),
+                ResultKind.Pointer  => type.OtherVolatileFloatRegister(Ptr),
+                ResultKind.Pointer3 => type.OtherVolatileFloatRegister(Ptr),
+                ResultKind.Pointer2 => type.OtherVolatileFloatRegister(Ptr, StructOffset),
+                ResultKind.Offset   => type.OtherVolatileFloatRegister(),
+                _                   => throw new ArgumentOutOfRangeException()
             };
         }
 

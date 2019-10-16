@@ -194,6 +194,8 @@
                     case 8:
                         codeGen.Movzx(target.AsR64(), Value.AsR8());
                         break;
+                    default:
+                        throw new NotImplementedException();
                 }
             }
             else if (target.FloatingPoint && Value.FloatingPoint)
