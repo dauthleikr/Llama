@@ -103,6 +103,21 @@
                 var (intRegister, floatRegister) = _parameterRegisters[i];
                 var register = parameterTypes[i].MakeRegisterWithCorrectSize(intRegister, floatRegister);
                 parameterStorages[i].AsExpressionResult(parameterTypes[i]).GenerateMoveTo(register, parameterTypes[i], codeGen, addressFixer);
+                storageManager.Release(parameterStorages[i]);
+            }
+            for (var i = _parameterRegisters.Length; i < parameterStorages.Length; i++)
+            {
+                var parameterTemp = parameterStorages[i].AsExpressionResult(parameterTypes[i]);
+                if (parameterTemp.Kind == ExpressionResult.ResultKind.Value)
+                {
+                    codeGen.MovToDereferenced(Register64.RSP, parameterTemp.Value, scope.GetCalleeParameterOffset(i - 4));
+                }
+                else
+                {
+                    parameterTemp.GenerateMoveTo(Register64.R10, codeGen, addressFixer);
+                    codeGen.MovToDereferenced(Register64.RSP, Register64.R10, scope.GetCalleeParameterOffset(i - 4));
+                }
+                storageManager.Release(parameterStorages[i]);
             }
 
             switch (functionPtr.Kind)
