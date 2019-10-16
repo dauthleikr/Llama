@@ -68,9 +68,9 @@
         //todo: bug: rework this redundant shit
         private void GenerateUpgradeToOffset(Register target, CodeGen codeGen, IAddressFixer fixer, bool signed)
         {
-            if (!target.FloatingPoint && !Value.FloatingPoint)
+            if (!target.FloatingPoint && ValueType.IsIntegerRegisterType())
             {
-                var bitize = Math.Min(target.BitSize, Value.BitSize);
+                var bitize = Math.Min(target.BitSize, ValueType.SizeOf() * 8);
                 if (bitize == 32)
                 {
                     if (signed)
@@ -96,9 +96,9 @@
 
         private void GenerateUpgradeToPointer3(Register target, CodeGen codeGen, bool signed)
         {
-            if (!target.FloatingPoint && !Value.FloatingPoint)
+            if (!target.FloatingPoint && ValueType.IsIntegerRegisterType())
             {
-                var bitize = Math.Min(target.BitSize, Value.BitSize);
+                var bitize = Math.Min(target.BitSize, ValueType.SizeOf() * 8);
                 if (bitize == 32)
                 {
                     if (signed)
@@ -114,7 +114,7 @@
                         codeGen.MovzxFromDereferenced3(target, Ptr, OffsetMul, ValueType.SizeOf() == 1, Offset);
                 }
             }
-            else if (target.FloatingPoint && Value.FloatingPoint)
+            else if (target.FloatingPoint && !ValueType.IsIntegerRegisterType())
                 codeGen.CvtSs2SdFromDereferenced3(target, Ptr, OffsetMul, Offset, Segment);
             else
                 throw new NotImplementedException();
@@ -122,9 +122,9 @@
 
         private void GenerateUpgradeToPointer2(Register target, CodeGen codeGen, bool signed)
         {
-            if (!target.FloatingPoint && !Value.FloatingPoint)
+            if (!target.FloatingPoint && ValueType.IsIntegerRegisterType())
             {
-                var bitize = Math.Min(target.BitSize, Value.BitSize);
+                var bitize = Math.Min(target.BitSize, ValueType.SizeOf() * 8);
                 if (bitize == 32)
                 {
                     if (signed)
@@ -148,9 +148,9 @@
 
         private void GenerateUpgradeToPointer(Register target, CodeGen codeGen, bool signed)
         {
-            if (!target.FloatingPoint && !Value.FloatingPoint)
+            if (!target.FloatingPoint && ValueType.IsIntegerRegisterType())
             {
-                var bitize = Math.Min(target.BitSize, Value.BitSize);
+                var bitize = Math.Min(target.BitSize, ValueType.SizeOf() * 8);
                 if (bitize == 32)
                 {
                     if (signed)
@@ -174,7 +174,7 @@
 
         private void GenerateUpgradeToValue(Register target, CodeGen codeGen, bool signed)
         {
-            if (!target.FloatingPoint && !Value.FloatingPoint)
+            if (!target.FloatingPoint && ValueType.IsIntegerRegisterType())
             {
                 var bitize = Value.BitSize;
                 switch (bitize)
