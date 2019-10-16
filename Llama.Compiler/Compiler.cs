@@ -30,10 +30,20 @@
             var storageManager = new StorageManager(scope);
 
             var prologuePosition = _codeGen.StreamPosition;
+            if (function.Declaration.Identifier.RawText == "main")
+                CompileEntryPointPreCode();
             _context.CompileStatement(function.Body.StatementAsBlock(), _codeGen, storageManager, scope);
             _codeGen.InsertCode(_context.AddressLinker, prologuePosition, gen => storageManager.CreatePrologue(gen));
             storageManager.CreateEpilogue(_codeGen);
             _codeGen.Ret();
+        }
+
+        private void CompileEntryPointPreCode()
+        {
+            _codeGen.CallRelative(Constants.DummyOffsetInt);
+            _context.AddressLinker.FixIATEntryOffset(_codeGen, "kernel32.dll", "GetProcessHeap");
+            _codeGen.MovToDereferenced4(Constants.DummyOffsetInt, Register64.RAX);
+            _context.AddressLinker.FixDataOffset(_codeGen, Constants.HeapHandleIdentifier);
         }
 
         public ReadOnlySpan<byte> Finish() => _codeGen.GetDataSpan();
