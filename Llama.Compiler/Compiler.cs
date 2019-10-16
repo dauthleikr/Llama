@@ -29,6 +29,9 @@
             var scope = FunctionScope.FromBlock(function, imports, declarations);
             var storageManager = new StorageManager(scope);
 
+            foreach (var parameter in function.Declaration.Parameters)
+                scope.DefineLocal(parameter.ParameterIdentifier.RawText, parameter.ParameterType);
+
             var prologuePosition = _codeGen.StreamPosition;
             if (function.Declaration.Identifier.RawText == "main")
                 CompileEntryPointPreCode();
