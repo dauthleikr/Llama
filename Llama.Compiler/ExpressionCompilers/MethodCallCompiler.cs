@@ -34,7 +34,10 @@
             FunctionDeclaration knownDeclaration = null;
             if (expression.Expression is AtomicExpression atomicExpression && atomicExpression.Token.Kind == TokenKind.Identifier)
             {
-                knownDeclaration = scope.GetFunctionDeclaration(atomicExpression.Token.RawText);
+                var identifier = atomicExpression.Token.RawText;
+                knownDeclaration = scope.GetFunctionDeclaration(identifier) ?? scope.GetFunctionImport(identifier).Declaration;
+                if (knownDeclaration == null)
+                    throw new UnknownIdentifierException($"Cannot resolve function signature for identifier: \"{identifier}\"");
                 parameterTypes = knownDeclaration.Parameters.Select(par => par.ParameterType).ToArray();
             }
             else
