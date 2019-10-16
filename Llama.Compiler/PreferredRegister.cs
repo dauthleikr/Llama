@@ -29,7 +29,7 @@
         public Register MakeFor(Type type)
         {
             if (type.IsIntegerRegisterType())
-                Register.IntRegisterFromSize(type.SizeOf(), (int)_intRegister);
+                return Register.IntRegisterFromSize(type.SizeOf(), (int)_intRegister);
             return _floatRegister;
         }
     }
