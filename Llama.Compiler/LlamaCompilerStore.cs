@@ -36,8 +36,6 @@
             StatementCompilerStore<While>.Compiler = new WhileCompiler();
         }
 
-        private LlamaCompilerStore() { }
-
         public ICompileExpressions<T> GetExpressionCompiler<T>() where T : IExpression => ExpressionCompilerStore<T>.Compiler;
 
         public ICompileStatements<T> GetStatementCompiler<T>() where T : IStatement => StatementCompilerStore<T>.Compiler;
