@@ -60,7 +60,17 @@
             IAddressFixer fixer
         )
         {
-            var literalContent = expression.Token.RawText.Substring(1, expression.Token.RawText.Length - 2);
+            var literalContent = PrepareStringLiteral(expression.Token);
+            var literalBytes = Encoding.ASCII.GetBytes(literalContent + "\0");
+            var targetRegister = target.MakeFor(Constants.CstrType);
+            codeGen.LeaFromDereferenced4(targetRegister, Constants.DummyOffsetInt);
+            fixer.FixConstantDataOffset(codeGen.StreamPosition, literalBytes);
+            return new ExpressionResult(Constants.CstrType, targetRegister);
+        }
+
+        private static string PrepareStringLiteral(Token token)
+        {
+            var literalContent = new StringBuilder().Append(token.RawText.AsSpan().Slice(1, token.RawText.Length - 2));
             literalContent = literalContent.Replace(@"\n", "\n");
             literalContent = literalContent.Replace(@"\r", "\r");
             literalContent = literalContent.Replace(@"\t", "\t");
@@ -70,12 +80,7 @@
             // literalContent = literalContent.Replace(@"\a", "\a");
             // literalContent = literalContent.Replace(@"\b", "\b");
             // literalContent = literalContent.Replace(@"\f", "\f");
-
-            var literalBytes = Encoding.ASCII.GetBytes(literalContent + "\0");
-            var targetRegister = target.MakeFor(Constants.CstrType);
-            codeGen.LeaFromDereferenced4(targetRegister, Constants.DummyOffsetInt);
-            fixer.FixConstantDataOffset(codeGen.StreamPosition, literalBytes);
-            return new ExpressionResult(Constants.CstrType, targetRegister);
+            return literalContent.ToString();
         }
 
         private static ExpressionResult CompileIdentifier(AtomicExpression expression, CodeGen codeGen, IScopeContext scope)
@@ -93,7 +98,7 @@
             {
                 return new ExpressionResult(
                     Constants.FunctionPointerType,
-                    (fixer, gen) => fixer.FixIATEntryOffset(codeGen.StreamPosition, import.LibraryName.RawText, identifier)
+                    (fixer, gen) => fixer.FixIATEntryOffset(codeGen.StreamPosition, PrepareStringLiteral(import.LibraryName), identifier)
                 );
             }
 
