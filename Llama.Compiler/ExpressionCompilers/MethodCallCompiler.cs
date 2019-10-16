@@ -40,7 +40,7 @@
             else
                 parameterTypes = new Type[expression.Parameters.Length];
 
-            for (var i = 0; i < expression.Parameters.Length; i++)
+            for (var i = 0; i < expression.Parameters.Length; i++) // Compiling parameter expressions
             {
                 var parameter = expression.Parameters[i];
                 var parameterResult = context.CompileExpression(

@@ -35,19 +35,26 @@
 
         public int TotalStackSpace { get; }
         private readonly int _calleeParameterSpace;
-        private readonly IEnumerable<FunctionDeclaration> _declarations;
+        private readonly Dictionary<string, FunctionDeclaration> _functionDeclarations;
+        private readonly Dictionary<string, FunctionImport> _functionImports;
         private readonly Dictionary<string, int> _localToOffset;
         private LocalScope _scope = new LocalScope();
 
-        private FunctionScope(Dictionary<string, int> localToOffset, int calleeParameterSpace, IEnumerable<FunctionDeclaration> declarations)
+        private FunctionScope(
+            Dictionary<string, int> localToOffset,
+            int calleeParameterSpace,
+            IEnumerable<FunctionImport> imports,
+            IEnumerable<FunctionDeclaration> declarations
+        )
         {
             if (declarations == null)
                 throw new ArgumentNullException(nameof(declarations));
 
             _localToOffset = localToOffset ?? throw new ArgumentNullException(nameof(localToOffset));
             _calleeParameterSpace = calleeParameterSpace;
-            _declarations = declarations.ToArray();
-            TotalStackSpace = _localToOffset.Values.Max() + 8;
+            _functionDeclarations = declarations.ToDictionary(item => item.Identifier.RawText, item => item);
+            _functionImports = imports.ToDictionary(item => item.Declaration.Identifier.RawText, item => item);
+            TotalStackSpace = _localToOffset.Any() ? _localToOffset.Values.Max() : 0;
         }
 
         public int GetCalleeParameterOffset(int index)
@@ -67,7 +74,8 @@
         public ExpressionResult GetLocalReference(string identifier) =>
             new ExpressionResult(GetLocalType(identifier), Register64.RSP, GetLocalOffset(identifier));
 
-        public FunctionDeclaration GetFunctionDeclaration(string identifier) => throw new NotImplementedException();
+        public FunctionDeclaration GetFunctionDeclaration(string identifier) => _functionDeclarations.GetValueOrDefault(identifier);
+        public FunctionImport GetFunctionImport(string identifier) => _functionImports.GetValueOrDefault(identifier);
 
         public bool IsLocalDefined(string identifier) => _scope.IsLocalDefined(identifier);
 
@@ -77,7 +85,11 @@
 
         public void PopScope() => _scope = _scope.Parent ?? throw new InvalidOperationException();
 
-        public static FunctionScope FromBlock(FunctionImplementation function, IEnumerable<FunctionDeclaration> declarations)
+        public static FunctionScope FromBlock(
+            FunctionImplementation function,
+            IEnumerable<FunctionImport> imports,
+            IEnumerable<FunctionDeclaration> declarations
+        )
         {
             if (function == null)
                 throw new ArgumentNullException(nameof(function));
@@ -108,16 +120,16 @@
                             SetLocalOffsets(startOffset, childBlock);
                             break;
                         case Declaration declaration:
-                        {
-                            var declarationName = declaration.Identifier.RawText;
-                            if (localToOffset.ContainsKey(declarationName))
-                                throw new Exception($"Cannot redefine {declarationName}");
+                            {
+                                var declarationName = declaration.Identifier.RawText;
+                                if (localToOffset.ContainsKey(declarationName))
+                                    throw new Exception($"Cannot redefine {declarationName}");
 
-                            if (!declaration.Type.IsIntegerRegisterType())
-                                startOffset = Round.Up(startOffset, 16); // todo: use wasted space
-                            localToOffset[declarationName] = startOffset;
-                            startOffset += 8; //declaration.Type.SizeOf();
-                        }
+                                if (!declaration.Type.IsIntegerRegisterType())
+                                    startOffset = Round.Up(startOffset, 16); // todo: use wasted space
+                                localToOffset[declarationName] = startOffset;
+                                startOffset += 8; //declaration.Type.SizeOf();
+                            }
                             break;
                         default:
                             Debug.Fail($"{nameof(GetDeclarationsAndBlocks)} returned neither declaration nor block");
@@ -136,7 +148,7 @@
             var calleeParameterSpace = maxCalleeParameters * 8;
 
             SetLocalOffsets(calleeParameterSpace, function.Body);
-            return new FunctionScope(localToOffset, calleeParameterSpace, declarations);
+            return new FunctionScope(localToOffset, calleeParameterSpace, imports, declarations);
         }
 
         private static IEnumerable<IStatement> GetDeclarationsAndBlocks(IStatement block)
@@ -146,14 +158,14 @@
                 switch (statement)
                 {
                     case For @for:
-                    {
-                        var forScopeStatements = new[]
-                            {
+                        {
+                            var forScopeStatements = new[]
+                                {
                                 @for.Instruction
                             }.Concat(@for.Instruction.StatementAsBlock().Statements)
-                            .ToArray();
-                        yield return new CodeBlock(forScopeStatements);
-                    }
+                                .ToArray();
+                            yield return new CodeBlock(forScopeStatements);
+                        }
                         break;
                     case If @if:
                         yield return @if.Instruction.StatementAsBlock();

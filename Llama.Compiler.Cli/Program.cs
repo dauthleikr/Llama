@@ -27,9 +27,8 @@
             var compilationContext = new CompilationContext(new LlamaCompilerStore(), new LinkerFactory());
             var compiler = new Compiler(compilationContext);
 
-            var declarations = document.Functions.Select(fun => fun.Declaration).Concat(document.Imports.Select(imp => imp.Declaration)).ToArray();
             foreach (var functionImplementation in document.Functions)
-                compiler.AddFunction(functionImplementation, declarations);
+                compiler.AddFunction(functionImplementation, document.Imports, document.Functions.Select(fun => fun.Declaration));
             var codeBlob = compiler.Finish();
             var linker = (Linker)compilationContext.AddressLinker;
 
