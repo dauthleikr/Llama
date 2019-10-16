@@ -42,7 +42,7 @@
 
         private void CompileEntryPointPreCode()
         {
-            _codeGen.CallRelative(Constants.DummyOffsetInt);
+            _codeGen.CallDereferenced4(Constants.DummyOffsetInt);
             _context.AddressLinker.FixIATEntryOffset(_codeGen.StreamPosition, "kernel32.dll", "GetProcessHeap");
             _codeGen.MovToDereferenced4(Constants.DummyOffsetInt, Register64.RAX);
             _context.AddressLinker.FixDataOffset(_codeGen.StreamPosition, Constants.HeapHandleIdentifier);
