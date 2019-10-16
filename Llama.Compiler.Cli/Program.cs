@@ -1,10 +1,10 @@
 ﻿namespace Llama.Compiler.Cli
 {
     using System;
+    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Reflection;
-    using System.Reflection.PortableExecutable;
     using Linker;
     using Parser;
     using Parser.Lexer;
@@ -19,10 +19,14 @@
                 Console.WriteLine($"Usage {Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().Location)} codefile.llama");
 
             var sourceFilePath = args[0];
+            var time = Stopwatch.StartNew();
             var source = File.ReadAllText(sourceFilePath);
             var lexer = LexerBuilder.BuildLlamaLexer();
             var parser = new ParseContext(new LlamaParseStore(), lexer, source);
             var document = parser.ReadNode<LlamaDocument>();
+
+            Console.WriteLine($"Parsing time: {time.Elapsed.TotalMilliseconds:F2} ms");
+            time.Restart();
 
             var compilationContext = new CompilationContext(new LlamaCompilerStore(), new LinkerFactory());
             var compiler = new Compiler(compilationContext);
@@ -32,8 +36,10 @@
             var codeBlob = compiler.Finish();
             var linker = (Linker)compilationContext.AddressLinker;
 
+            Console.WriteLine($"Compilation time: {time.Elapsed.TotalMilliseconds:F2} ms");
+            time.Restart();
+
             var pe32PlusExeBuilder = new ExecutableBuilder();
-            
             linker.LinkPreBuild(pe32PlusExeBuilder);
 
             var mainOffset = linker.GetCodeOffsetOfKnownFunction("main");
@@ -46,6 +52,9 @@
             var peResult = pe32PlusExeBuilder.Build((uint)codeBlob.Length, (uint)mainOffset);
             codeBlob.CopyTo(peResult.GetCodeSectionBuffer());
             linker.LinkPostBuild(peResult);
+
+            Console.WriteLine($"Linking time: {time.Elapsed.TotalMilliseconds:F2} ms");
+            time.Restart();
 
             using var fileStream = File.Open(Path.ChangeExtension(sourceFilePath, "exe"), FileMode.Create);
             peResult.Finish(fileStream);
