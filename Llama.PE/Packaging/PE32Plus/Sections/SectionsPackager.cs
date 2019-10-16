@@ -46,22 +46,14 @@
                 sectionHeaders.Add(WriteAndCreateHeader(peFile, otherSection, param.FileAlignment, param.SectionAlignment, ref rva));
 
             var relocInfo = CreateRelocInfo(param, sectionHeaders);
-            ImageDataDirectory relocDataDirectory;
-            if (relocInfo.Relocations.Size == 0)
+            var relocPackage = _relocPackager.Package(relocInfo);
+            var relocSection = WriteAndCreateHeader(peFile, relocPackage, param.FileAlignment, param.SectionAlignment, ref rva);
+            sectionHeaders.Add(relocSection);
+            var relocDataDirectory = new ImageDataDirectory
             {
-                relocDataDirectory = new ImageDataDirectory();
-            }
-            else
-            {
-                var relocPackage = _relocPackager.Package(relocInfo);
-                var relocSection = WriteAndCreateHeader(peFile, relocPackage, param.FileAlignment, param.SectionAlignment, ref rva);
-                sectionHeaders.Add(relocSection);
-                relocDataDirectory = new ImageDataDirectory
-                {
-                    VirtualAddress = relocSection.VirtualAddress,
-                    Size = relocPackage.RelocationDirectorySize
-                };
-            }
+                VirtualAddress = relocSection.VirtualAddress,
+                Size = relocPackage.RelocationDirectorySize
+            };
 
             peFile.Position = param.FileOffsetAtSectionsHeader;
             var structWriter = new StreamStructReaderWriter(peFile);
