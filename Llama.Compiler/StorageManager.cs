@@ -10,6 +10,8 @@
         private readonly HashSet<Register> _borrowedRegisters = new HashSet<Register>();
         private readonly Stack<Storage> _registerStorageFloat = new Stack<Storage>();
         private readonly Stack<Storage> _registerStorageInt = new Stack<Storage>();
+        private readonly Stack<Storage> _stackStorageFloat = new Stack<Storage>();
+        private readonly Stack<Storage> _stackStorageInt = new Stack<Storage>();
         private int _stackNeededForFunction;
 
         public StorageManager(IScopeContext functionScope)
@@ -49,6 +51,9 @@
             if (_registerStorageInt.Count != 0)
                 return _registerStorageInt.Pop();
 
+            if (_stackStorageInt.Count != 0)
+                return _stackStorageInt.Pop();
+
             var storage = new Storage(_stackNeededForFunction, true);
             _stackNeededForFunction += 8;
             return storage;
@@ -59,17 +64,36 @@
             if (_registerStorageFloat.Count != 0)
                 return _registerStorageFloat.Pop();
 
+            if (_stackStorageFloat.Count != 0)
+                return _stackStorageFloat.Pop();
+
             var storage = new Storage(_stackNeededForFunction, false);
             _stackNeededForFunction += 8;
             return storage;
         }
 
+        public PreferredRegister MakePreferredRegister(Register64 fallbackInt = Register64.RAX, XmmRegister fallbackFloat = XmmRegister.XMM0) =>
+            new PreferredRegister(
+                _registerStorageInt.Count > 0 ? _registerStorageInt.Peek().Register.AsR64() : fallbackInt,
+                _registerStorageFloat.Count > 0 ? _registerStorageFloat.Peek().Register.AsFloat() : fallbackFloat
+            );
+
         public void Release(Storage storage)
         {
             if (storage.IsIntegerType)
-                _registerStorageInt.Push(storage);
+            {
+                if (storage.IsRegister)
+                    _registerStorageInt.Push(storage);
+                else
+                    _stackStorageInt.Push(storage);
+            }
             else
-                _registerStorageFloat.Push(storage);
+            {
+                if (storage.IsRegister)
+                    _registerStorageFloat.Push(storage);
+                else
+                    _stackStorageFloat.Push(storage);
+            }
         }
 
         public void CreatePrologue(CodeGen codeGen)

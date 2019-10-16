@@ -32,10 +32,16 @@
 
             Type[] parameterTypes;
             FunctionDeclaration knownDeclaration = null;
+            var isIATEntry = false;
             if (expression.Expression is AtomicExpression atomicExpression && atomicExpression.Token.Kind == TokenKind.Identifier)
             {
                 var identifier = atomicExpression.Token.RawText;
-                knownDeclaration = scope.GetFunctionDeclaration(identifier) ?? scope.GetFunctionImport(identifier).Declaration;
+                knownDeclaration = scope.GetFunctionDeclaration(identifier);
+                if (knownDeclaration == null)
+                {
+                    knownDeclaration = scope.GetFunctionImport(identifier).Declaration;
+                    isIATEntry = true;
+                }
                 if (knownDeclaration == null)
                     throw new UnknownIdentifierException($"Cannot resolve function signature for identifier: \"{identifier}\"");
                 parameterTypes = knownDeclaration.Parameters.Select(par => par.ParameterType).ToArray();
@@ -50,7 +56,7 @@
                     parameter,
                     codeGen,
                     storageManager,
-                    new PreferredRegister(Register64.RAX, XmmRegister.XMM0), // todo: improve by peeking the StorageManager
+                    storageManager.MakePreferredRegister(),
                     scope
                 );
 
@@ -102,11 +108,17 @@
             switch (functionPtr.Kind)
             {
                 case ExpressionResult.ResultKind.Offset:
-                    codeGen.CallRelative(Constants.DummyOffsetInt);
+                    if (isIATEntry)
+                        codeGen.CallDereferenced4(Constants.DummyOffsetInt);
+                    else
+                        codeGen.CallRelative(Constants.DummyOffsetInt);
                     functionPtr.OffsetFixup(addressFixer, codeGen);
                     break;
                 case ExpressionResult.ResultKind.Value:
-                    codeGen.Call(functionPtr.Value.AsR64());
+                    if (isIATEntry)
+                        codeGen.CallDereferenced(functionPtr.Value.AsR64());
+                    else
+                        codeGen.Call(functionPtr.Value.AsR64());
                     break;
                 default:
                     throw new NotImplementedException();
