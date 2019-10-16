@@ -31,13 +31,13 @@
 
 
             codeGen.MovFromDereferenced4(Register64.RCX, Constants.DummyOffsetInt);
-            addressFixer.FixDataOffset(codeGen, Constants.HeapHandleIdentifier); // Parameter 1: DefaultHeapHandle
+            addressFixer.FixDataOffset(codeGen.StreamPosition, Constants.HeapHandleIdentifier); // Parameter 1: DefaultHeapHandle
 
             codeGen.Xor(Register64.RDX, Register64.RDX);
             codeGen.Add(Register64.RDX, (sbyte)(0x8 + 0x4)); // Parameter 2: HEAP_ZERO_MEMORY + HEAP_GENERATE_EXCEPTIONS
 
             codeGen.CallRelative(Constants.DummyOffsetInt);
-            addressFixer.FixIATEntryOffset(codeGen, "kernel32.dll", "HeapAlloc");
+            addressFixer.FixIATEntryOffset(codeGen.StreamPosition, "kernel32.dll", "HeapAlloc");
 
             return new ExpressionResult(new Type(expression.Type, Type.WrappingType.ArrayOf), Register64.RAX);
         }

@@ -1,15 +1,13 @@
 ﻿namespace Llama.Compiler
 {
-    using spit;
-
     public interface IAddressFixer
     {
-        void FixIATEntryOffset(CodeGen generator, string library, string function);
-        void FixConstantDataOffset(CodeGen generator, byte[] data);
-        void FixConstantDataAddress(CodeGen generator, byte[] data);
-        void FixDataOffset(CodeGen generator, string identifier, int length = 8);
-        void FixFunctionOffset(CodeGen generator, string identifier);
-        void FixFunctionAddress(CodeGen generator, string identifier);
+        void FixIATEntryOffset(long position, string library, string function);
+        void FixConstantDataOffset(long position, byte[] data);
+        void FixConstantDataAddress(long position, byte[] data);
+        void FixDataOffset(long position, string identifier, int length = 8);
+        void FixFunctionOffset(long position, string identifier);
+        void FixFunctionAddress(long position, string identifier);
         void Insert(long position, int count);
         void CopyTo(IAddressFixer other, long offset);
     }

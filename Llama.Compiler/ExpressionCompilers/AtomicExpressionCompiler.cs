@@ -36,7 +36,10 @@
             if (!double.TryParse(expression.Token.RawText, out var result))
                 throw new BadLiteralException(expression.Token.RawText);
 
-            return new ExpressionResult(Constants.DoubleType, (fixer, gen) => fixer.FixConstantDataOffset(gen, BitConverter.GetBytes(result)));
+            return new ExpressionResult(
+                Constants.DoubleType,
+                (fixer, gen) => fixer.FixConstantDataOffset(gen.StreamPosition, BitConverter.GetBytes(result))
+            );
         }
 
         private static ExpressionResult CompileIntegerLiteral(AtomicExpression expression)
@@ -46,7 +49,7 @@
 
             return new ExpressionResult(
                 GetMostNarrowSignedType(result),
-                (fixer, gen) => fixer.FixConstantDataOffset(gen, BitConverter.GetBytes(result))
+                (fixer, gen) => fixer.FixConstantDataOffset(gen.StreamPosition, BitConverter.GetBytes(result))
             );
         }
 
@@ -71,7 +74,7 @@
             var literalBytes = Encoding.ASCII.GetBytes(literalContent + "\0");
             var targetRegister = target.MakeFor(Constants.CstrType);
             codeGen.LeaFromDereferenced4(targetRegister, Constants.DummyOffsetInt);
-            fixer.FixConstantDataOffset(codeGen, literalBytes);
+            fixer.FixConstantDataOffset(codeGen.StreamPosition, literalBytes);
             return new ExpressionResult(Constants.CstrType, targetRegister);
         }
 
@@ -84,7 +87,10 @@
             }
 
             // it should be a function pointer
-            return new ExpressionResult(Constants.FunctionPointerType, (fixer, gen) => fixer.FixFunctionAddress(codeGen, expression.Token.RawText));
+            return new ExpressionResult(
+                Constants.FunctionPointerType,
+                (fixer, gen) => fixer.FixFunctionAddress(codeGen.StreamPosition, expression.Token.RawText)
+            );
         }
 
         private static Type GetMostNarrowSignedType(long value)
