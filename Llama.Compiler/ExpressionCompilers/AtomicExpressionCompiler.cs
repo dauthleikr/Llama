@@ -87,10 +87,25 @@
             }
 
             // it should be a function pointer
-            return new ExpressionResult(
-                Constants.FunctionPointerType,
-                (fixer, gen) => fixer.FixFunctionAddress(codeGen.StreamPosition, expression.Token.RawText)
-            );
+            var identifier = expression.Token.RawText;
+            var import = scope.GetFunctionImport(identifier);
+            if (import != null) // if it's an import, resolve with IAT offset
+            {
+                return new ExpressionResult(
+                    Constants.FunctionPointerType,
+                    (fixer, gen) => fixer.FixIATEntryOffset(codeGen.StreamPosition, import.LibraryName.RawText, identifier)
+                );
+            }
+
+            if (scope.GetFunctionDeclaration(identifier) != null) // if it's another function, resolve with code offset
+            {
+                return new ExpressionResult(
+                    Constants.FunctionPointerType,
+                    (fixer, gen) => fixer.FixFunctionOffset(codeGen.StreamPosition, identifier)
+                );
+            }
+
+            throw new UnknownIdentifierException($"Cannot resolve identifier \"{identifier}\"");
         }
 
         private static Type GetMostNarrowSignedType(long value)

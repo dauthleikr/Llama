@@ -14,7 +14,7 @@
 
         public Compiler(ICompilationContext context) => _context = context ?? throw new ArgumentNullException(nameof(context));
 
-        public long AddFunction(FunctionImplementation function, IEnumerable<FunctionDeclaration> declarations)
+        public long AddFunction(FunctionImplementation function, IEnumerable<FunctionImport> imports, IEnumerable<FunctionDeclaration> declarations)
         {
             if (function == null)
                 throw new ArgumentNullException(nameof(function));
@@ -26,7 +26,7 @@
                 Enumerable.Repeat((byte)0xCC, (int)(16 - _codeGen.StreamPosition % 16)).ToArray()
             ); // 16-byte align function with int3 breakpoints
 
-            var scope = FunctionScope.FromBlock(function, declarations);
+            var scope = FunctionScope.FromBlock(function, imports, declarations);
             var storageManager = new StorageManager(scope);
 
             var prologuePosition = _codeGen.StreamPosition;
