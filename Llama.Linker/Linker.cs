@@ -182,7 +182,7 @@
             {
                 var offset = (int)(rdataOffset - constDataFix.Position + rdataPtr);
                 BitConverter.GetBytes(offset).CopyTo(codeBuffer.Slice((int)constDataFix.Position - 4, 4));
-                constDataFix.ConstData.CopyTo(rdataBuffer.Slice(rdataPtr, 4));
+                constDataFix.ConstData.CopyTo(rdataBuffer.Slice(rdataPtr));
                 rdataPtr = Round.Up(rdataPtr + constDataFix.ConstData.Length, ForcedDataAlignment);
             }
 
@@ -190,7 +190,7 @@
             {
                 var rva = rdataRVA + rdataPtr;
                 BitConverter.GetBytes(rva).CopyTo(codeBuffer.Slice((int)constDataFix.Position - 8, 8));
-                constDataFix.ConstData.CopyTo(rdataBuffer.Slice(rdataPtr, 8));
+                constDataFix.ConstData.CopyTo(rdataBuffer.Slice(rdataPtr));
                 rdataPtr = Round.Up(rdataPtr + constDataFix.ConstData.Length, ForcedDataAlignment);
             }
 
