@@ -36,16 +36,12 @@
 
             switch (type.PrimitiveType)
             {
-                case "long":
-                case "int":
-                case "short":
-                case "sbyte":
-                case "byte":
-                case "cstr":
-                    return true;
+                case "float":
+                case "double":
+                    return false;
             }
 
-            return false;
+            return true;
         }
 
         private static bool CanPromote(string targetType, string sourceType)
