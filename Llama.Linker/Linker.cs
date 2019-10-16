@@ -174,7 +174,7 @@
             foreach (var iatOffsetFix in _iatOffsetFixes) // Fix references to IAT functions
             {
                 var functionOffsetCode = peResult.GetIATEntryOffsetToStartOfCode(iatOffsetFix.Library, iatOffsetFix.Function);
-                var rva = (int)(iatOffsetFix.Position - functionOffsetCode);
+                var rva = (int)(functionOffsetCode - iatOffsetFix.Position);
                 BitConverter.GetBytes(rva).CopyTo(codeBuffer.Slice((int)iatOffsetFix.Position - 4, 4));
             }
 
