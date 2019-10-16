@@ -23,7 +23,7 @@
 
             _codeGen.Write(0xCC);
             _codeGen.Write(
-                Enumerable.Repeat((byte)0xCC, (int)(_codeGen.StreamPosition % 16)).ToArray()
+                Enumerable.Repeat((byte)0xCC, (int)(16 - _codeGen.StreamPosition % 16)).ToArray()
             ); // 16-byte align function with int3 breakpoints
 
             var scope = FunctionScope.FromBlock(function, declarations);
@@ -36,6 +36,7 @@
             _codeGen.InsertCode(_context.AddressLinker, prologuePosition, gen => storageManager.CreatePrologue(gen));
             storageManager.CreateEpilogue(_codeGen);
             _codeGen.Ret();
+            _context.AddressLinker.ResolveFunctionFixes(function.Declaration.Identifier.RawText, prologuePosition);
             return prologuePosition;
         }
 
