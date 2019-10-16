@@ -170,7 +170,7 @@
                 }
                 else // Remaining parameters are passed on the stack
                 {
-                    var tempVolatile = parameterResult.GetUnoccupiedVolatile(parameterResult.ValueType.IsIntegerRegisterType());
+                    var tempVolatile = parameterResult.GetUnoccupiedVolatile(parameterResult.ValueType);
                     parameterResult.GenerateMoveTo(tempVolatile, codeGen, addressFixer);
                     var stackReference = new ExpressionResult(
                         parameterResult.ValueType,
