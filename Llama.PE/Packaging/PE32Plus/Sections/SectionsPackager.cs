@@ -45,20 +45,29 @@
             foreach (var otherSection in param.OtherSections)
                 sectionHeaders.Add(WriteAndCreateHeader(peFile, otherSection, param.FileAlignment, param.SectionAlignment, ref rva));
 
-            var relocPackage = _relocPackager.Package(CreateRelocInfo(param, sectionHeaders));
-            var relocSection = WriteAndCreateHeader(peFile, relocPackage, param.FileAlignment, param.SectionAlignment, ref rva);
-            sectionHeaders.Add(relocSection);
+            var relocInfo = CreateRelocInfo(param, sectionHeaders);
+            ImageDataDirectory relocDataDirectory;
+            if (relocInfo.Relocations.Size == 0)
+            {
+                relocDataDirectory = new ImageDataDirectory();
+            }
+            else
+            {
+                var relocPackage = _relocPackager.Package(relocInfo);
+                var relocSection = WriteAndCreateHeader(peFile, relocPackage, param.FileAlignment, param.SectionAlignment, ref rva);
+                sectionHeaders.Add(relocSection);
+                relocDataDirectory = new ImageDataDirectory
+                {
+                    VirtualAddress = relocSection.VirtualAddress,
+                    Size = relocPackage.RelocationDirectorySize
+                };
+            }
 
             peFile.Position = param.FileOffsetAtSectionsHeader;
             var structWriter = new StreamStructReaderWriter(peFile);
             structWriter.WriteArray(sectionHeaders.ToArray());
             Debug.Assert(peFile.Position <= sectionDataStart, "Section headers are writing into section data");
 
-            var relocDataDirectory = new ImageDataDirectory
-            {
-                VirtualAddress = relocSection.VirtualAddress,
-                Size = relocPackage.RelocationDirectorySize
-            };
             return new SectionsResult(
                 peFile.ToArray().Skip((int)param.FileOffsetAtSectionsHeader).ToArray(),
                 sectionHeaders,
