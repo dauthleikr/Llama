@@ -50,7 +50,7 @@
             {
                 case "int" when targetType == "long":
                 case "short" when targetType == "int" || targetType == "long":
-                case "byte" when targetType == "short" || targetType == "int" || targetType == "long":
+                case "sbyte" when targetType == "short" || targetType == "int" || targetType == "long":
                     return true;
                 default:
                     return false;
