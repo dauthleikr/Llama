@@ -33,6 +33,7 @@
             var linker = (Linker)compilationContext.AddressLinker;
 
             var pe32PlusExeBuilder = new ExecutableBuilder();
+            
             linker.LinkPreBuild(pe32PlusExeBuilder);
 
             var mainOffset = linker.GetCodeOffsetOfKnownFunction("main");
@@ -43,8 +44,8 @@
             }
 
             var peResult = pe32PlusExeBuilder.Build((uint)codeBlob.Length, (uint)mainOffset);
-            linker.LinkPostBuild(peResult);
             codeBlob.CopyTo(peResult.GetCodeSectionBuffer());
+            linker.LinkPostBuild(peResult);
 
             using var fileStream = File.Open(Path.ChangeExtension(sourceFilePath, "exe"), FileMode.Create);
             peResult.Finish(fileStream);
