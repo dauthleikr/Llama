@@ -59,13 +59,14 @@
 
         public int GetCalleeParameterOffset(int index)
         {
-            var offset = _calleeParameterSpace - (index + 1) * 8;
+            var offset = index * 8;
             if (offset < 0)
                 throw new ArgumentException(
                     $"{nameof(FunctionScope)}: {nameof(GetCalleeParameterOffset)}: Cannot get paramter for index {index} (bad index)"
                 );
             return offset;
         }
+
 
         public int GetLocalOffset(string identifier) => _localToOffset[identifier];
 
