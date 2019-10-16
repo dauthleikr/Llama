@@ -54,7 +54,7 @@
             _calleeParameterSpace = calleeParameterSpace;
             _functionDeclarations = declarations.ToDictionary(item => item.Identifier.RawText, item => item);
             _functionImports = imports.ToDictionary(item => item.Declaration.Identifier.RawText, item => item);
-            TotalStackSpace = _localToOffset.Any() ? _localToOffset.Values.Max() : 0;
+            TotalStackSpace = calleeParameterSpace + (_localToOffset.Any() ? _localToOffset.Values.Max() : 0);
         }
 
         public int GetCalleeParameterOffset(int index)

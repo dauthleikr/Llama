@@ -36,6 +36,7 @@
             _codeGen.InsertCode(_context.AddressLinker, prologuePosition, gen => storageManager.CreatePrologue(gen));
             storageManager.CreateEpilogue(_codeGen);
             _codeGen.Ret();
+
             _context.AddressLinker.ResolveFunctionFixes(function.Declaration.Identifier.RawText, prologuePosition);
             return prologuePosition;
         }
