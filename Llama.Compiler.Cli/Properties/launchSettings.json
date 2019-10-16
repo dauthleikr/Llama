@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Llama.Compiler.Cli": {
+      "commandName": "Project",
+      "commandLineArgs": "SampleProgram.llama"
+    }
+  }
+}
