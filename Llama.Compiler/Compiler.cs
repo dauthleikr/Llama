@@ -14,7 +14,7 @@
 
         public Compiler(ICompilationContext context) => _context = context ?? throw new ArgumentNullException(nameof(context));
 
-        public void AddFunction(FunctionImplementation function, IEnumerable<FunctionDeclaration> declarations)
+        public long AddFunction(FunctionImplementation function, IEnumerable<FunctionDeclaration> declarations)
         {
             if (function == null)
                 throw new ArgumentNullException(nameof(function));
@@ -36,6 +36,7 @@
             _codeGen.InsertCode(_context.AddressLinker, prologuePosition, gen => storageManager.CreatePrologue(gen));
             storageManager.CreateEpilogue(_codeGen);
             _codeGen.Ret();
+            return prologuePosition;
         }
 
         private void CompileEntryPointPreCode()
