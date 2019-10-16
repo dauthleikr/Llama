@@ -1,0 +1,6 @@
+﻿import("user32.dll") void MessageBoxA(int hwnd, cstr title, cstr text, int type)
+
+void main()
+{
+	MessageBoxA(0, "Hello Llama", "What sorcery is this?", 0);
+}

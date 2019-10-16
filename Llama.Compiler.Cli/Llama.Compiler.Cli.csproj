@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Llama.Compiler\Llama.Compiler.csproj" />
+    <ProjectReference Include="..\Llama.Linker\Llama.Linker.csproj" />
+    <ProjectReference Include="..\Llama.Parser\Llama.Parser.csproj" />
+    <ProjectReference Include="..\Llama.PE\Llama.PE.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="SampleProgram.llama">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
