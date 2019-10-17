@@ -350,7 +350,7 @@
 
         private void GenerateMoveToValue(Register register, CodeGen codeGen)
         {
-            if (register == Value)
+            if (register.IsSameRegister(Value))
                 return;
 
             if (!register.FloatingPoint && !Value.FloatingPoint)
