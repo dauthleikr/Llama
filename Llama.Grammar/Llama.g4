@@ -14,11 +14,14 @@ whileControl:
 forControl:
 	For OpenParanthesis declaration SemiColon expression SemiColon expression CloseParanthesis statementAny;
 
+returnStatement:
+	Return expression?;
+
 statementAny: (statementSingle | statementBlock);
 
 statementBlock: OpenBraces statementSingle* CloseBraces;
 
-statementSingle: (declaration | expression) SemiColon
+statementSingle: (declaration | returnStatement | expression) SemiColon
 	| ifControl
 	| whileControl
 	| forControl;
@@ -88,6 +91,7 @@ If: 'if';
 Else: 'else';
 While: 'while';
 For: 'for';
+Return: 'return';
 PrimitiveType:
 	'void'
 	| 'int'

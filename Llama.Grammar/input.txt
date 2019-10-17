@@ -1,12 +1,13 @@
 void main()
 {
     int num = 10;
-    while(num)
+    while(num == 10)
     {
         num = <int>(num - 1);
         ShowInfoBox("Hi", "dood");
     }
     int[] arr = new int(123 - 3);
+    return;
 }
 
 import("user32.dll") void MessageBoxA(int hwnd, cstr title, cstr text, int type)
@@ -14,4 +15,5 @@ import("user32.dll") void MessageBoxA(int hwnd, cstr title, cstr text, int type)
 void ShowInfoBox(cstr title, cstr text)
 {
     MessageBoxA(0, title, text, 0);
+    return 123;
 }
