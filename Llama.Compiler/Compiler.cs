@@ -36,7 +36,7 @@
             if (function.Declaration.Identifier.RawText == "main")
                 CompileEntryPointPreCode();
             _context.CompileStatement(function.Body.StatementAsBlock(), _codeGen, storageManager, scope);
-            _codeGen.InsertCode(_context.AddressLinker, prologuePosition, gen => storageManager.CreatePrologue(gen));
+            _codeGen.InsertCode(_context.AddressLinker, prologuePosition, gen => storageManager.CreatePrologue(gen, function.Declaration));
             storageManager.CreateEpilogue(_codeGen);
             _codeGen.Ret();
 
