@@ -52,6 +52,6 @@
             _context.AddressLinker.FixDataOffset(_codeGen.StreamPosition, Constants.HeapHandleIdentifier);
         }
 
-        public ReadOnlySpan<byte> Finish() => _codeGen.GetDataSpan();
+        public ReadOnlySpan<byte> Finish() => _codeGen.GetBufferSpan();
     }
 }

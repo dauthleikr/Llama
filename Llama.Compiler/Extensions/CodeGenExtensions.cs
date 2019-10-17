@@ -1,6 +1,7 @@
 ﻿namespace Llama.Compiler.Extensions
 {
     using System;
+    using Parser.Nodes;
     using spit;
 
     public static class CodeGenExtensions
@@ -22,8 +23,8 @@
         {
             var insertCode = new CodeGen();
             insertAction(insertCode);
-            myFixer.Insert(position, insertCode.GetDataSpan().Length);
-            codeGen.Insert(insertCode.GetDataSpan(), position);
+            myFixer.Insert(position, insertCode.GetBufferSpan().Length);
+            codeGen.Insert(insertCode.GetBufferSpan(), position);
         }
     }
 }

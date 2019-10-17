@@ -89,21 +89,21 @@
         public void CopyTo(IAddressFixer other, long offset)
         {
             foreach (var fixup in _constDataOffsetFixes)
-                other.FixConstantDataOffset(fixup.Position, fixup.ConstData);
+                other.FixConstantDataOffset(fixup.Position + offset, fixup.ConstData);
             foreach (var fixup in _constDataAddressFixes)
-                other.FixConstantDataAddress(fixup.Position, fixup.ConstData);
+                other.FixConstantDataAddress(fixup.Position + offset, fixup.ConstData);
             foreach (var fixup in _iatOffsetFixes)
-                other.FixIATEntryOffset(fixup.Position, fixup.Library, fixup.Function);
+                other.FixIATEntryOffset(fixup.Position + offset, fixup.Library, fixup.Function);
             foreach (var fixup in _functionAddressFixes)
-                other.FixFunctionAddress(fixup.Position, fixup.Function);
+                other.FixFunctionAddress(fixup.Position + offset, fixup.Function);
             foreach (var fixup in _functionOffsetFixes)
-                other.FixFunctionOffset(fixup.Position, fixup.Function);
+                other.FixFunctionOffset(fixup.Position + offset, fixup.Function);
             foreach (var fixup in _resolvedFunctionFixes)
-                other.ResolveFunctionFixes(fixup.Function, fixup.Position);
+                other.ResolveFunctionFixes(fixup.Function, fixup.Position + offset);
             foreach (var (identifier, (length, positions)) in _dataOffsetFixes)
             {
                 foreach (var fixupPosition in positions)
-                    other.FixDataOffset(fixupPosition, identifier, length);
+                    other.FixDataOffset(fixupPosition + offset, identifier, length);
             }
         }
 
