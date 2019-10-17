@@ -18,9 +18,15 @@
             var startPos = codeGen.StreamPosition;
             var preferredRegisterCondition = new PreferredRegister(Register64.RAX);
             var whileConditionResult = context.CompileExpression(statement.Condition, codeGen, storageManager, preferredRegisterCondition, scope);
+            Constants.BoolType.AssertCanAssign(whileConditionResult.ValueType);
 
-            whileConditionResult.GenerateMoveTo(Register64.RAX, Constants.BoolType, codeGen, addressFixer);
-            codeGen.Test(Register32.EAX, Register32.EAX);
+            Register testRegister = Register32.EAX;
+            if (whileConditionResult.Kind == ExpressionResult.ResultKind.Value)
+                testRegister = whileConditionResult.Value;
+            else
+                whileConditionResult.GenerateMoveTo(testRegister, Constants.BoolType, codeGen, addressFixer);
+
+            codeGen.Test(testRegister, testRegister);
 
             var childContext = context.CreateChildContext();
             var bodyCodeGen = new CodeGen();
