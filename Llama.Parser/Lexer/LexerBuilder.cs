@@ -21,11 +21,13 @@
             public bool TryRead(string src, ref int pos, out Token result)
             {
                 for (var i = 0; i < _text.Length; i++)
+                {
                     if (_text[i] != src[pos + i])
                     {
                         result = default;
                         return false;
                     }
+                }
 
                 pos += _text.Length;
                 result = new Token(_kind, _textString);
@@ -68,26 +70,33 @@
         public static Lexer BuildLlamaLexer()
         {
             var builder = new LexerBuilder();
+
+            /*
+             * todo: bug: because the builder will always try to match in the given order, longer tokens
+             * that contain shorter tokens need to come first, or else it will always match the short token
+             * rework that logic sometimes.
+             */
+
+            builder.AddStaticToken(TokenKind.Equals, "==");
+            builder.AddStaticToken(TokenKind.NotEquals, "!=");
+            builder.AddStaticToken(TokenKind.GreaterEquals, ">=");
+            builder.AddStaticToken(TokenKind.SmallerEquals, "<=");
             builder.AddStaticToken(TokenKind.Assignment, "=");
+            builder.AddStaticToken(TokenKind.OpenAngularBracket, "<");
+            builder.AddStaticToken(TokenKind.CloseAngularBracket, ">");
+            builder.AddStaticToken(TokenKind.Not, "!");
+            builder.AddStaticToken(TokenKind.AddressOf, "&");
             builder.AddStaticToken(TokenKind.OpenParanthesis, "(");
             builder.AddStaticToken(TokenKind.CloseParanthesis, ")");
             builder.AddStaticToken(TokenKind.OpenBraces, "{");
             builder.AddStaticToken(TokenKind.CloseBraces, "}");
             builder.AddStaticToken(TokenKind.OpenSquareBracket, "[");
             builder.AddStaticToken(TokenKind.CloseSquareBracket, "]");
-            builder.AddStaticToken(TokenKind.OpenAngularBracket, "<");
-            builder.AddStaticToken(TokenKind.CloseAngularBracket, ">");
             builder.AddStaticToken(TokenKind.Comma, ",");
             builder.AddStaticToken(TokenKind.SemiColon, ";");
             builder.AddStaticToken(TokenKind.Pointer, "*");
             builder.AddStaticToken(TokenKind.Plus, "+");
             builder.AddStaticToken(TokenKind.Minus, "-");
-            builder.AddStaticToken(TokenKind.Equals, "==");
-            builder.AddStaticToken(TokenKind.NotEquals, "!=");
-            builder.AddStaticToken(TokenKind.GreaterEquals, ">=");
-            builder.AddStaticToken(TokenKind.SmallerEquals, "<=");
-            builder.AddStaticToken(TokenKind.Not, "!");
-            builder.AddStaticToken(TokenKind.AddressOf, "&");
             builder.AddStaticToken(TokenKind.New, "new");
             builder.AddStaticToken(TokenKind.Delete, "delete");
             builder.AddStaticToken(TokenKind.Import, "import");
