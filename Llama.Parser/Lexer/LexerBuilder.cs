@@ -104,6 +104,7 @@
             builder.AddStaticToken(TokenKind.Else, "else");
             builder.AddStaticToken(TokenKind.While, "while");
             builder.AddStaticToken(TokenKind.For, "for");
+            builder.AddStaticToken(TokenKind.Return, "return");
             builder.AddRegexToken(TokenKind.PrimitiveType, new Regex("(void|int|long|short|byte|sbyte|cstr|float|double)", RegexOptions.Compiled));
             builder.AddRegexToken(TokenKind.StringLiteral, new Regex("\"[^\"]*\"", RegexOptions.Compiled));
             builder.AddRegexToken(TokenKind.IntegerLiteral, new Regex("[0-9]+[0-9_]*", RegexOptions.Compiled));
