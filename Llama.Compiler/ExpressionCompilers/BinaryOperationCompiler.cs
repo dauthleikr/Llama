@@ -37,7 +37,7 @@
                         scope,
                         addressFixer,
                         context,
-                        codeGen.Je
+                        codeGen.Jne // Jz
                     );
                 case TokenKind.NotEquals:
                     return CompileComparison(
@@ -49,7 +49,7 @@
                         scope,
                         addressFixer,
                         context,
-                        codeGen.Je,
+                        codeGen.Jne,
                         true
                     );
                 case TokenKind.OpenAngularBracket:
@@ -214,11 +214,11 @@
             mov1CodeGen.Mov(targetRegister.AsR32(), inverted ? 0 : 1);
             var mov0CodeGen = new CodeGen();
             mov0CodeGen.Mov(targetRegister.AsR32(), inverted ? 1 : 0);
-            mov0CodeGen.Jmp(mov1CodeGen.GetDataSpan().Length);
+            mov0CodeGen.Jmp(mov1CodeGen.GetBufferSpan().Length);
 
-            comparisonJmp((sbyte)mov0CodeGen.GetDataSpan().Length);
-            codeGen.Write(mov0CodeGen.GetDataSpan());
-            codeGen.Write(mov1CodeGen.GetDataSpan());
+            comparisonJmp((sbyte)mov0CodeGen.GetBufferSpan().Length);
+            codeGen.Write(mov0CodeGen.GetBufferSpan());
+            codeGen.Write(mov1CodeGen.GetBufferSpan());
             return new ExpressionResult(Constants.BoolType, targetRegister);
         }
 

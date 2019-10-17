@@ -67,7 +67,6 @@
             return offset;
         }
 
-
         public int GetLocalOffset(string identifier) => _localToOffset[identifier];
 
         public Type GetLocalType(string identifier) => _scope.GetLocalType(identifier);
@@ -157,7 +156,7 @@
                     {
                         var forScopeStatements = new[]
                             {
-                                @for.Instruction
+                                @for.Variable
                             }.Concat(@for.Instruction.StatementAsBlock().Statements)
                             .ToArray();
                         yield return new CodeBlock(forScopeStatements);

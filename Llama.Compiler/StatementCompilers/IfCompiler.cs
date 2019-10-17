@@ -23,7 +23,7 @@
             var childContext = context.CreateChildContext();
             var bodyCodeGen = new CodeGen();
             childContext.CompileStatement(statement.Instruction.StatementAsBlock(), bodyCodeGen, storageManager, scope);
-            var bodySpan = bodyCodeGen.GetDataSpan();
+            var bodySpan = bodyCodeGen.GetBufferSpan();
 
             if (bodySpan.Length <= sbyte.MaxValue)
                 codeGen.Je((sbyte)bodySpan.Length);
