@@ -219,7 +219,7 @@
             comparisonJmp((sbyte)mov0CodeGen.GetDataSpan().Length);
             codeGen.Write(mov0CodeGen.GetDataSpan());
             codeGen.Write(mov1CodeGen.GetDataSpan());
-            return new ExpressionResult(type, targetRegister);
+            return new ExpressionResult(Constants.BoolType, targetRegister);
         }
 
         private static (Register first, ExpressionResult second, Type type) PrepareBinaryExpression(
