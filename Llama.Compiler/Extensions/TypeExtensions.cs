@@ -160,6 +160,8 @@
                     return 4;
                 case "double":
                     return 8;
+                case "bool":
+                    return 1;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
