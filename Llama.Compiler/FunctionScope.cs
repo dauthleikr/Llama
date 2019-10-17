@@ -4,7 +4,6 @@
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
-    using BinaryUtils;
     using Extensions;
     using Parser.Nodes;
     using spit;
@@ -34,7 +33,6 @@
         }
 
         public int TotalStackSpace { get; }
-        private readonly int _calleeParameterSpace;
         private readonly Dictionary<string, FunctionDeclaration> _functionDeclarations;
         private readonly Dictionary<string, FunctionImport> _functionImports;
         private readonly Dictionary<string, int> _localToOffset;
@@ -51,7 +49,6 @@
                 throw new ArgumentNullException(nameof(declarations));
 
             _localToOffset = localToOffset ?? throw new ArgumentNullException(nameof(localToOffset));
-            _calleeParameterSpace = calleeParameterSpace;
             _functionDeclarations = declarations.ToDictionary(item => item.Identifier.RawText, item => item);
             _functionImports = imports.ToDictionary(item => item.Declaration.Identifier.RawText, item => item);
             TotalStackSpace = calleeParameterSpace + (_localToOffset.Any() ? _localToOffset.Values.Max() : 0);
@@ -61,9 +58,12 @@
         {
             var offset = index * 8;
             if (offset < 0)
+            {
                 throw new ArgumentException(
                     $"{nameof(FunctionScope)}: {nameof(GetCalleeParameterOffset)}: Cannot get paramter for index {index} (bad index)"
                 );
+            }
+
             return offset;
         }
 
@@ -99,17 +99,18 @@
 
             var localToOffset = new Dictionary<string, int>();
 
-            void DeclareLocal(Type type, string name, ref int offset)
+            void DeclareLocal(string name, ref int offset)
             {
                 if (localToOffset.ContainsKey(name))
                     throw new Exception($"Cannot redefine {name}");
                 localToOffset[name] = offset;
-                offset += type.SizeOf();
+                offset += 8;
             }
 
+            // todo: use (shadow) stack space provided by caller for parameters, for now they are just defined as locals
             var offset = 0;
             foreach (var parameter in function.Declaration.Parameters)
-                DeclareLocal(parameter.ParameterType, parameter.ParameterIdentifier.RawText, ref offset);
+                DeclareLocal(parameter.ParameterIdentifier.RawText, ref offset); 
 
             void SetLocalOffsets(int startOffset, IStatement code)
             {
@@ -121,16 +122,7 @@
                             SetLocalOffsets(startOffset, childBlock);
                             break;
                         case Declaration declaration:
-                            {
-                                var declarationName = declaration.Identifier.RawText;
-                                if (localToOffset.ContainsKey(declarationName))
-                                    throw new Exception($"Cannot redefine {declarationName}");
-
-                                if (!declaration.Type.IsIntegerRegisterType())
-                                    startOffset = Round.Up(startOffset, 16); // todo: use wasted space
-                                localToOffset[declarationName] = startOffset;
-                                startOffset += 8; //declaration.Type.SizeOf();
-                            }
+                            DeclareLocal(declaration.Identifier.RawText, ref startOffset);
                             break;
                         default:
                             Debug.Fail($"{nameof(GetDeclarationsAndBlocks)} returned neither declaration nor block");
@@ -147,9 +139,12 @@
             }
 
             var calleeParameterSpace = maxCalleeParameters * 8;
-
             SetLocalOffsets(calleeParameterSpace, function.Body);
-            return new FunctionScope(localToOffset, calleeParameterSpace, imports, declarations);
+
+            var scope = new FunctionScope(localToOffset, calleeParameterSpace, imports, declarations);
+            foreach (var parameter in function.Declaration.Parameters)
+                scope.DefineLocal(parameter.ParameterIdentifier.RawText, parameter.ParameterType);
+            return scope;
         }
 
         private static IEnumerable<IStatement> GetDeclarationsAndBlocks(IStatement block)
@@ -159,14 +154,14 @@
                 switch (statement)
                 {
                     case For @for:
-                        {
-                            var forScopeStatements = new[]
-                                {
+                    {
+                        var forScopeStatements = new[]
+                            {
                                 @for.Instruction
                             }.Concat(@for.Instruction.StatementAsBlock().Statements)
-                                .ToArray();
-                            yield return new CodeBlock(forScopeStatements);
-                        }
+                            .ToArray();
+                        yield return new CodeBlock(forScopeStatements);
+                    }
                         break;
                     case If @if:
                         yield return @if.Instruction.StatementAsBlock();
