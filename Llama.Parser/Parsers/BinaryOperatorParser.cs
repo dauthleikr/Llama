@@ -9,7 +9,7 @@
             if (BinaryOperator.IsTokenKindValid(context.NextCodeToken.Kind))
                 return new BinaryOperator(context.ReadCodeToken());
 
-            context.Panic($"Expected {nameof(BinaryOperator)}");
+            context.Panic($"Expected {nameof(BinaryOperator)}, but got: {context.NextCodeToken}");
             return null;
         }
     }

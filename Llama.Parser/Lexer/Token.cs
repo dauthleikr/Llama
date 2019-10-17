@@ -30,5 +30,7 @@
         public static bool operator ==(Token left, Token right) => left.Equals(right);
 
         public static bool operator !=(Token left, Token right) => !left.Equals(right);
+
+        public override string ToString() => $"{{ {nameof(Kind)}: {Kind}, {nameof(RawText)} = {RawText}}}";
     }
 }

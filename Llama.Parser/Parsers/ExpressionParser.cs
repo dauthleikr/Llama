@@ -44,7 +44,7 @@
             if (AtomicExpression.IsTokenKindValid(context.NextCodeToken.Kind))
                 return new AtomicExpression(context.ReadCodeToken());
 
-            context.Panic($"Expected {nameof(AtomicExpression)}");
+            context.Panic($"Expected {nameof(AtomicExpression)}, but got: {context.NextCodeToken}");
             return null;
         }
 
