@@ -8,29 +8,40 @@
     {
         public IStatement Read(IParseContext context)
         {
-            switch (context.NextCodeToken.Kind)
+            return context.NextCodeToken.Kind switch
             {
-                case TokenKind.If:
-                    return ReadIf(context);
-                case TokenKind.While:
-                    return ReadWhile(context);
-                case TokenKind.For:
-                    return ReadFor(context);
-                case TokenKind.PrimitiveType:
-                {
-                    var declaration = context.ReadNode<Declaration>();
-                    context.ReadOrPanic(TokenKind.SemiColon);
-                    return declaration;
-                }
-                case TokenKind.OpenBraces:
-                    return ReadBlock(context);
-                default:
-                {
-                    var expression = context.ReadNode<IExpression>();
-                    context.ReadOrPanic(TokenKind.SemiColon);
-                    return expression;
-                }
-            }
+                TokenKind.If            => ReadIf(context),
+                TokenKind.While         => ReadWhile(context),
+                TokenKind.For           => ReadFor(context),
+                TokenKind.Return        => ReadReturn(context),
+                TokenKind.PrimitiveType => ReadDeclaration(context),
+                TokenKind.OpenBraces    => ReadBlock(context),
+                _                       => ReadExpression(context)
+            };
+        }
+
+        private static IExpression ReadExpression(IParseContext context)
+        {
+            var expression = context.ReadNode<IExpression>();
+            context.ReadOrPanic(TokenKind.SemiColon);
+            return expression;
+        }
+
+        private static Declaration ReadDeclaration(IParseContext context)
+        {
+            var declaration = context.ReadNode<Declaration>();
+            context.ReadOrPanic(TokenKind.SemiColon);
+            return declaration;
+        }
+
+        private static IStatement ReadReturn(IParseContext context)
+        {
+            context.ReadOrPanic(TokenKind.Return);
+            if (context.NextCodeToken.Kind == TokenKind.SemiColon)
+                return new Return();
+            var returnExpression = context.ReadNode<IExpression>();
+            context.ReadOrPanic(TokenKind.Return);
+            return new Return(returnExpression);
         }
 
         private IStatement ReadBlock(IParseContext context)

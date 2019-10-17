@@ -30,6 +30,7 @@
         Else,
         While,
         For,
+        Return,
         PrimitiveType,
         StringLiteral,
         IntegerLiteral,
