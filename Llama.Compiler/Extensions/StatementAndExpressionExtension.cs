@@ -42,7 +42,7 @@
                             yield return expression;
                         break;
                     case While @while:
-                        foreach (var expression in GetExpressions(@while))
+                        foreach (var expression in GetExpressions(@while.Condition))
                             yield return expression;
                         break;
                 }
@@ -108,7 +108,7 @@
                         yield return @for.Instruction;
                         if (@for.Instruction is CodeBlock forBlock)
                         {
-                            foreach (var codeBlockStatement in GetStatements(forBlock))
+                            foreach (var codeBlockStatement in GetStatements(new CodeBlock(forBlock.Statements)))
                                 yield return codeBlockStatement;
                         }
 
@@ -116,13 +116,13 @@
                     case If @if:
                         if (@if.Instruction is CodeBlock ifBlock)
                         {
-                            foreach (var codeBlockStatement in GetStatements(ifBlock))
+                            foreach (var codeBlockStatement in GetStatements(new CodeBlock(ifBlock.Statements)))
                                 yield return codeBlockStatement;
                         }
 
                         if (@if.ElseInstruction != null && @if.ElseInstruction is CodeBlock elseBlock)
                         {
-                            foreach (var codeBlockStatement in GetStatements(elseBlock))
+                            foreach (var codeBlockStatement in GetStatements(new CodeBlock(elseBlock.Statements)))
                                 yield return codeBlockStatement;
                         }
 
@@ -130,7 +130,7 @@
                     case While @while:
                         if (@while.Instruction is CodeBlock whileBlock)
                         {
-                            foreach (var codeBlockStatement in GetStatements(whileBlock))
+                            foreach (var codeBlockStatement in GetStatements(new CodeBlock(whileBlock.Statements)))
                                 yield return codeBlockStatement;
                         }
 
