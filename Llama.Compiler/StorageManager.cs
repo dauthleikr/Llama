@@ -3,11 +3,14 @@
     using System.Collections.Generic;
     using System.Linq;
     using BinaryUtils;
+    using Extensions;
+    using Parser.Nodes;
     using spit;
 
     public class StorageManager
     {
         private readonly HashSet<Register> _borrowedRegisters = new HashSet<Register>();
+        private readonly IScopeContext _functionScope;
         private readonly Stack<Storage> _registerStorageFloat = new Stack<Storage>();
         private readonly Stack<Storage> _registerStorageInt = new Stack<Storage>();
         private readonly Stack<Storage> _stackStorageFloat = new Stack<Storage>();
@@ -16,6 +19,7 @@
 
         public StorageManager(IScopeContext functionScope)
         {
+            _functionScope = functionScope;
             _stackNeededForFunction = functionScope.TotalStackSpace;
 
             _registerStorageInt.Push(new Storage(Register64.R15));
@@ -96,7 +100,7 @@
             }
         }
 
-        public void CreatePrologue(CodeGen codeGen)
+        public void CreatePrologue(CodeGen codeGen, FunctionDeclaration function)
         {
             var borrowedRegisters = _borrowedRegisters.Where(reg => !reg.FloatingPoint).OrderBy(reg => reg.AsR64()).ToArray();
             foreach (var register in borrowedRegisters)
@@ -114,8 +118,51 @@
             else
                 codeGen.Sub(Register64.RSP, totalStack);
 
+            MoveParametersToLocals(
+                codeGen,
+                function,
+                stackForFloatRegisters + 8
+            ); // todo: rework this. If we know the borrowedRegisters beforehand, this does not need to be done _here_
+
+
             foreach (var register in _borrowedRegisters.Where(reg => reg.FloatingPoint).OrderBy(reg => reg.AsFloat()))
                 codeGen.MovqToDereferenced(Register64.RSP, register.AsFloat(), totalStack -= 8);
+        }
+
+        private void MoveParametersToLocals(CodeGen codeGen, FunctionDeclaration function, int stackOffsetToParams)
+        {
+            static ExpressionResult MakeRegister(Type type, Register64 registerInt, XmmRegister registerFloat) =>
+                new ExpressionResult(
+                    type,
+                    type.MakeRegisterWithCorrectSize(registerInt, registerFloat)
+                );
+
+            for (var index = 0; index < function.Parameters.Length; index++)
+            {
+                var parameter = function.Parameters[index];
+                var target = _functionScope.GetLocalReference(parameter.ParameterIdentifier.RawText);
+                var source = index switch
+                {
+                    0 => MakeRegister(parameter.ParameterType, Register64.RCX, XmmRegister.XMM0),
+                    1 => MakeRegister(parameter.ParameterType, Register64.RDX, XmmRegister.XMM1),
+                    2 => MakeRegister(parameter.ParameterType, Register64.R8, XmmRegister.XMM2),
+                    3 => MakeRegister(parameter.ParameterType, Register64.R9, XmmRegister.XMM3),
+                    _ => new ExpressionResult(
+                        parameter.ParameterType,
+                        Register64.RSP,
+                        stackOffsetToParams + (index - 4) * 8,
+                        Segment.SS
+                    )
+                };
+                if (source.Kind == ExpressionResult.ResultKind.Value)
+                    target.GenerateAssign(source.Value, codeGen, null);
+                else
+                {
+                    var tempRegister = parameter.ParameterType.MakeRegisterWithCorrectSize(Register64.RAX, XmmRegister.XMM4);
+                    source.GenerateMoveTo(tempRegister, codeGen, null);
+                    target.GenerateAssign(tempRegister, codeGen, null);
+                }
+            }
         }
 
         public void CreateEpilogue(CodeGen codeGen)
