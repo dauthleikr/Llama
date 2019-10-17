@@ -29,7 +29,7 @@
             ICompilationContext context
         )
         {
-            var parameterStorages = new Storage[4];
+            var parameterStorages = new Storage[Math.Min(expression.Parameters.Length, 4)];
 
             Type[] parameterTypes;
             FunctionDeclaration knownDeclaration = null;
@@ -98,7 +98,7 @@
             IReadOnlyList<Storage> parameterStorages
         )
         {
-            for (var i = 0; i < _parameterRegisters.Length; i++)
+            for (var i = 0; i < Math.Min(_parameterRegisters.Length, parameterStorages.Count); i++)
             {
                 var (intRegister, floatRegister) = _parameterRegisters[i];
                 var register = parameterTypes[i].MakeRegisterWithCorrectSize(intRegister, floatRegister);
