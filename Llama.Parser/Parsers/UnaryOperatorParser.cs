@@ -9,7 +9,7 @@
             if (UnaryOperator.IsTokenKindValid(context.NextCodeToken.Kind))
                 return new UnaryOperator(context.ReadCodeToken());
 
-            context.Panic($"Expected {nameof(UnaryOperator)}");
+            context.Panic($"Expected {nameof(UnaryOperator)}, but got: {context.NextCodeToken}");
             return null;
         }
     }

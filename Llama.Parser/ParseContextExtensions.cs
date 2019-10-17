@@ -8,7 +8,7 @@
         {
             if (context.NextCodeToken.Kind != kind)
             {
-                context.Panic($"Expected token of kind: {kind}");
+                context.Panic($"Expected token of kind: {kind}, but got: {context.NextCodeToken}");
                 return default;
             }
 
