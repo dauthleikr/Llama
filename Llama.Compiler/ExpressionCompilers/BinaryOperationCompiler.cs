@@ -37,7 +37,7 @@
                         scope,
                         addressFixer,
                         context,
-                        codeGen.Jne // Jz
+                        codeGen.Je
                     );
                 case TokenKind.NotEquals:
                     return CompileComparison(
@@ -49,7 +49,7 @@
                         scope,
                         addressFixer,
                         context,
-                        codeGen.Jne,
+                        codeGen.Je,
                         true
                     );
                 case TokenKind.OpenAngularBracket:
