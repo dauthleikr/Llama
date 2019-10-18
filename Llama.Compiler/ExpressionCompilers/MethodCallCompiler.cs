@@ -30,8 +30,9 @@
         )
         {
             var parameterStorages = new Storage[Math.Min(expression.Parameters.Length, 4)];
+            var parameterSourceTypes = new Type[expression.Parameters.Length];
+            Type[] parameterTargetTypes;
 
-            Type[] parameterTypes;
             FunctionDeclaration knownDeclaration = null;
             var isIATEntry = false;
             if (expression.Expression is AtomicExpression atomicExpression && atomicExpression.Token.Kind == TokenKind.Identifier)
@@ -46,15 +47,15 @@
 
                 if (knownDeclaration == null)
                     throw new UnknownIdentifierException($"Cannot resolve function signature for identifier: \"{identifier}\"");
-                parameterTypes = knownDeclaration.Parameters.Select(par => par.ParameterType).ToArray();
+                parameterTargetTypes = knownDeclaration.Parameters.Select(par => par.ParameterType).ToArray();
             }
             else
-                parameterTypes = new Type[expression.Parameters.Length];
+                parameterTargetTypes = parameterSourceTypes;
 
-            CompileAndStoreParameters(expression, codeGen, storageManager, scope, addressFixer, context, parameterTypes, parameterStorages);
+            CompileAndStoreParameters(expression, codeGen, storageManager, scope, addressFixer, context, parameterSourceTypes, parameterStorages);
 
             var functionPtr = CompileFunctionPtr(expression, target, codeGen, storageManager, scope, addressFixer, context);
-            PrepareParameters(codeGen, storageManager, scope, addressFixer, parameterTypes, parameterStorages);
+            PrepareParameters(codeGen, storageManager, scope, addressFixer, parameterTargetTypes, parameterSourceTypes, parameterStorages);
             CallPreparedFunction(codeGen, addressFixer, functionPtr, isIATEntry);
 
             var returnType = knownDeclaration?.ReturnType ?? Constants.LongType; // todo: better alternative if not known
@@ -94,21 +95,22 @@
             StorageManager storageManager,
             IScopeContext scope,
             IAddressFixer addressFixer,
-            IReadOnlyList<Type> parameterTypes,
+            IReadOnlyList<Type> parameterTargetTypes,
+            IReadOnlyList<Type> parameterSourceTypes,
             IReadOnlyList<Storage> parameterStorages
         )
         {
             for (var i = 0; i < Math.Min(_parameterRegisters.Length, parameterStorages.Count); i++)
             {
                 var (intRegister, floatRegister) = _parameterRegisters[i];
-                var register = parameterTypes[i].MakeRegisterWithCorrectSize(intRegister, floatRegister);
-                parameterStorages[i].AsExpressionResult(parameterTypes[i]).GenerateMoveTo(register, parameterTypes[i], codeGen, addressFixer);
+                var register = parameterTargetTypes[i].MakeRegisterWithCorrectSize(intRegister, floatRegister);
+                parameterStorages[i].AsExpressionResult(parameterSourceTypes[i]).GenerateMoveTo(register, parameterTargetTypes[i], codeGen, addressFixer);
                 storageManager.Release(parameterStorages[i]);
             }
 
             for (var i = _parameterRegisters.Length; i < parameterStorages.Count; i++)
             {
-                var parameterTemp = parameterStorages[i].AsExpressionResult(parameterTypes[i]);
+                var parameterTemp = parameterStorages[i].AsExpressionResult(parameterSourceTypes[i]);
                 if (parameterTemp.Kind == ExpressionResult.ResultKind.Value)
                     codeGen.MovToDereferenced(Register64.RSP, parameterTemp.Value, scope.GetCalleeParameterOffset(i - 4));
                 else
@@ -150,7 +152,7 @@
             IScopeContext scope,
             IAddressFixer addressFixer,
             ICompilationContext context,
-            IList<Type> parameterTypes,
+            IList<Type> parameterSourceTypes,
             IList<Storage> parameterStorages
         )
         {
@@ -158,9 +160,7 @@
             {
                 var parameter = expression.Parameters[i];
                 var parameterResult = context.CompileExpression(parameter, codeGen, storageManager, storageManager.MakePreferredRegister(), scope);
-
-                if (parameterTypes[i] == null)
-                    parameterTypes[i] = parameterResult.ValueType;
+                parameterSourceTypes[i] = parameterResult.ValueType;
 
                 if (i < 4) // First 4 parameters are passed as RCX, RDX, R8, R9
                 {
