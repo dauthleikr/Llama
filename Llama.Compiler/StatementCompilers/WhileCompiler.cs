@@ -26,7 +26,7 @@
 
             whileConditionResult.GenerateMoveTo(Register8.AL, Constants.BoolType, codeGen, addressFixer);
 
-            codeGen.TestAlWith0();
+            codeGen.Test(Register8.AL, Register8.AL);
 
             var childContext = context.CreateChildContext();
             var bodyCodeGen = new CodeGen();
