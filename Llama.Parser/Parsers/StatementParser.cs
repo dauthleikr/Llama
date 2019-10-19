@@ -10,13 +10,13 @@
         {
             return context.NextCodeToken.Kind switch
             {
-                TokenKind.If            => ReadIf(context),
-                TokenKind.While         => ReadWhile(context),
-                TokenKind.For           => ReadFor(context),
-                TokenKind.Return        => ReadReturn(context),
+                TokenKind.If => ReadIf(context),
+                TokenKind.While => ReadWhile(context),
+                TokenKind.For => ReadFor(context),
+                TokenKind.Return => ReadReturn(context),
                 TokenKind.PrimitiveType => ReadDeclaration(context),
-                TokenKind.OpenBraces    => ReadBlock(context),
-                _                       => ReadExpression(context)
+                TokenKind.OpenBraces => ReadBlock(context),
+                _ => ReadExpression(context)
             };
         }
 
@@ -37,10 +37,10 @@
         private static IStatement ReadReturn(IParseContext context)
         {
             context.ReadOrPanic(TokenKind.Return);
-            if (context.NextCodeToken.Kind == TokenKind.SemiColon)
-                return new Return();
-            var returnExpression = context.ReadNode<IExpression>();
-            context.ReadOrPanic(TokenKind.Return);
+            IExpression returnExpression = null;
+            if (context.NextCodeToken.Kind != TokenKind.SemiColon)
+                returnExpression = context.ReadNode<IExpression>();
+            context.ReadOrPanic(TokenKind.SemiColon);
             return new Return(returnExpression);
         }
 
