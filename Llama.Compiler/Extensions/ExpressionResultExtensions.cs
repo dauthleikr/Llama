@@ -18,6 +18,20 @@
             );
         }
 
+        public static void CmpTo(this ExpressionResult source, Register other, CodeGen codeGen, IAddressFixer fixer)
+        {
+            source.DereferenceFromRegister(
+                codeGen,
+                other,
+                fixer,
+                codeGen.Cmp,
+                codeGen.CmpToDereferenced,
+                codeGen.CmpToDereferenced2,
+                codeGen.CmpToDereferenced3,
+                codeGen.CmpToDereferenced4
+            );
+        }
+
         public static void ComisdTo(this ExpressionResult source, Register target, CodeGen codeGen, IAddressFixer fixer)
         {
             source.DereferenceToRegister(
