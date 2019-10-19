@@ -77,6 +77,9 @@
              * rework that logic sometimes.
              */
 
+            builder.AddRegexToken(TokenKind.LineComment, new Regex(@"//[^\n\r]*", RegexOptions.Compiled));
+            builder.AddRegexToken(TokenKind.BlockComment, new Regex(@"\/\*(\*(?!\/)|[^*])*\*\/", RegexOptions.Compiled));
+            builder.AddRegexToken(TokenKind.WhitespaceOrControl, new Regex(@"[\s\t\n\r]+", RegexOptions.Compiled));
             builder.AddStaticToken(TokenKind.Equals, "==");
             builder.AddStaticToken(TokenKind.NotEquals, "!=");
             builder.AddStaticToken(TokenKind.GreaterEquals, ">=");
@@ -111,9 +114,7 @@
             builder.AddRegexToken(TokenKind.IntegerLiteral, new Regex("[0-9]+[0-9_]*", RegexOptions.Compiled));
             builder.AddRegexToken(TokenKind.FloatLiteral, new Regex(@"([0-9]+[0-9_]*)?\.[0-9]+[0-9_]*", RegexOptions.Compiled));
             builder.AddRegexToken(TokenKind.Identifier, new Regex("[_A-Za-z][_A-Za-z0-9]*", RegexOptions.Compiled));
-            builder.AddRegexToken(TokenKind.WhitespaceOrControl, new Regex(@"[\s\t\n\r]+", RegexOptions.Compiled));
-            builder.AddRegexToken(TokenKind.LineComment, new Regex(@"//[^\n\r]*", RegexOptions.Compiled));
-            builder.AddRegexToken(TokenKind.BlockComment, new Regex(@"\/\*(\*(?!\/)|[^*])*\*\/", RegexOptions.Compiled));
+            
             return builder.Build();
         }
     }
