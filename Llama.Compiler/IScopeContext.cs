@@ -5,6 +5,7 @@
     public interface IScopeContext
     {
         int TotalStackSpace { get; }
+        string CurrentFunctionIdentifier { get; }
         int GetCalleeParameterOffset(int index);
         int GetLocalOffset(string identifier);
         Type GetLocalType(string identifier);

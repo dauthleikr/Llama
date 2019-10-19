@@ -37,6 +37,7 @@
                 CompileEntryPointPreCode();
             _context.CompileStatement(function.Body.StatementAsBlock(), _codeGen, storageManager, scope);
             _codeGen.InsertCode(_context.AddressLinker, prologuePosition, gen => storageManager.CreatePrologue(gen, function.Declaration));
+            _context.AddressLinker.ResolveFunctionEpilogueFixes(function.Declaration.Identifier.RawText, _codeGen.StreamPosition);
             storageManager.CreateEpilogue(_codeGen);
             _codeGen.Ret();
 

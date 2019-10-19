@@ -33,21 +33,29 @@
         }
 
         public int TotalStackSpace { get; }
+        public string CurrentFunctionIdentifier { get; }
+
         private readonly Dictionary<string, FunctionDeclaration> _functionDeclarations;
         private readonly Dictionary<string, FunctionImport> _functionImports;
         private readonly Dictionary<string, int> _localToOffset;
         private LocalScope _scope = new LocalScope();
 
         private FunctionScope(
+            FunctionDeclaration function,
             Dictionary<string, int> localToOffset,
             int calleeParameterSpace,
             IEnumerable<FunctionImport> imports,
             IEnumerable<FunctionDeclaration> declarations
         )
         {
+            if (function == null)
+                throw new ArgumentNullException(nameof(function));
+            if (imports == null)
+                throw new ArgumentNullException(nameof(imports));
             if (declarations == null)
                 throw new ArgumentNullException(nameof(declarations));
 
+            CurrentFunctionIdentifier = function.Identifier.RawText;
             _localToOffset = localToOffset ?? throw new ArgumentNullException(nameof(localToOffset));
             _functionDeclarations = declarations.ToDictionary(item => item.Identifier.RawText, item => item);
             _functionImports = imports.ToDictionary(item => item.Declaration.Identifier.RawText, item => item);
@@ -109,7 +117,7 @@
             // todo: use (shadow) stack space provided by caller for parameters, for now they are just defined as locals
             var offset = 0;
             foreach (var parameter in function.Declaration.Parameters)
-                DeclareLocal(parameter.ParameterIdentifier.RawText, ref offset); 
+                DeclareLocal(parameter.ParameterIdentifier.RawText, ref offset);
 
             void SetLocalOffsets(int startOffset, IStatement code)
             {
@@ -140,7 +148,7 @@
             var calleeParameterSpace = maxCalleeParameters * 8;
             SetLocalOffsets(calleeParameterSpace, function.Body);
 
-            var scope = new FunctionScope(localToOffset, calleeParameterSpace, imports, declarations);
+            var scope = new FunctionScope(function.Declaration, localToOffset, calleeParameterSpace, imports, declarations);
             foreach (var parameter in function.Declaration.Parameters)
                 scope.DefineLocal(parameter.ParameterIdentifier.RawText, parameter.ParameterType);
             return scope;

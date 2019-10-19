@@ -1,5 +1,6 @@
 ﻿namespace Llama.Compiler
 {
+    using System;
     using Parser.Nodes;
     using spit;
 
@@ -16,8 +17,13 @@
             AddressLinker = linkerFactory.Create();
         }
 
-        public void CompileStatement<T>(T statement, CodeGen codeGen, StorageManager storageManager, IScopeContext scope) where T : IStatement =>
-            _store.GetStatementCompiler<T>().Compile(statement, codeGen, storageManager, scope, AddressLinker, this);
+        public void CompileStatement<T>(T statement, CodeGen codeGen, StorageManager storageManager, IScopeContext scope) where T : IStatement
+        {
+            var compiler = _store.GetStatementCompiler<T>();
+            if (compiler == null)
+                throw new NotImplementedException($"{nameof(CompilationContext)}: I can not get a compiler for: {statement}");
+            compiler.Compile(statement, codeGen, storageManager, scope, AddressLinker, this);
+        }
 
         public ICompilationContext CreateChildContext() => new CompilationContext(_store, _linkerFactory);
 

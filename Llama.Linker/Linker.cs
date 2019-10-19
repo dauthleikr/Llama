@@ -15,9 +15,11 @@
         private readonly List<ConstDataFixup> _constDataOffsetFixes = new List<ConstDataFixup>();
         private readonly Dictionary<string, Tuple<int, List<long>>> _dataOffsetFixes = new Dictionary<string, Tuple<int, List<long>>>();
         private readonly List<FunctionFixup> _functionAddressFixes = new List<FunctionFixup>();
+        private readonly List<FunctionFixup> _functionEpilogueOffsetFixes = new List<FunctionFixup>();
         private readonly List<FunctionFixup> _functionOffsetFixes = new List<FunctionFixup>();
         private readonly List<IATFixup> _iatOffsetFixes = new List<IATFixup>();
 
+        private readonly List<FunctionFixup> _resolvedFunctionEpilogueFixes = new List<FunctionFixup>();
         private readonly List<FunctionFixup> _resolvedFunctionFixes = new List<FunctionFixup>();
 
         public void FixIATEntryOffset(long position, string library, string function)
@@ -53,9 +55,19 @@
             _functionAddressFixes.Add(new FunctionFixup(position, identifier));
         }
 
+        public void FixFunctionEpilogueOffset(long position, string identifier)
+        {
+            _functionEpilogueOffsetFixes.Add(new FunctionFixup(position, identifier));
+        }
+
         public void ResolveFunctionFixes(string identifier, long position)
         {
             _resolvedFunctionFixes.Add(new FunctionFixup(position, identifier));
+        }
+
+        public void ResolveFunctionEpilogueFixes(string identifier, long position)
+        {
+            _resolvedFunctionEpilogueFixes.Add(new FunctionFixup(position, identifier));
         }
 
         public void Insert(long position, int count)
@@ -73,8 +85,10 @@
             ProcessInsertForFixups(_constDataOffsetFixes, position, count);
             ProcessInsertForFixups(_functionAddressFixes, position, count);
             ProcessInsertForFixups(_functionOffsetFixes, position, count);
+            ProcessInsertForFixups(_functionEpilogueOffsetFixes, position, count);
             ProcessInsertForFixups(_iatOffsetFixes, position, count);
             ProcessInsertForFixups(_resolvedFunctionFixes, position, count);
+            ProcessInsertForFixups(_resolvedFunctionEpilogueFixes, position, count);
 
             foreach (var fixupList in _dataOffsetFixes.Values.Select(value => value.Item2))
             {
@@ -98,8 +112,13 @@
                 other.FixFunctionAddress(fixup.Position + offset, fixup.Function);
             foreach (var fixup in _functionOffsetFixes)
                 other.FixFunctionOffset(fixup.Position + offset, fixup.Function);
+            foreach (var fixup in _functionEpilogueOffsetFixes)
+                other.FixFunctionEpilogueOffset(fixup.Position + offset, fixup.Function);
             foreach (var fixup in _resolvedFunctionFixes)
                 other.ResolveFunctionFixes(fixup.Function, fixup.Position + offset);
+            foreach (var fixup in _resolvedFunctionEpilogueFixes)
+                other.ResolveFunctionEpilogueFixes(fixup.Function, fixup.Position + offset);
+
             foreach (var (identifier, (length, positions)) in _dataOffsetFixes)
             {
                 foreach (var fixupPosition in positions)
@@ -210,6 +229,16 @@
                     throw new LinkException($"Cannot link function: \"{functionAddressFix.Function}\" (function not defined)");
                 var rva = codeRVA + codeOffsetOfKnownFunction;
                 BitConverter.GetBytes(rva).CopyTo(codeBuffer.Slice((int)functionAddressFix.Position - 8, 8));
+            }
+
+            foreach (var functionEpilogueOffsetFix in _functionEpilogueOffsetFixes)
+            {
+                var codeOffsetOfEpilogue =
+                    _resolvedFunctionEpilogueFixes.FirstOrDefault(prologue => prologue.Function == functionEpilogueOffsetFix.Function);
+                if (codeOffsetOfEpilogue == null)
+                    throw new LinkException($"Cannot link epilogue of function: \"{functionEpilogueOffsetFix.Function}\" (epilogue not defined)");
+                var offset = (int)(codeOffsetOfEpilogue.Position - functionEpilogueOffsetFix.Position);
+                BitConverter.GetBytes(offset).CopyTo(codeBuffer.Slice((int)functionEpilogueOffsetFix.Position - 4, 4));
             }
 
             foreach (var (size, fixes) in _dataOffsetFixes.Values)
