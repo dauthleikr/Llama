@@ -1,5 +1,6 @@
 ﻿namespace Llama.Compiler.StatementCompilers
 {
+    using System;
     using Parser.Nodes;
     using spit;
 
@@ -34,6 +35,9 @@
                     case While @while:
                         context.CompileStatement(@while, codeGen, storageManager, scope);
                         break;
+                    case Return @return:
+                        context.CompileStatement(@return, codeGen, storageManager, scope);
+                        break;
                     case IExpression expression:
                         context.CompileExpression(
                             expression,
@@ -43,6 +47,10 @@
                             scope
                         );
                         break;
+                    default:
+                        throw new NotImplementedException(
+                            $"{nameof(CodeBlockCompiler)}: I do not know how to compile: {subStatement.GetType().Name}"
+                        );
                 }
             }
 

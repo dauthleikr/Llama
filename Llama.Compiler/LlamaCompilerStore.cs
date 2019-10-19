@@ -34,6 +34,7 @@
             StatementCompilerStore<For>.Compiler = new ForCompiler();
             StatementCompilerStore<If>.Compiler = new IfCompiler();
             StatementCompilerStore<While>.Compiler = new WhileCompiler();
+            StatementCompilerStore<Return>.Compiler = new ReturnCompiler();
         }
 
         public ICompileExpressions<T> GetExpressionCompiler<T>() where T : IExpression => ExpressionCompilerStore<T>.Compiler;
