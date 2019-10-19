@@ -56,7 +56,7 @@
 
         private IStatement ReadFor(IParseContext context)
         {
-            context.ReadOrPanic(TokenKind.While);
+            context.ReadOrPanic(TokenKind.For);
             context.ReadOrPanic(TokenKind.OpenParanthesis);
             var variable = context.NextCodeToken.Kind != TokenKind.SemiColon ? context.ReadNode<Declaration>() : null;
             context.ReadOrPanic(TokenKind.SemiColon);
