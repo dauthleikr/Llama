@@ -336,9 +336,9 @@
             var type = GetOrPromoteToSame(firstResult.ValueType, secondResult.ValueType);
             var preferredRegister = preferredFirst.MakeFor(type);
             var firstRegister = secondResult.IsOccopied(preferredRegister) ?
-                secondResult.GetUnoccupiedVolatile(firstResult.ValueType) :
+                secondResult.GetUnoccupiedVolatile(type) :
                 preferredRegister;
-            firstTemp.AsExpressionResult(firstResult.ValueType).GenerateMoveTo(firstRegister, type, codeGen, addressFixer);
+            firstTemp.AsExpressionResult(type).GenerateMoveTo(firstRegister, type, codeGen, addressFixer);
             storageManager.Release(firstTemp);
             return (firstRegister, secondResult, type);
         }
