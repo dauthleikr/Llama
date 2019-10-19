@@ -22,9 +22,37 @@
             switch (expression.Operator.Operator.Kind)
             {
                 case TokenKind.Plus:
-                    return CompileAdd(expression.Left, expression.Right, target, codeGen, storageManager, scope, addressFixer, context);
+                    return CompileAny(
+                        expression.Left,
+                        expression.Right,
+                        ExpressionResultExtensions.AddTo,
+                        ExpressionResultExtensions.AddsdTo,
+                        ExpressionResultExtensions.AddssTo,
+                        target,
+                        codeGen,
+                        storageManager,
+                        scope,
+                        addressFixer,
+                        context
+                    );
                 case TokenKind.Minus:
-                    return CompileSubtract(expression.Left, expression.Right, target, codeGen, storageManager, scope, addressFixer, context);
+                    return CompileAny(
+                        expression.Left,
+                        expression.Right,
+                        ExpressionResultExtensions.SubTo,
+                        ExpressionResultExtensions.SubsdTo,
+                        ExpressionResultExtensions.SubssTo,
+                        target,
+                        codeGen,
+                        storageManager,
+                        scope,
+                        addressFixer,
+                        context
+                    );
+                case TokenKind.Pointer:
+                    return CompileMultiply(expression.Left, expression.Right, target, codeGen, storageManager, scope, addressFixer, context);
+                case TokenKind.Divide:
+                    return CompileDivide(expression.Left, expression.Right, target, codeGen, storageManager, scope, addressFixer, context);
                 case TokenKind.Assignment:
                     return CompileAssign(expression.Left, expression.Right, target, codeGen, storageManager, scope, addressFixer, context);
                 case TokenKind.Equals:
@@ -107,9 +135,12 @@
             }
         }
 
-        private static ExpressionResult CompileAdd(
+        private static ExpressionResult CompileAny(
             IExpression left,
             IExpression right,
+            Action<ExpressionResult, Register, CodeGen, IAddressFixer> actionInt,
+            Action<ExpressionResult, Register, CodeGen, IAddressFixer> actionFloat,
+            Action<ExpressionResult, Register, CodeGen, IAddressFixer> actionDouble,
             PreferredRegister target,
             CodeGen codeGen,
             StorageManager storageManager,
@@ -121,22 +152,22 @@
             var (leftReg, rightExpr, type) = PrepareBinaryExpression(left, right, target, codeGen, storageManager, scope, addressFixer, context);
 
             if (type.IsIntegerRegisterType())
-                rightExpr.AddTo(leftReg, codeGen, addressFixer);
+                actionInt(rightExpr, leftReg, codeGen, addressFixer);
             else if (type == Constants.DoubleType)
-                rightExpr.AddsdTo(leftReg, codeGen, addressFixer);
+                actionDouble(rightExpr, leftReg, codeGen, addressFixer);
             else if (type == Constants.FloatType)
-                rightExpr.AddssTo(leftReg, codeGen, addressFixer);
+                actionFloat(rightExpr, leftReg, codeGen, addressFixer);
             else
             {
                 throw new NotImplementedException(
-                    $"{nameof(BinaryOperationCompiler)}: {nameof(CompileAdd)}: I do not know how to compile this type: {type}"
+                    $"{nameof(BinaryOperationCompiler)}: {nameof(CompileAny)}: I do not know how to compile this type: {type}"
                 );
             }
 
             return new ExpressionResult(type, leftReg);
         }
 
-        private static ExpressionResult CompileSubtract(
+        private static ExpressionResult CompileMultiply(
             IExpression left,
             IExpression right,
             PreferredRegister target,
@@ -147,18 +178,81 @@
             ICompilationContext context
         )
         {
-            var (leftReg, rightExpr, type) = PrepareBinaryExpression(left, right, target, codeGen, storageManager, scope, addressFixer, context);
+            var tempRegister = new PreferredRegister(Register64.RAX, target.FloatRegister);
+            var (leftReg, rightExpr, type) = PrepareBinaryExpression(
+                left,
+                right,
+                tempRegister,
+                codeGen,
+                storageManager,
+                scope,
+                addressFixer,
+                context
+            );
 
             if (type.IsIntegerRegisterType())
-                rightExpr.SubTo(leftReg, codeGen, addressFixer);
+            {
+                if (type.SizeOf() == 1)
+                {
+                    throw new NotImplementedException($"Multiplications with 8-bit types are not implemented");
+                }
+
+                rightExpr.ImulTo(leftReg, codeGen, addressFixer);
+            }
             else if (type == Constants.DoubleType)
-                rightExpr.SubsdTo(leftReg, codeGen, addressFixer);
+                rightExpr.DivsdTo(leftReg, codeGen, addressFixer);
             else if (type == Constants.FloatType)
-                rightExpr.SubssTo(leftReg, codeGen, addressFixer);
+                rightExpr.DivssTo(leftReg, codeGen, addressFixer);
             else
             {
                 throw new NotImplementedException(
-                    $"{nameof(BinaryOperationCompiler)}: {nameof(CompileSubtract)}: I do not know how to compile this type: {type}"
+                    $"{nameof(BinaryOperationCompiler)}: {nameof(CompileMultiply)}: I do not know how to compile this type: {type}"
+                );
+            }
+
+            return new ExpressionResult(type, leftReg);
+        }
+
+        private static ExpressionResult CompileDivide(
+            IExpression left,
+            IExpression right,
+            PreferredRegister target,
+            CodeGen codeGen,
+            StorageManager storageManager,
+            IScopeContext scope,
+            IAddressFixer addressFixer,
+            ICompilationContext context
+        )
+        {
+            var tempRegister = new PreferredRegister(Register64.RAX, target.FloatRegister);
+            var (leftReg, rightExpr, type) = PrepareBinaryExpression(
+                left,
+                right,
+                tempRegister,
+                codeGen,
+                storageManager,
+                scope,
+                addressFixer,
+                context
+            );
+
+            if (type.IsIntegerRegisterType())
+            {
+                if (!leftReg.IsSameRegister(Register64.RAX))
+                    codeGen.Mov(Register64.RAX, leftReg.AsR64());
+                var rightTemp = rightExpr.GetUnoccupiedVolatile(type);
+                rightExpr.GenerateMoveTo(rightTemp, type, codeGen, addressFixer);
+                codeGen.Idiv(rightTemp);
+                return new ExpressionResult(type, Register64.RAX);
+            }
+            if (type == Constants.DoubleType)
+                rightExpr.DivsdTo(leftReg, codeGen, addressFixer);
+            else if (type == Constants.FloatType)
+                rightExpr.DivssTo(leftReg, codeGen, addressFixer);
+            else
+            {
+                throw new NotImplementedException(
+                    $"{nameof(BinaryOperationCompiler)}: {nameof(CompileDivide)}: I do not know how to compile this type: {type}"
                 );
             }
 
@@ -237,7 +331,7 @@
             var isfirstIntegerType = firstResult.ValueType.IsIntegerRegisterType();
             var firstTemp = storageManager.Allocate(isfirstIntegerType);
             firstTemp.Store(firstResult, codeGen, addressFixer);
-            
+
             var secondResult = context.CompileExpression(second, codeGen, storageManager, preferredFirst, scope);
             var type = GetOrPromoteToSame(firstResult.ValueType, secondResult.ValueType);
             var preferredRegister = preferredFirst.MakeFor(type);

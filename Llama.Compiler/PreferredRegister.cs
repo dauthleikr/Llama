@@ -6,18 +6,18 @@
 
     public class PreferredRegister
     {
-        private readonly XmmRegister _floatRegister;
-        private readonly Register64 _intRegister;
+        public readonly XmmRegister FloatRegister;
+        public readonly Register64 IntRegister;
 
         public PreferredRegister(Register64 intRegister, XmmRegister floatRegister)
         {
-            _intRegister = intRegister;
-            _floatRegister = floatRegister;
+            IntRegister = intRegister;
+            FloatRegister = floatRegister;
         }
 
-        public PreferredRegister(Register64 intRegister) => _intRegister = intRegister;
+        public PreferredRegister(Register64 intRegister) => IntRegister = intRegister;
 
-        public PreferredRegister(XmmRegister register) => _floatRegister = register;
+        public PreferredRegister(XmmRegister register) => FloatRegister = register;
 
         public static implicit operator PreferredRegister(Register register)
         {
@@ -29,8 +29,8 @@
         public Register MakeFor(Type type)
         {
             if (type.IsIntegerRegisterType())
-                return Register.IntRegisterFromSize(type.SizeOf(), (int)_intRegister);
-            return _floatRegister;
+                return Register.IntRegisterFromSize(type.SizeOf(), (int)IntRegister);
+            return FloatRegister;
         }
     }
 }
