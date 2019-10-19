@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="spit" Version="0.0.42" />
+    <PackageReference Include="spit" Version="0.0.45" />
   </ItemGroup>
 
   <ItemGroup>

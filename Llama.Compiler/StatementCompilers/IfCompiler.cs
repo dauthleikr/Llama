@@ -41,9 +41,9 @@
 
             var ifBodySpan = ifBodyCodeGen.GetBufferSpan();
             if (ifBodySpan.Length <= sbyte.MaxValue)
-                codeGen.Jne((sbyte)ifBodySpan.Length);
+                codeGen.Je((sbyte)ifBodySpan.Length);
             else
-                codeGen.Jne(ifBodySpan.Length);
+                codeGen.Je(ifBodySpan.Length);
 
             ifBodyContext.AddressLinker.CopyTo(context.AddressLinker, codeGen.StreamPosition);
             codeGen.Write(ifBodySpan);
