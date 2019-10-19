@@ -196,7 +196,7 @@
         {
             var (leftReg, rightExpr, type) = PrepareBinaryExpression(left, right, target, codeGen, storageManager, scope, addressFixer, context);
             if (type.IsIntegerRegisterType())
-                rightExpr.TestTo(leftReg, codeGen, addressFixer);
+                rightExpr.CmpTo(leftReg, codeGen, addressFixer);
             else if (type == Constants.DoubleType)
                 rightExpr.ComisdTo(leftReg, codeGen, addressFixer);
             else if (type == Constants.FloatType)
