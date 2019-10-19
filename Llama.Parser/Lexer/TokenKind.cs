@@ -17,6 +17,7 @@
         Pointer,
         Plus,
         Minus,
+        Divide,
         Equals,
         NotEquals,
         GreaterEquals,

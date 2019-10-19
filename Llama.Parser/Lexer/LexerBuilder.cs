@@ -97,6 +97,7 @@
             builder.AddStaticToken(TokenKind.Pointer, "*");
             builder.AddStaticToken(TokenKind.Plus, "+");
             builder.AddStaticToken(TokenKind.Minus, "-");
+            builder.AddStaticToken(TokenKind.Divide, "/");
             builder.AddStaticToken(TokenKind.New, "new");
             builder.AddStaticToken(TokenKind.Delete, "delete");
             builder.AddStaticToken(TokenKind.Import, "import");

@@ -42,6 +42,8 @@
         public static bool IsTokenKindValid(TokenKind kind) =>
             kind == TokenKind.Plus ||
             kind == TokenKind.Minus ||
+            kind == TokenKind.Divide ||
+            kind == TokenKind.Pointer ||
             kind == TokenKind.Assignment ||
             kind == TokenKind.Equals ||
             kind == TokenKind.NotEquals ||
