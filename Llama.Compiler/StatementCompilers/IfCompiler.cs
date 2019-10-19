@@ -29,11 +29,15 @@
                 elseBodyContext.CompileStatement(statement.ElseInstruction.StatementAsBlock(), elseBodyCodeGen, storageManager, scope);
 
             ifBodyContext.CompileStatement(statement.Instruction.StatementAsBlock(), ifBodyCodeGen, storageManager, scope);
+
             var elseBodySpan = elseBodyCodeGen.GetBufferSpan();
-            if (elseBodySpan.Length <= sbyte.MaxValue)
-                ifBodyCodeGen.Jmp((sbyte)elseBodySpan.Length);
-            else
-                ifBodyCodeGen.Jmp(elseBodySpan.Length);
+            if (elseBodySpan.Length > 0)
+            {
+                if (elseBodySpan.Length <= sbyte.MaxValue)
+                    ifBodyCodeGen.Jmp((sbyte)elseBodySpan.Length);
+                else
+                    ifBodyCodeGen.Jmp(elseBodySpan.Length);
+            }
 
             var ifBodySpan = ifBodyCodeGen.GetBufferSpan();
             if (ifBodySpan.Length <= sbyte.MaxValue)
