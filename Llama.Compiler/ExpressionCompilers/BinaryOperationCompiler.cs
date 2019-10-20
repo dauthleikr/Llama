@@ -385,7 +385,7 @@
             if (type.IsSignedInteger())
                 comparisonJmpSigned((sbyte)mov0CodeGen.GetBufferSpan().Length);
             else
-                comparisonJmpSigned((sbyte)mov0CodeGen.GetBufferSpan().Length);
+                comparisonJmpUnsignedd((sbyte)mov0CodeGen.GetBufferSpan().Length);
 
             codeGen.Write(mov0CodeGen.GetBufferSpan());
             codeGen.Write(mov1CodeGen.GetBufferSpan());
