@@ -36,9 +36,9 @@
             var bodySpan = bodyCodeGen.GetBufferSpan();
             var bodyLength = bodySpan.Length + JmpIntSize; // assume far jmp will be generated
             if (bodyLength <= sbyte.MaxValue)
-                codeGen.Jne((sbyte)bodyLength);
+                codeGen.Je((sbyte)bodyLength);
             else
-                codeGen.Jne(bodyLength);
+                codeGen.Je(bodyLength);
             var farJmpGuessPos = codeGen.StreamPosition;
 
             childContext.AddressLinker.CopyTo(context.AddressLinker, codeGen.StreamPosition);
