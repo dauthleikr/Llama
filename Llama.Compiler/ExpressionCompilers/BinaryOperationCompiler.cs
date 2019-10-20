@@ -53,6 +53,8 @@
                     return CompileMultiply(expression.Left, expression.Right, target, codeGen, storageManager, scope, addressFixer, context);
                 case TokenKind.Divide:
                     return CompileDivide(expression.Left, expression.Right, target, codeGen, storageManager, scope, addressFixer, context);
+                case TokenKind.Modolu:
+                    return CompileModolu(expression.Left, expression.Right, target, codeGen, storageManager, scope, addressFixer, context);
                 case TokenKind.Assignment:
                     return CompileAssign(expression.Left, expression.Right, target, codeGen, storageManager, scope, addressFixer, context);
                 case TokenKind.Equals:
@@ -193,9 +195,7 @@
             if (type.IsIntegerRegisterType())
             {
                 if (type.SizeOf() == 1)
-                {
-                    throw new NotImplementedException($"Multiplications with 8-bit types are not implemented");
-                }
+                    throw new NotImplementedException("Multiplications with 8-bit types are not implemented");
 
                 rightExpr.ImulTo(leftReg, codeGen, addressFixer);
             }
@@ -224,11 +224,12 @@
             ICompilationContext context
         )
         {
-            var tempRegister = new PreferredRegister(Register64.RAX, target.FloatRegister);
+            var leftRegisterPref = new PreferredRegister(Register64.RAX, target.FloatRegister);
+            var rightRegisterPref = new PreferredRegister(Register64.RCX, target.FloatRegister);
             var (leftReg, rightExpr, type) = PrepareBinaryExpression(
                 left,
                 right,
-                tempRegister,
+                leftRegisterPref,
                 codeGen,
                 storageManager,
                 scope,
@@ -238,18 +239,26 @@
 
             if (type.IsIntegerRegisterType())
             {
+                var rightReg = rightRegisterPref.MakeFor(type);
                 if (!leftReg.IsSameRegister(Register64.RAX))
                     codeGen.Mov(Register64.RAX, leftReg.AsR64());
-                var rightTemp = rightExpr.GetUnoccupiedVolatile(type);
-                rightExpr.GenerateMoveTo(rightTemp, type, codeGen, addressFixer);
+
+                rightExpr.GenerateMoveTo(rightReg, type, codeGen, addressFixer);
+
+                var typeIsByte = type.SizeOf() == 1;
+                if (typeIsByte) // clear remainder space
+                    codeGen.Movzx(Register64.RAX, Register8.AL);
+                else
+                    codeGen.Xor(Register64.RDX, Register64.RDX);
 
                 if (type.IsSignedInteger())
-                    codeGen.Idiv(rightTemp);
+                    codeGen.Idiv(rightReg);
                 else
-                    codeGen.Div(rightTemp);
+                    codeGen.Div(rightReg);
 
-                return new ExpressionResult(type, Register64.RAX);
+                return new ExpressionResult(type, leftReg);
             }
+
             if (type == Constants.DoubleType)
                 rightExpr.DivsdTo(leftReg, codeGen, addressFixer);
             else if (type == Constants.FloatType)
@@ -262,6 +271,60 @@
             }
 
             return new ExpressionResult(type, leftReg);
+        }
+
+        private static ExpressionResult CompileModolu(
+            IExpression left,
+            IExpression right,
+            PreferredRegister target,
+            CodeGen codeGen,
+            StorageManager storageManager,
+            IScopeContext scope,
+            IAddressFixer addressFixer,
+            ICompilationContext context
+        )
+        {
+            var leftRegisterPref = new PreferredRegister(Register64.RAX, target.FloatRegister);
+            var rightRegisterPref = new PreferredRegister(Register64.RCX, target.FloatRegister);
+            var (leftReg, rightExpr, type) = PrepareBinaryExpression(
+                left,
+                right,
+                leftRegisterPref,
+                codeGen,
+                storageManager,
+                scope,
+                addressFixer,
+                context
+            );
+
+            if (type.IsIntegerRegisterType())
+            {
+                var rightReg = rightRegisterPref.MakeFor(type);
+                if (!leftReg.IsSameRegister(Register64.RAX))
+                    codeGen.Mov(Register64.RAX, leftReg.AsR64());
+
+                rightExpr.GenerateMoveTo(rightReg, type, codeGen, addressFixer);
+
+                var typeIsByte = type.SizeOf() == 1;
+                if (typeIsByte) // clear remainder space
+                    codeGen.Movzx(Register64.RAX, Register8.AL);
+                else
+                    codeGen.Xor(Register64.RDX, Register64.RDX);
+
+                if (type.IsSignedInteger())
+                    codeGen.Idiv(rightReg);
+                else
+                    codeGen.Div(rightReg);
+
+                if (typeIsByte) // for byte op. the remainder is stored in 'ah' instead
+                    codeGen.Write(0x8A, 0xD4); // mov dl, ah
+
+                return new ExpressionResult(type, new PreferredRegister(Register64.RDX).MakeFor(type));
+            }
+
+            throw new NotImplementedException(
+                $"{nameof(BinaryOperationCompiler)}: {nameof(CompileModolu)}: I do not know how to compile this type: {type}"
+            );
         }
 
         private static ExpressionResult CompileAssign(
@@ -340,9 +403,7 @@
             var secondResult = context.CompileExpression(second, codeGen, storageManager, preferredFirst, scope);
             var type = GetOrPromoteToSame(firstResult.ValueType, secondResult.ValueType);
             var preferredRegister = preferredFirst.MakeFor(type);
-            var firstRegister = secondResult.IsOccopied(preferredRegister) ?
-                secondResult.GetUnoccupiedVolatile(type) :
-                preferredRegister;
+            var firstRegister = secondResult.IsOccopied(preferredRegister) ? secondResult.GetUnoccupiedVolatile(type) : preferredRegister;
             firstTemp.AsExpressionResult(firstResult.ValueType).GenerateMoveTo(firstRegister, type, codeGen, addressFixer);
             storageManager.Release(firstTemp);
             return (firstRegister, secondResult, type);
