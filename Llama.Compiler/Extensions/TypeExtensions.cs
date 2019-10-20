@@ -106,15 +106,15 @@
             }
         }
 
-        public static bool CanAssignImplicitly(this Type type, Type other)
+        public static bool CanAssignImplicitly(this Type type, Type source)
         {
-            if (type.ChildRelation != other.ChildRelation) // cannot do weird stuff implicitly
+            if (type.ChildRelation != source.ChildRelation) // cannot do weird stuff implicitly
                 return false;
 
             if (type.ChildRelation == Type.WrappingType.None) // if they are the same type, or can be promoted to the same type, we are good
-                return type.PrimitiveType == other.PrimitiveType || CanPromote(type.PrimitiveType, other.PrimitiveType);
+                return type.PrimitiveType == source.PrimitiveType || CanPromote(type.PrimitiveType, source.PrimitiveType);
 
-            return CanAssignImplicitly(type.Child, other.Child); // unwrap pointer/array/... and check type underneath
+            return CanAssignImplicitly(type.Child, source.Child); // unwrap pointer/array/... and check type underneath
         }
 
         public static void AssertCanAssignImplicitly(this Type type, Type other)
@@ -171,9 +171,12 @@
         {
             if (targetType == null)
                 throw new ArgumentNullException(nameof(targetType));
+            if (occupiedRegisters.Length >= VolatileIntRegisters.Length)
+                throw new ArgumentException("No registers left", nameof(occupiedRegisters));
+
             return Register.IntRegisterFromSize(
                 targetType.SizeOf(),
-                VolatileIntRegisters.FirstOrDefault(vol => occupiedRegisters.All(occ => !occ.IsSameRegister(vol)))
+                VolatileIntRegisters.First(vol => occupiedRegisters.All(occ => !occ.IsSameRegister(vol))).FullValue
             );
         }
 
@@ -181,7 +184,10 @@
         {
             if (targetType == null)
                 throw new ArgumentNullException(nameof(targetType));
-            return VolatileFloatRegisters.FirstOrDefault(vol => occupiedRegisters.All(occ => !occ.IsSameRegister(vol)));
+            if (occupiedRegisters.Length >= VolatileFloatRegisters.Length)
+                throw new ArgumentException("No registers left", nameof(occupiedRegisters));
+
+            return VolatileFloatRegisters.First(vol => occupiedRegisters.All(occ => !occ.IsSameRegister(vol)));
         }
     }
 }
