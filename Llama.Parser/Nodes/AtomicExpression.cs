@@ -9,6 +9,11 @@
         public AtomicExpression(Token token) => Token = token;
 
         public static bool IsTokenKindValid(TokenKind kind) =>
-            kind == TokenKind.FloatLiteral || kind == TokenKind.IntegerLiteral || kind == TokenKind.StringLiteral || kind == TokenKind.Identifier;
+            kind == TokenKind.FloatLiteral ||
+            kind == TokenKind.IntegerLiteral ||
+            kind == TokenKind.StringLiteral ||
+            kind == TokenKind.True ||
+            kind == TokenKind.False ||
+            kind == TokenKind.Identifier;
     }
 }

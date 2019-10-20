@@ -24,6 +24,8 @@
         SmallerEquals,
         Not,
         AddressOf,
+        True,
+        False,
         New,
         Delete,
         Import,
