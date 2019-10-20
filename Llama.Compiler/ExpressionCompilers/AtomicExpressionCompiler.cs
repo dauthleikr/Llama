@@ -133,9 +133,9 @@
             if (value <= sbyte.MaxValue && value >= sbyte.MinValue)
                 return Constants.SbyteType;
             if (value <= short.MaxValue && value >= short.MinValue)
-                return Constants.SbyteType;
+                return Constants.ShortType;
             if (value <= int.MaxValue && value >= int.MinValue)
-                return Constants.SbyteType;
+                return Constants.IntType;
             return Constants.LongType;
         }
     }
