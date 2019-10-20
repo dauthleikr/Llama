@@ -30,6 +30,9 @@
             arrayTemp.AsExpressionResult(arrayType).GenerateMoveTo(arrayRegister, codeGen, addressFixer);
             storageManager.Release(arrayTemp);
 
+            if (arrayType == Constants.CstrType)
+                return new ExpressionResult(Constants.SbyteType, arrayRegister, structOffsetRegister, 1);
+
             var itemType = arrayType.Child;
             if (arrayType.ChildRelation == Type.WrappingType.PointerOf)
                 return new ExpressionResult(itemType, arrayRegister, structOffsetRegister, (byte)itemType.SizeOf());
