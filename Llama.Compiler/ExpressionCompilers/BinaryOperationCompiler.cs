@@ -242,7 +242,12 @@
                     codeGen.Mov(Register64.RAX, leftReg.AsR64());
                 var rightTemp = rightExpr.GetUnoccupiedVolatile(type);
                 rightExpr.GenerateMoveTo(rightTemp, type, codeGen, addressFixer);
-                codeGen.Idiv(rightTemp);
+
+                if (type.IsSignedInteger())
+                    codeGen.Idiv(rightTemp);
+                else
+                    codeGen.Div(rightTemp);
+
                 return new ExpressionResult(type, Register64.RAX);
             }
             if (type == Constants.DoubleType)
