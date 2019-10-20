@@ -22,7 +22,7 @@
             var conditionStart = codeGen.StreamPosition;
             var preferredRegisterCondition = new PreferredRegister(Register64.RAX);
             var whileConditionResult = context.CompileExpression(statement.Condition, codeGen, storageManager, preferredRegisterCondition, scope);
-            Constants.BoolType.AssertCanAssign(whileConditionResult.ValueType);
+            Constants.BoolType.AssertCanAssignImplicitly(whileConditionResult.ValueType);
 
             whileConditionResult.GenerateMoveTo(Register8.AL, Constants.BoolType, codeGen, addressFixer);
 

@@ -41,7 +41,7 @@
         )
         {
             var result = context.CompileExpression(expression.Expression, codeGen, storageManager, target, scope);
-            Constants.BoolType.AssertCanAssign(result.ValueType);
+            Constants.BoolType.AssertCanAssignImplicitly(result.ValueType);
 
             var register = target.MakeFor(Constants.BoolType);
             result.GenerateMoveTo(register, codeGen, addressFixer);

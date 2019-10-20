@@ -21,7 +21,7 @@
             var index = context.CompileExpression(expression.Count, codeGen, storageManager, new PreferredRegister(Register64.R8), scope);
             var indexType = index.ValueType;
             var valueTypeSize = (sbyte)expression.Type.SizeOf();
-            Constants.LongType.AssertCanAssign(indexType);
+            Constants.LongType.AssertCanAssignImplicitly(indexType);
 
             // Array allocation compiles to function call of HeapAlloc (kernel32)
             index.GenerateMoveTo(Register64.R8, Constants.LongType, codeGen, addressFixer); // Parameter 3: byte count

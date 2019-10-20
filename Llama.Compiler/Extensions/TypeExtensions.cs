@@ -106,7 +106,7 @@
             }
         }
 
-        public static bool CanAssign(this Type type, Type other)
+        public static bool CanAssignImplicitly(this Type type, Type other)
         {
             if (type.ChildRelation != other.ChildRelation) // cannot do weird stuff implicitly
                 return false;
@@ -114,12 +114,12 @@
             if (type.ChildRelation == Type.WrappingType.None) // if they are the same type, or can be promoted to the same type, we are good
                 return type.PrimitiveType == other.PrimitiveType || CanPromote(type.PrimitiveType, other.PrimitiveType);
 
-            return CanAssign(type.Child, other.Child); // unwrap pointer/array/... and check type underneath
+            return CanAssignImplicitly(type.Child, other.Child); // unwrap pointer/array/... and check type underneath
         }
 
-        public static void AssertCanAssign(this Type type, Type other)
+        public static void AssertCanAssignImplicitly(this Type type, Type other)
         {
-            if (!type.CanAssign(other))
+            if (!type.CanAssignImplicitly(other))
                 throw new TypeMismatchException(type.ToString(), other.ToString());
         }
 

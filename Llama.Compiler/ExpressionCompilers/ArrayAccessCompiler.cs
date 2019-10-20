@@ -24,7 +24,7 @@
             const Register64 structOffsetRegister = Register64.RCX;
             const Register64 arrayRegister = Register64.RAX;
             var arrayIndex = context.CompileExpression(expression.Index, codeGen, storageManager, new PreferredRegister(structOffsetRegister), scope);
-            Constants.LongType.AssertCanAssign(arrayIndex.ValueType);
+            Constants.LongType.AssertCanAssignImplicitly(arrayIndex.ValueType);
 
             arrayIndex.GenerateMoveTo(structOffsetRegister, codeGen, addressFixer);
             arrayTemp.AsExpressionResult(arrayType).GenerateMoveTo(arrayRegister, codeGen, addressFixer);
