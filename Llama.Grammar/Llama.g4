@@ -38,7 +38,7 @@ expression:
 
 binaryOperator: Plus | Minus | Divide | Pointer | Equals | NotEquals | OpenAngularBracket | CloseAngularBracket | Assignment | GreaterEquals | SmallerEquals;
 
-unaryOperator: Minus | AddressOf | Not;
+unaryOperator: Minus | AddressOf | Not | Pointer;
 
 typeCast: OpenAngularBracket type CloseAngularBracket;
 
