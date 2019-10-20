@@ -41,7 +41,11 @@
                 knownDeclaration = scope.GetFunctionDeclaration(identifier);
                 if (knownDeclaration == null)
                 {
-                    knownDeclaration = scope.GetFunctionImport(identifier).Declaration;
+                    var importFunc = scope.GetFunctionImport(identifier);
+                    if(importFunc == null)
+                        throw new UnknownIdentifierException(identifier);
+
+                    knownDeclaration = importFunc.Declaration;
                     isIATEntry = true;
                 }
 
