@@ -53,8 +53,8 @@
             {
                 if (targetTypeSize > sourceTypeSize)
                 {
-                    // int register widening - works implicitly
-                    source.GenerateMoveTo(targetRegister, targetType, codeGen, addressFixer);
+                    // int register widening - works implicitly - isCast flag given to do signed <-> unsigned conversion by force
+                    source.GenerateMoveTo(targetRegister, targetType, codeGen, addressFixer, true);
                     return new ExpressionResult(targetType, targetRegister);
                 }
 

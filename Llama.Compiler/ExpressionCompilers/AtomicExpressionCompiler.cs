@@ -1,6 +1,7 @@
 ﻿namespace Llama.Compiler.ExpressionCompilers
 {
     using System;
+    using System.Globalization;
     using System.Text;
     using Parser.Lexer;
     using Parser.Nodes;
@@ -47,7 +48,7 @@
 
         private static ExpressionResult CompileFloatLiteral(AtomicExpression expression)
         {
-            if (!double.TryParse(expression.Token.RawText, out var result))
+            if (!double.TryParse(expression.Token.RawText, NumberStyles.Any, CultureInfo.InvariantCulture, out var result))
                 throw new BadLiteralException(expression.Token.RawText);
 
             return new ExpressionResult(

@@ -67,6 +67,7 @@
                         scope,
                         addressFixer,
                         context,
+                        codeGen.Je,
                         codeGen.Je
                     );
                 case TokenKind.NotEquals:
@@ -79,8 +80,8 @@
                         scope,
                         addressFixer,
                         context,
-                        codeGen.Je,
-                        true
+                        codeGen.Jne,
+                        codeGen.Jne
                     );
                 case TokenKind.OpenAngularBracket:
                     return CompileComparison(
@@ -92,8 +93,8 @@
                         scope,
                         addressFixer,
                         context,
-                        codeGen.Jb,
-                        true
+                        codeGen.Jl,
+                        codeGen.Jb
                     );
                 case TokenKind.CloseAngularBracket:
                     return CompileComparison(
@@ -105,7 +106,8 @@
                         scope,
                         addressFixer,
                         context,
-                        codeGen.Jb
+                        codeGen.Jg,
+                        codeGen.Ja
                     );
                 case TokenKind.GreaterEquals:
                     return CompileComparison(
@@ -117,7 +119,8 @@
                         scope,
                         addressFixer,
                         context,
-                        codeGen.Jbe
+                        codeGen.Jge,
+                        codeGen.Jae
                     );
                 case TokenKind.SmallerEquals:
                     return CompileComparison(
@@ -130,7 +133,7 @@
                         addressFixer,
                         context,
                         codeGen.Jbe,
-                        true
+                        codeGen.Jle
                     );
                 default:
                     throw new NotImplementedException($"Compilation for Operator {expression.Operator.Operator.Kind} is not implemented");
@@ -352,7 +355,8 @@
             IScopeContext scope,
             IAddressFixer addressFixer,
             ICompilationContext context,
-            Action<sbyte> comparisonJmp,
+            Action<sbyte> comparisonJmpSigned,
+            Action<sbyte> comparisonJmpUnsignedd,
             bool inverted = false
         )
         {
@@ -378,7 +382,11 @@
             mov0CodeGen.Mov(targetRegister.AsR32(), inverted ? 1 : 0);
             mov0CodeGen.Jmp(mov1CodeGen.GetBufferSpan().Length);
 
-            comparisonJmp((sbyte)mov0CodeGen.GetBufferSpan().Length);
+            if (type.IsSignedInteger())
+                comparisonJmpSigned((sbyte)mov0CodeGen.GetBufferSpan().Length);
+            else
+                comparisonJmpSigned((sbyte)mov0CodeGen.GetBufferSpan().Length);
+
             codeGen.Write(mov0CodeGen.GetBufferSpan());
             codeGen.Write(mov1CodeGen.GetBufferSpan());
             return new ExpressionResult(Constants.BoolType, targetRegister);
@@ -411,10 +419,10 @@
 
         private static Type GetOrPromoteToSame(Type leftType, Type rightType)
         {
-            if (leftType.CanAssign(rightType))
+            if (leftType.CanAssignImplicitly(rightType))
                 return leftType;
 
-            rightType.AssertCanAssign(leftType);
+            rightType.AssertCanAssignImplicitly(leftType);
             return rightType;
         }
     }

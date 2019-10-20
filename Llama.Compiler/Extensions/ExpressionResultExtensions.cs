@@ -33,17 +33,17 @@
             );
         }
 
-        public static void CmpTo(this ExpressionResult source, Register other, CodeGen codeGen, IAddressFixer fixer)
+        public static void CmpTo(this ExpressionResult source, Register target, CodeGen codeGen, IAddressFixer fixer)
         {
-            source.DereferenceFromRegister(
+            source.DereferenceToRegister(
+                target,
                 codeGen,
-                other,
                 fixer,
                 codeGen.Cmp,
-                codeGen.CmpToDereferenced,
-                codeGen.CmpToDereferenced2,
-                codeGen.CmpToDereferenced3,
-                codeGen.CmpToDereferenced4
+                codeGen.CmpFromDereferenced,
+                codeGen.CmpFromDereferenced2,
+                codeGen.CmpFromDereferenced3,
+                codeGen.CmpFromDereferenced4
             );
         }
 

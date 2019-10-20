@@ -28,9 +28,9 @@
 
         public delegate void GenericFromDrefAction(Register target, Register64 ptr, int offsetFlat = 0, Segment segment = Segment.DS);
 
-        public void GenerateMoveTo(Register target, Type targetType, CodeGen codeGen, IAddressFixer fixer)
+        public void GenerateMoveTo(Register target, Type targetType, CodeGen codeGen, IAddressFixer fixer, bool isCast = false)
         {
-            if (!targetType.CanAssign(ValueType))
+            if (!isCast && !targetType.CanAssignImplicitly(ValueType))
                 throw new TypeMismatchException(targetType.ToString(), ValueType.ToString());
             if (target.BitSize / 8 != targetType.SizeOf())
                 throw new ArgumentException($"Value of type {targetType} can not be moved to register {target}");

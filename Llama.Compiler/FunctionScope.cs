@@ -114,11 +114,6 @@
                 offset += 8;
             }
 
-            // todo: use (shadow) stack space provided by caller for parameters, for now they are just defined as locals
-            var offset = 0;
-            foreach (var parameter in function.Declaration.Parameters)
-                DeclareLocal(parameter.ParameterIdentifier.RawText, ref offset);
-
             void SetLocalOffsets(int startOffset, IStatement code)
             {
                 foreach (var statement in GetDeclarationsAndBlocks(code))
@@ -144,9 +139,14 @@
                 if (methodCallExpression.Parameters.Length > maxCalleeParameters)
                     maxCalleeParameters = methodCallExpression.Parameters.Length;
             }
-
             var calleeParameterSpace = maxCalleeParameters * 8;
-            SetLocalOffsets(calleeParameterSpace, function.Body);
+
+            // todo: use (shadow) stack space provided by caller for parameters, for now they are just defined as locals
+            var offset = calleeParameterSpace;
+            foreach (var parameter in function.Declaration.Parameters)
+                DeclareLocal(parameter.ParameterIdentifier.RawText, ref offset);
+
+            SetLocalOffsets(offset, function.Body);
 
             var scope = new FunctionScope(function.Declaration, localToOffset, calleeParameterSpace, imports, declarations);
             foreach (var parameter in function.Declaration.Parameters)
