@@ -18,6 +18,7 @@
         Plus,
         Minus,
         Divide,
+        Modolu,
         Equals,
         NotEquals,
         GreaterEquals,

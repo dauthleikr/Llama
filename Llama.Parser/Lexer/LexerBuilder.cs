@@ -101,6 +101,7 @@
             builder.AddStaticToken(TokenKind.Plus, "+");
             builder.AddStaticToken(TokenKind.Minus, "-");
             builder.AddStaticToken(TokenKind.Divide, "/");
+            builder.AddStaticToken(TokenKind.Modolu, "%");
             builder.AddStaticToken(TokenKind.True, "true");
             builder.AddStaticToken(TokenKind.False, "false");
             builder.AddStaticToken(TokenKind.New, "new");

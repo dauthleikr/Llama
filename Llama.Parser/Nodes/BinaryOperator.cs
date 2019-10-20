@@ -44,6 +44,7 @@
             kind == TokenKind.Minus ||
             kind == TokenKind.Divide ||
             kind == TokenKind.Pointer ||
+            kind == TokenKind.Modolu ||
             kind == TokenKind.Assignment ||
             kind == TokenKind.Equals ||
             kind == TokenKind.NotEquals ||
