@@ -35,7 +35,7 @@
                 sourceType.ChildRelation == Type.WrappingType.ArrayOf &&
                 sourceType.Child == targetType.Child)
             {
-                source.LeaTo(targetRegister, codeGen, addressFixer);
+                source.GenerateMoveTo(targetRegister, codeGen, addressFixer);
                 codeGen.Add(targetRegister.AsR64(), (sbyte)8);
                 return new ExpressionResult(targetType, targetRegister);
             }
@@ -51,7 +51,7 @@
 
             if (sourceIsInt && targetIsInt)
             {
-                if (targetTypeSize >= sourceTypeSize)
+                if (targetTypeSize > sourceTypeSize)
                 {
                     // int register widening - works implicitly
                     source.GenerateMoveTo(targetRegister, targetType, codeGen, addressFixer);
@@ -60,10 +60,11 @@
 
                 // int register narrowing
                 source.GenerateMoveTo(targetRegister, codeGen, addressFixer);
-                if (targetTypeSize == 4)
-                    codeGen.Mov(targetRegister.AsR32(), targetRegister.AsR32());
-                else
-                    codeGen.And(targetRegister.AsR32(), targetTypeSize == 2 ? ushort.MaxValue : byte.MaxValue);
+                // // clean rest of register
+                //if (targetTypeSize == 4)
+                //    codeGen.Mov(targetRegister.AsR32(), targetRegister.AsR32());
+                //else
+                //    codeGen.And(targetRegister.AsR32(), targetTypeSize == 2 ? ushort.MaxValue : byte.MaxValue);
                 return new ExpressionResult(targetType, targetRegister);
             }
 
