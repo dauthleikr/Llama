@@ -19,16 +19,30 @@
             ICompilationContext context
         )
         {
-            if (expression.Token.Kind == TokenKind.Identifier)
-                return CompileIdentifier(expression, codeGen, scope);
-            if (expression.Token.Kind == TokenKind.FloatLiteral)
-                return CompileFloatLiteral(expression);
-            if (expression.Token.Kind == TokenKind.IntegerLiteral)
-                return CompileIntegerLiteral(expression);
-            if (expression.Token.Kind == TokenKind.StringLiteral)
-                return CompileStringLiteral(expression, codeGen, target, addressFixer);
+            return expression.Token.Kind switch
+            {
+                TokenKind.Identifier     => CompileIdentifier(expression, codeGen, scope),
+                TokenKind.FloatLiteral   => CompileFloatLiteral(expression),
+                TokenKind.IntegerLiteral => CompileIntegerLiteral(expression),
+                TokenKind.StringLiteral  => CompileStringLiteral(expression, codeGen, target, addressFixer),
+                TokenKind.True           => CompileTrue(codeGen, target),
+                TokenKind.False          => CompileFalse(codeGen, target),
+                _                        => throw new NotImplementedException($"Atomic expression type {expression.Token.Kind} not implemented")
+            };
+        }
 
-            throw new NotImplementedException($"Atomic expression type {expression.Token.Kind} not implemented");
+        private static ExpressionResult CompileFalse(CodeGen codeGen, PreferredRegister target)
+        {
+            var register = target.MakeFor(Constants.BoolType);
+            codeGen.Xor(register, register);
+            return new ExpressionResult(Constants.BoolType, register);
+        }
+
+        private static ExpressionResult CompileTrue(CodeGen codeGen, PreferredRegister target)
+        {
+            var register = target.MakeFor(Constants.BoolType);
+            codeGen.Mov(register.AsR32(), 1);
+            return new ExpressionResult(Constants.BoolType, register);
         }
 
         private static ExpressionResult CompileFloatLiteral(AtomicExpression expression)
