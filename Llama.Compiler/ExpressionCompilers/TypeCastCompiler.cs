@@ -180,6 +180,17 @@
 
         private static bool CanCastUnsafe(Type targetType, Type sourceType)
         {
+            if (sourceType == Constants.CstrType &&
+                targetType.ChildRelation == Type.WrappingType.PointerOf &&
+                targetType.Child.ChildRelation == Type.WrappingType.None &&
+                targetType.Child.SizeOf() == 1)
+                return true; // allow cstr -> any single byte ptr
+            if (targetType == Constants.CstrType &&
+                sourceType.ChildRelation == Type.WrappingType.PointerOf &&
+                sourceType.Child.ChildRelation == Type.WrappingType.None &&
+                sourceType.Child.SizeOf() == 1)
+                return true; // allow any single byte ptr -> cstr
+
             if (sourceType.ChildRelation == Type.WrappingType.PointerOf && targetType.ChildRelation == Type.WrappingType.PointerOf)
                 return true; // Can cast any pointer to any pointer
             if (sourceType.ChildRelation == Type.WrappingType.ArrayOf &&
