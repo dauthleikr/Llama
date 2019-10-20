@@ -42,7 +42,7 @@ unaryOperator: Minus | AddressOf | Not;
 
 typeCast: OpenAngularBracket type CloseAngularBracket;
 
-atomicExpression: String | IntegerLiteral | FloatLiteral | Identifier;
+atomicExpression: String | IntegerLiteral | FloatLiteral | True | False | Identifier;
 
 type:
 	type Pointer
@@ -62,29 +62,35 @@ functionImplementation: functionDeclaration statementBlock;
 functionImport:
 	Import OpenParanthesis String CloseParanthesis functionDeclaration;
 
+// Trivia rules
+WhitespaceOrControl: [ \r\n\t]+ -> skip;
+LineComment: '//' ~[\r\n]* -> skip;
+BlockComment: '/*' .*? '*/' -> skip;
+
 // Lexer rules
+Equals: '==';
+NotEquals: '!=';
+GreaterEquals: '>=';
+SmallerEquals: '<=';
 Assignment: '=';
+OpenAngularBracket: '<';
+CloseAngularBracket: '>';
+Not: '!';
+AddressOf: '&';
 OpenParanthesis: '(';
 CloseParanthesis: ')';
 OpenBraces: '{';
 CloseBraces: '}';
 OpenSquareBracket: '[';
 CloseSquareBracket: ']';
-OpenAngularBracket: '<';
-CloseAngularBracket: '>';
 Comma: ',';
 SemiColon: ';';
 Pointer: '*';
 Plus: '+';
 Minus: '-';
 Divide: '/';
-Equals: '==';
-NotEquals: '!=';
-GreaterEquals: '>=';
-SmallerEquals: '<=';
-Not: '!';
-AddressOf: '&';
-
+True: 'true';
+False: 'false';
 New: 'new';
 Delete: 'delete';
 Import: 'import';
@@ -104,12 +110,10 @@ PrimitiveType:
 	| 'float'
 	| 'double';
 
+
+
 String: '"' .*? '"';
 IntegerLiteral: [0-9]+ [0-9_]*;
 FloatLiteral: IntegerLiteral? '.' IntegerLiteral;
 Identifier: [_A-Za-z][_A-Za-z0-9]*;
 
-// Trivia rules
-WhitespaceOrControl: [ \r\n\t]+ -> skip;
-LineComment: '//' ~[\r\n]* -> skip;
-BlockComment: '/*' .*? '*/' -> skip;
