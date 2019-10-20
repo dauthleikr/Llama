@@ -7,8 +7,8 @@
 
     internal class WhileCompiler : ICompileStatements<While>
     {
-        private static readonly int JmpIntSize = InstructionLength(gen => gen.Jmp(Constants.DummyOffsetInt));
-        private static readonly int JmpSbyteSize = InstructionLength(gen => gen.Jmp((sbyte)0));
+        private static readonly int JmpIntSize = CodeGenExtensions.InstructionLength(gen => gen.Jmp(Constants.DummyOffsetInt));
+        private static readonly int JmpSbyteSize = CodeGenExtensions.InstructionLength(gen => gen.Jmp((sbyte)0));
 
         public void Compile(
             While statement,
@@ -57,13 +57,6 @@
             }
             else
                 codeGen.Jmp((int)(offsetToStart - JmpIntSize));
-        }
-
-        private static int InstructionLength(Action<CodeGen> genAction)
-        {
-            var gen = new CodeGen();
-            genAction(gen);
-            return (int)gen.StreamPosition;
         }
     }
 }
