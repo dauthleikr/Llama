@@ -100,6 +100,21 @@
 
         public void ChangeTypeUnsafe(Type newTypeUnsafe) => ValueType = newTypeUnsafe;
 
+        public Register GetOccupiedOrVolatile(Type type)
+        {
+            return type.MakeRegisterWithCorrectSize(
+                Kind switch
+                {
+                    ResultKind.Value => Value,
+                    ResultKind.Pointer => Ptr,
+                    ResultKind.Pointer3 => Ptr,
+                    ResultKind.Pointer2 => Ptr,
+                    ResultKind.Offset => type.IsIntegerRegisterType() ? type.OtherVolatileIntRegister() : type.OtherVolatileFloatRegister(),
+                    _ => throw new ArgumentOutOfRangeException()
+                }
+            );
+        }
+
         public Register GetUnoccupiedVolatile(Type type)
         {
             if (type.IsIntegerRegisterType())

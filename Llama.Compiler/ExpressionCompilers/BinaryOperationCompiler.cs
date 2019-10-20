@@ -154,7 +154,17 @@
             ICompilationContext context
         )
         {
-            var (leftReg, rightExpr, type) = PrepareBinaryExpression(left, right, target, codeGen, storageManager, scope, addressFixer, context);
+            var (leftReg, rightExpr, type) = PrepareBinaryExpression(
+                left,
+                right,
+                target,
+                codeGen,
+                storageManager,
+                scope,
+                addressFixer,
+                context,
+                true
+            );
 
             if (type.IsIntegerRegisterType())
                 actionInt(rightExpr, leftReg, codeGen, addressFixer);
@@ -192,7 +202,8 @@
                 storageManager,
                 scope,
                 addressFixer,
-                context
+                context,
+                true
             );
 
             if (type.IsIntegerRegisterType())
@@ -228,7 +239,6 @@
         )
         {
             var leftRegisterPref = new PreferredRegister(Register64.RAX, target.FloatRegister);
-            var rightRegisterPref = new PreferredRegister(Register64.RCX, target.FloatRegister);
             var (leftReg, rightExpr, type) = PrepareBinaryExpression(
                 left,
                 right,
@@ -237,16 +247,17 @@
                 storageManager,
                 scope,
                 addressFixer,
-                context
+                context,
+                true
             );
 
             if (type.IsIntegerRegisterType())
             {
-                var rightReg = rightRegisterPref.MakeFor(type);
+                var rightReg = type.OtherVolatileIntRegister(leftReg, Register64.RAX, Register64.RDX);
+                rightExpr.GenerateMoveTo(rightReg, type, codeGen, addressFixer);
+
                 if (!leftReg.IsSameRegister(Register64.RAX))
                     codeGen.Mov(Register64.RAX, leftReg.AsR64());
-
-                rightExpr.GenerateMoveTo(rightReg, type, codeGen, addressFixer);
 
                 var typeIsByte = type.SizeOf() == 1;
                 if (typeIsByte) // clear remainder space
@@ -288,7 +299,6 @@
         )
         {
             var leftRegisterPref = new PreferredRegister(Register64.RAX, target.FloatRegister);
-            var rightRegisterPref = new PreferredRegister(Register64.RCX, target.FloatRegister);
             var (leftReg, rightExpr, type) = PrepareBinaryExpression(
                 left,
                 right,
@@ -297,16 +307,17 @@
                 storageManager,
                 scope,
                 addressFixer,
-                context
+                context,
+                true
             );
 
             if (type.IsIntegerRegisterType())
             {
-                var rightReg = rightRegisterPref.MakeFor(type);
+                var rightReg = type.OtherVolatileIntRegister(leftReg, Register64.RAX, Register64.RDX);
+                rightExpr.GenerateMoveTo(rightReg, type, codeGen, addressFixer);
+
                 if (!leftReg.IsSameRegister(Register64.RAX))
                     codeGen.Mov(Register64.RAX, leftReg.AsR64());
-
-                rightExpr.GenerateMoveTo(rightReg, type, codeGen, addressFixer);
 
                 var typeIsByte = type.SizeOf() == 1;
                 if (typeIsByte) // clear remainder space
@@ -360,7 +371,17 @@
             bool inverted = false
         )
         {
-            var (leftReg, rightExpr, type) = PrepareBinaryExpression(left, right, target, codeGen, storageManager, scope, addressFixer, context);
+            var (leftReg, rightExpr, type) = PrepareBinaryExpression(
+                left,
+                right,
+                target,
+                codeGen,
+                storageManager,
+                scope,
+                addressFixer,
+                context,
+                true
+            );
             if (type.IsIntegerRegisterType())
                 rightExpr.CmpTo(leftReg, codeGen, addressFixer);
             else if (type == Constants.DoubleType)
@@ -392,7 +413,21 @@
             return new ExpressionResult(Constants.BoolType, targetRegister);
         }
 
-        private static (Register first, ExpressionResult second, Type type) PrepareBinaryExpression(
+        /// <summary>
+        ///     Evaluates two expressions, and brings them to a common type. Tries to keep the second expression as reference, for
+        ///     mor optimal code generation.
+        /// </summary>
+        /// <param name="first"></param>
+        /// <param name="second"></param>
+        /// <param name="preferredFirst"></param>
+        /// <param name="codeGen"></param>
+        /// <param name="storageManager"></param>
+        /// <param name="scope"></param>
+        /// <param name="addressFixer"></param>
+        /// <param name="context"></param>
+        /// <param name="shouldDereferenceForImplicitCast">The reference may be deferenced to cast it to the common type</param>
+        /// <returns></returns>
+        private static (Register register, ExpressionResult reference, Type type) PrepareBinaryExpression(
             IExpression first,
             IExpression second,
             PreferredRegister preferredFirst,
@@ -400,7 +435,8 @@
             StorageManager storageManager,
             IScopeContext scope,
             IAddressFixer addressFixer,
-            ICompilationContext context
+            ICompilationContext context,
+            bool shouldDereferenceForImplicitCast = false
         )
         {
             var firstResult = context.CompileExpression(first, codeGen, storageManager, preferredFirst, scope);
@@ -409,21 +445,28 @@
             firstTemp.Store(firstResult, codeGen, addressFixer);
 
             var secondResult = context.CompileExpression(second, codeGen, storageManager, preferredFirst, scope);
-            var type = GetOrPromoteToSame(firstResult.ValueType, secondResult.ValueType);
+            var type = firstResult.ValueType;
+            if (firstResult.ValueType != secondResult.ValueType)
+            {
+                if (secondResult.ValueType.CanAssignImplicitly(firstResult.ValueType))
+                    type = secondResult.ValueType;
+                else if (shouldDereferenceForImplicitCast && firstResult.ValueType.CanAssignImplicitly(secondResult.ValueType))
+                {
+                    type = firstResult.ValueType;
+
+                    var secondDerefVolatile = secondResult.GetOccupiedOrVolatile(type);
+                    secondResult.GenerateMoveTo(secondDerefVolatile, type, codeGen, addressFixer);
+                    secondResult = new ExpressionResult(type, secondDerefVolatile);
+                }
+                else
+                    throw new TypeMismatchException("Any common type", $"{firstResult.ValueType} and {secondResult.ValueType}");
+            }
+
             var preferredRegister = preferredFirst.MakeFor(type);
             var firstRegister = secondResult.IsOccopied(preferredRegister) ? secondResult.GetUnoccupiedVolatile(type) : preferredRegister;
             firstTemp.AsExpressionResult(firstResult.ValueType).GenerateMoveTo(firstRegister, type, codeGen, addressFixer);
             storageManager.Release(firstTemp);
             return (firstRegister, secondResult, type);
-        }
-
-        private static Type GetOrPromoteToSame(Type leftType, Type rightType)
-        {
-            if (leftType.CanAssignImplicitly(rightType))
-                return leftType;
-
-            rightType.AssertCanAssignImplicitly(leftType);
-            return rightType;
         }
     }
 }
