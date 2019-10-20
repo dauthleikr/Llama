@@ -28,6 +28,7 @@
             ExpressionCompilerStore<ArrayAccessExpression>.Compiler = new ArrayAccessCompiler();
             ExpressionCompilerStore<MethodCallExpression>.Compiler = new MethodCallCompiler();
             ExpressionCompilerStore<TypeCastExpression>.Compiler = new TypeCastCompiler();
+            ExpressionCompilerStore<UnaryOperatorExpression>.Compiler = new UnaryOperationCompiler();
 
             StatementCompilerStore<CodeBlock>.Compiler = new CodeBlockCompiler();
             StatementCompilerStore<Declaration>.Compiler = new DeclarationCompiler();

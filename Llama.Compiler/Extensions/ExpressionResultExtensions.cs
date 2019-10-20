@@ -5,6 +5,20 @@
 
     internal static class ExpressionResultExtensions
     {
+        public static void XorTo(this ExpressionResult source, Register target, CodeGen codeGen, IAddressFixer fixer)
+        {
+            source.DereferenceToRegister(
+                target,
+                codeGen,
+                fixer,
+                codeGen.Xor,
+                codeGen.XorFromDereferenced,
+                codeGen.XorFromDereferenced2,
+                codeGen.XorFromDereferenced3,
+                codeGen.XorFromDereferenced4
+            );
+        }
+
         public static void TestTo(this ExpressionResult source, Register other, CodeGen codeGen, IAddressFixer fixer)
         {
             source.DereferenceFromRegister(
