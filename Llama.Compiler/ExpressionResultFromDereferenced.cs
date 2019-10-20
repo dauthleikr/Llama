@@ -28,9 +28,9 @@
 
         public delegate void GenericFromDrefAction(Register target, Register64 ptr, int offsetFlat = 0, Segment segment = Segment.DS);
 
-        public void GenerateMoveTo(Register target, Type targetType, CodeGen codeGen, IAddressFixer fixer, bool isCast = false)
+        public void GenerateMoveTo(Register target, Type targetType, CodeGen codeGen, IAddressFixer fixer, bool isExplicitCast = false)
         {
-            if (!isCast && !targetType.CanAssignImplicitly(ValueType))
+            if (!isExplicitCast && !targetType.CanAssignImplicitly(ValueType))
                 throw new TypeMismatchException(targetType.ToString(), ValueType.ToString());
             if (!target.FloatingPoint && target.BitSize / 8 != targetType.SizeOf())
                 throw new ArgumentException($"Value of type {targetType} can not be moved to register {target}");
@@ -194,7 +194,10 @@
                             codeGen.Movzx(target.AsR64(), Value.AsR16());
                         break;
                     case 8:
-                        codeGen.Movzx(target.AsR64(), Value.AsR8());
+                        if (signed)
+                            codeGen.Movsx(target.AsR64(), Value.AsR8());
+                        else
+                            codeGen.Movzx(target.AsR64(), Value.AsR8());
                         break;
                     default:
                         throw new NotImplementedException();
@@ -241,6 +244,9 @@
             GenericFromDref4Action dref4Action
         )
         {
+            if (!target.FloatingPoint && target.BitSize / 8 != ValueType.SizeOf())
+                throw new ArgumentException($"Can not perform implicit cast in {nameof(DereferenceToRegister)} action");
+
             switch (Kind)
             {
                 case ResultKind.Value:
