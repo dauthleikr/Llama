@@ -36,7 +36,7 @@ expression:
 	| New type OpenParanthesis expression CloseParanthesis
 	| atomicExpression;
 
-binaryOperator: Plus | Minus | Divide | Pointer | Equals | NotEquals | OpenAngularBracket | CloseAngularBracket | Assignment | GreaterEquals | SmallerEquals;
+binaryOperator: Plus | Minus | Divide | Pointer | Mod | Equals | NotEquals | OpenAngularBracket | CloseAngularBracket | Assignment | GreaterEquals | SmallerEquals;
 
 unaryOperator: Minus | AddressOf | Not | Pointer;
 
@@ -89,6 +89,7 @@ Pointer: '*';
 Plus: '+';
 Minus: '-';
 Divide: '/';
+Mod: '%';
 True: 'true';
 False: 'false';
 New: 'new';
