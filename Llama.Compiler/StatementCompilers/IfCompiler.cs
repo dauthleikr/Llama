@@ -17,7 +17,7 @@
         {
             var preferredRegisterCondition = new PreferredRegister(Register64.RAX);
             var ifConditionResult = context.CompileExpression(statement.Condition, codeGen, storageManager, preferredRegisterCondition, scope);
-            ifConditionResult.GenerateMoveTo(Register64.RAX, Constants.BoolType, codeGen, addressFixer);
+            ifConditionResult.GenerateMoveTo(preferredRegisterCondition.MakeFor(Constants.BoolType), codeGen, addressFixer);
             codeGen.Test(Register8.AL, Register8.AL);
 
             var ifBodyContext = context.CreateChildContext();
