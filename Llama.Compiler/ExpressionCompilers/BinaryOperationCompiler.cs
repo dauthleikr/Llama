@@ -253,24 +253,8 @@
 
             if (type.IsIntegerRegisterType())
             {
-                var rightReg = type.OtherVolatileIntRegister(leftReg, Register64.RAX, Register64.RDX);
-                rightExpr.GenerateMoveTo(rightReg, type, codeGen, addressFixer);
-
-                if (!leftReg.IsSameRegister(Register64.RAX))
-                    codeGen.Mov(Register64.RAX, leftReg.AsR64());
-
-                var typeIsByte = type.SizeOf() == 1;
-                if (typeIsByte) // clear remainder space
-                    codeGen.Movzx(Register64.RAX, Register8.AL);
-                else
-                    codeGen.Xor(Register64.RDX, Register64.RDX);
-
-                if (type.IsSignedInteger())
-                    codeGen.Idiv(rightReg);
-                else
-                    codeGen.Div(rightReg);
-
-                return new ExpressionResult(type, leftReg);
+                CompileIntegerDivision(codeGen, addressFixer, type, leftReg, rightExpr);
+                return new ExpressionResult(type, new PreferredRegister(Register64.RAX).MakeFor(type));
             }
 
             if (type == Constants.DoubleType)
@@ -313,23 +297,7 @@
 
             if (type.IsIntegerRegisterType())
             {
-                var rightReg = type.OtherVolatileIntRegister(leftReg, Register64.RAX, Register64.RDX);
-                rightExpr.GenerateMoveTo(rightReg, type, codeGen, addressFixer);
-
-                if (!leftReg.IsSameRegister(Register64.RAX))
-                    codeGen.Mov(Register64.RAX, leftReg.AsR64());
-
-                var typeIsByte = type.SizeOf() == 1;
-                if (typeIsByte) // clear remainder space
-                    codeGen.Movzx(Register64.RAX, Register8.AL);
-                else
-                    codeGen.Xor(Register64.RDX, Register64.RDX);
-
-                if (type.IsSignedInteger())
-                    codeGen.Idiv(rightReg);
-                else
-                    codeGen.Div(rightReg);
-
+                var typeIsByte = CompileIntegerDivision(codeGen, addressFixer, type, leftReg, rightExpr);
                 if (typeIsByte) // for byte op. the remainder is stored in 'ah' instead
                     codeGen.Write(0x8A, 0xD4); // mov dl, ah
 
@@ -339,6 +307,41 @@
             throw new NotImplementedException(
                 $"{nameof(BinaryOperationCompiler)}: {nameof(CompileModolu)}: I do not know how to compile this type: {type}"
             );
+        }
+
+        private static bool CompileIntegerDivision(CodeGen codeGen, IAddressFixer addressFixer, Type type, Register leftReg, ExpressionResult rightExpr)
+        {
+            var rightReg = type.OtherVolatileIntRegister(leftReg, Register64.RAX, Register64.RDX);
+            rightExpr.GenerateMoveTo(rightReg, type, codeGen, addressFixer);
+
+            if (!leftReg.IsSameRegister(Register64.RAX))
+                codeGen.Mov(Register64.RAX, leftReg.AsR64());
+
+            var typeIsByte = type.SizeOf() == 1;
+            var typeIsSigned = type.IsSignedInteger();
+            if (typeIsByte)
+            {
+                if (typeIsSigned)
+                    codeGen.Movsx(Register64.RAX, Register8.AL);
+                else
+                    codeGen.Movzx(Register64.RAX, Register8.AL);
+            }
+            else
+            {
+                codeGen.Xor(Register64.RDX, Register64.RDX);
+                if (typeIsSigned)
+                {
+                    codeGen.Test(Register64.RAX, Register64.RAX);
+                    codeGen.Jns(CodeGenExtensions.InstructionLength(gen => gen.Not(Register64.RDX)));
+                    codeGen.Not(Register64.RDX);
+                }
+            }
+
+            if (type.IsSignedInteger())
+                codeGen.Idiv(rightReg);
+            else
+                codeGen.Div(rightReg);
+            return typeIsByte;
         }
 
         private static ExpressionResult CompileAssign(
