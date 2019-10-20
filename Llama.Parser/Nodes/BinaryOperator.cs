@@ -11,22 +11,22 @@
         {
             get
             {
+                // https://github.com/dauthleikr/llama/blob/4e8bbbfe45709f83d898b259fb5c79bc57bb0b8a/llama.parser/Language/BinaryOperators.cs
                 switch (Operator.Kind)
                 {
+                    case TokenKind.Modolu:
+                    case TokenKind.Divide:
+                    case TokenKind.Pointer:
+                        return 98;
                     case TokenKind.Plus:
-                        return 96;
                     case TokenKind.Minus:
                         return 96;
                     case TokenKind.Equals:
-                        return 90;
                     case TokenKind.NotEquals:
                         return 90;
                     case TokenKind.OpenAngularBracket:
-                        return 92;
                     case TokenKind.CloseAngularBracket:
-                        return 92;
                     case TokenKind.GreaterEquals:
-                        return 92;
                     case TokenKind.SmallerEquals:
                         return 92;
                     case TokenKind.Assignment:
