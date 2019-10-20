@@ -90,7 +90,8 @@
                         scope,
                         addressFixer,
                         context,
-                        codeGen.Jb
+                        codeGen.Jb,
+                        true
                     );
                 case TokenKind.CloseAngularBracket:
                     return CompileComparison(
@@ -102,8 +103,7 @@
                         scope,
                         addressFixer,
                         context,
-                        codeGen.Jbe,
-                        true
+                        codeGen.Jb
                     );
                 case TokenKind.GreaterEquals:
                     return CompileComparison(
@@ -115,8 +115,7 @@
                         scope,
                         addressFixer,
                         context,
-                        codeGen.Jb,
-                        true
+                        codeGen.Jbe
                     );
                 case TokenKind.SmallerEquals:
                     return CompileComparison(
@@ -128,7 +127,8 @@
                         scope,
                         addressFixer,
                         context,
-                        codeGen.Jbe
+                        codeGen.Jbe,
+                        true
                     );
                 default:
                     throw new NotImplementedException($"Compilation for Operator {expression.Operator.Operator.Kind} is not implemented");
@@ -327,7 +327,7 @@
             ICompilationContext context
         )
         {
-            var firstResult = context.CompileExpression(first, codeGen, storageManager, preferredFirst, scope); // todo: compile into temp storage
+            var firstResult = context.CompileExpression(first, codeGen, storageManager, preferredFirst, scope);
             var isfirstIntegerType = firstResult.ValueType.IsIntegerRegisterType();
             var firstTemp = storageManager.Allocate(isfirstIntegerType);
             firstTemp.Store(firstResult, codeGen, addressFixer);
@@ -338,7 +338,7 @@
             var firstRegister = secondResult.IsOccopied(preferredRegister) ?
                 secondResult.GetUnoccupiedVolatile(type) :
                 preferredRegister;
-            firstTemp.AsExpressionResult(type).GenerateMoveTo(firstRegister, type, codeGen, addressFixer);
+            firstTemp.AsExpressionResult(firstResult.ValueType).GenerateMoveTo(firstRegister, type, codeGen, addressFixer);
             storageManager.Release(firstTemp);
             return (firstRegister, secondResult, type);
         }
