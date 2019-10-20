@@ -41,11 +41,16 @@
 
         public ExpressionResult(Type valueType, Register valueRegister)
         {
+            if (valueType == null)
+                throw new ArgumentNullException(nameof(valueType));
+            if (valueRegister == null)
+                throw new ArgumentNullException(nameof(valueRegister));
             if (valueType.IsIntegerRegisterType() == valueRegister.FloatingPoint)
                 throw new ArgumentException("Type does not match register");
+            if (!valueRegister.FloatingPoint && valueType.SizeOf() != valueRegister.BitSize / 8)
+                throw new ArgumentException($"Bad register for type: {valueRegister} {valueType}");
 
-            Debug.Assert(valueType.SizeOf() == valueRegister.BitSize / 8);
-            ValueType = valueType ?? throw new ArgumentNullException(nameof(valueType));
+            ValueType = valueType;
             Value = valueRegister;
             Kind = ResultKind.Value;
         }
@@ -101,23 +106,23 @@
             {
                 return Kind switch
                 {
-                    ResultKind.Value    => type.OtherVolatileIntRegister(Value),
-                    ResultKind.Pointer  => type.OtherVolatileIntRegister(Ptr),
+                    ResultKind.Value => type.OtherVolatileIntRegister(Value),
+                    ResultKind.Pointer => type.OtherVolatileIntRegister(Ptr),
                     ResultKind.Pointer3 => type.OtherVolatileIntRegister(Ptr),
                     ResultKind.Pointer2 => type.OtherVolatileIntRegister(Ptr, StructOffset),
-                    ResultKind.Offset   => type.OtherVolatileIntRegister(),
-                    _                   => throw new ArgumentOutOfRangeException()
+                    ResultKind.Offset => type.OtherVolatileIntRegister(),
+                    _ => throw new ArgumentOutOfRangeException()
                 };
             }
 
             return Kind switch
             {
-                ResultKind.Value    => type.OtherVolatileFloatRegister(Value),
-                ResultKind.Pointer  => type.OtherVolatileFloatRegister(Ptr),
+                ResultKind.Value => type.OtherVolatileFloatRegister(Value),
+                ResultKind.Pointer => type.OtherVolatileFloatRegister(Ptr),
                 ResultKind.Pointer3 => type.OtherVolatileFloatRegister(Ptr),
                 ResultKind.Pointer2 => type.OtherVolatileFloatRegister(Ptr, StructOffset),
-                ResultKind.Offset   => type.OtherVolatileFloatRegister(),
-                _                   => throw new ArgumentOutOfRangeException()
+                ResultKind.Offset => type.OtherVolatileFloatRegister(),
+                _ => throw new ArgumentOutOfRangeException()
             };
         }
 

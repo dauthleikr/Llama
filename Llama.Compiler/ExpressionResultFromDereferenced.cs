@@ -32,7 +32,7 @@
         {
             if (!isCast && !targetType.CanAssignImplicitly(ValueType))
                 throw new TypeMismatchException(targetType.ToString(), ValueType.ToString());
-            if (target.BitSize / 8 != targetType.SizeOf())
+            if (!target.FloatingPoint && target.BitSize / 8 != targetType.SizeOf())
                 throw new ArgumentException($"Value of type {targetType} can not be moved to register {target}");
 
             if (targetType == ValueType)
