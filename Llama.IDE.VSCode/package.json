@@ -1,0 +1,26 @@
+{
+    "name": "llama-lang",
+	"publisher": "dauthleikr",
+    "displayName": "Llama Lang",
+    "description": "Llama support",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.39.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "contributes": {
+        "languages": [{
+            "id": "llama",
+            "aliases": ["Llama", "llama"],
+            "extensions": [".llama"],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "llama",
+            "scopeName": "source.llama",
+            "path": "./syntaxes/llama.tmLanguage.json"
+        }]
+    }
+}
