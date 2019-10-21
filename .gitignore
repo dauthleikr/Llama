@@ -6,6 +6,8 @@
 .antlr/
 test/
 
+*.vsix
+
 # User-specific files
 *.rsuser
 *.suo
