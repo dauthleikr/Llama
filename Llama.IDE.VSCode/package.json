@@ -4,6 +4,10 @@
     "displayName": "Llama Lang",
     "description": "Llama support",
     "version": "0.0.1",
+    "repository": {
+        "type" : "git",
+        "url" : "https://github.com/dauthleikr/llama.git"
+    },
     "engines": {
         "vscode": "^1.39.0"
     },
