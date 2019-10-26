@@ -42,7 +42,7 @@
             var pe32PlusExeBuilder = new ExecutableBuilder();
             linker.LinkPreBuild(pe32PlusExeBuilder);
 
-            var mainOffset = linker.GetCodeOffsetOfKnownFunction("main");
+            var mainOffset = linker.GetCodeOffsetOfKnownFunction("Main");
             if (mainOffset < 0)
             {
                 Console.WriteLine("No main function");
