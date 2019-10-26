@@ -26,7 +26,7 @@
             var arrayIndex = context.CompileExpression(expression.Index, codeGen, storageManager, new PreferredRegister(structOffsetRegister), scope);
             Constants.LongType.AssertCanAssignImplicitly(arrayIndex.ValueType);
 
-            arrayIndex.GenerateMoveTo(structOffsetRegister, codeGen, addressFixer);
+            arrayIndex.GenerateMoveTo(structOffsetRegister, Constants.LongType, codeGen, addressFixer);
             arrayTemp.AsExpressionResult(arrayType).GenerateMoveTo(arrayRegister, codeGen, addressFixer);
             storageManager.Release(arrayTemp);
 
