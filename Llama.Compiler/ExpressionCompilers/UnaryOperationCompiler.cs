@@ -21,13 +21,25 @@
         {
             return expression.Operator.Operator.Kind switch
             {
-                TokenKind.Minus     => CompileMinus(expression, target, codeGen, context, storageManager, addressFixer, scope),
+                TokenKind.Minus => CompileMinus(expression, target, codeGen, context, storageManager, addressFixer, scope),
                 TokenKind.AddressOf => CompileAddressOf(expression, target, codeGen, context, storageManager, addressFixer, scope),
-                TokenKind.Not       => CompileNot(expression, target, codeGen, context, storageManager, addressFixer, scope),
+                TokenKind.Not => CompileNot(expression, target, codeGen, context, storageManager, addressFixer, scope),
+                TokenKind.Pointer => CompileDereference(expression, target, codeGen, context, storageManager, addressFixer, scope),
                 _ => throw new NotImplementedException(
                     $"{nameof(UnaryOperationCompiler)}: I do not know how to compile {expression.Operator.Operator}"
                 )
             };
+        }
+
+        private ExpressionResult CompileDereference(UnaryOperatorExpression expression, PreferredRegister target, CodeGen codeGen, ICompilationContext context, StorageManager storageManager, IAddressFixer addressFixer, IScopeContext scope)
+        {
+            var result = context.CompileExpression(expression.Expression, codeGen, storageManager, target, scope);
+            if (result.ValueType.ChildRelation != Type.WrappingType.PointerOf)
+                throw new TypeMismatchException($"Any dereference-able type", result.ValueType.ToString());
+
+            var targetRegister = target.MakeFor(result.ValueType);
+            result.GenerateMoveTo(targetRegister, codeGen, addressFixer);
+            return new ExpressionResult(result.ValueType.Child, targetRegister.AsR64(), 0);
         }
 
         private static ExpressionResult CompileNot(
