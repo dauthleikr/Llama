@@ -5,6 +5,7 @@
 
 .antlr/
 test/
+*.exe
 
 *.vsix
 
@@ -125,6 +126,7 @@ $tf/
 # Guidance Automation Toolkit
 *.gpState
 
+compilerBinaries/
 # ReSharper is a .NET coding add-in
 _ReSharper*/
 *.[Rr]e[Ss]harper
