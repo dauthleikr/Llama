@@ -4,9 +4,9 @@
 
 A small compiled programming language written from scratch **(0 libraries used)**
 
-- **Where does it run?** x64 Windows only
+- **Where does it run?** x64 Windows only.
 - **Where is the standard library?** No.
-- **Demo Program?** There is a SampleProgram.llama in Llama.Compiler.Cli. Feel free to run "Llama.Compiler.Cli.exe SampleProgram.llama" and execute the resulting SampleProgram.exe
+- **Demo Program?** Run Example/BUILD_ALL_AND_OPEN.bat to set everything up, open any .llama file in the opened vscode instance, hit build (default Ctrl + Shift + B), run the generated .exe (same name as the .llama). Alternatively, run the Llama.Compiler.Cli with any .llama as argument.
 
 * **Why?** To really understand how everything works from the ground up; No "... yeah uhh let me use a library for [whatever]".
 * **Is it usable?** Not really, it's a prototype. The type system is garbage, the optimization is garbage, the language is garbage, the code generator is garbage. I was just exploring.
