@@ -37,24 +37,14 @@
             var isIATEntry = false;
             if (expression.Expression is AtomicExpression atomicExpression && atomicExpression.Token.Kind == TokenKind.Identifier)
             {
-                var identifier = atomicExpression.Token.RawText;
-                knownDeclaration = scope.GetFunctionDeclaration(identifier);
-                if (knownDeclaration == null)
-                {
-                    var importFunc = scope.GetFunctionImport(identifier);
-                    if(importFunc == null)
-                        throw new UnknownIdentifierException(identifier);
-
-                    knownDeclaration = importFunc.Declaration;
-                    isIATEntry = true;
-                }
-
-                if (knownDeclaration == null)
-                    throw new UnknownIdentifierException($"Cannot resolve function signature for identifier: \"{identifier}\"");
-                parameterTargetTypes = knownDeclaration.Parameters.Select(par => par.ParameterType).ToArray();
+                knownDeclaration = GetKnownDeclaration(scope, atomicExpression, ref isIATEntry, out parameterTargetTypes);
+                if(knownDeclaration.Parameters.Length != expression.Parameters.Length)
+                    throw new BadSignatureException(knownDeclaration);
             }
             else
                 parameterTargetTypes = parameterSourceTypes;
+
+
 
             CompileAndStoreParameters(expression, codeGen, storageManager, scope, addressFixer, context, parameterSourceTypes, parameterStorages);
 
@@ -64,6 +54,31 @@
 
             var returnType = knownDeclaration?.ReturnType ?? Constants.LongType; // todo: better alternative if not known
             return new ExpressionResult(returnType, returnType.MakeRegisterWithCorrectSize(Register64.RAX, XmmRegister.XMM0));
+        }
+
+        private static FunctionDeclaration GetKnownDeclaration(
+            IScopeContext scope,
+            AtomicExpression atomicExpression,
+            ref bool isIATEntry,
+            out Type[] parameterTargetTypes
+        )
+        {
+            var identifier = atomicExpression.Token.RawText;
+            var knownDeclaration = scope.GetFunctionDeclaration(identifier);
+            if (knownDeclaration == null)
+            {
+                var importFunc = scope.GetFunctionImport(identifier);
+                if (importFunc == null)
+                    throw new UnknownIdentifierException(identifier);
+
+                knownDeclaration = importFunc.Declaration;
+                isIATEntry = true;
+            }
+
+            if (knownDeclaration == null)
+                throw new UnknownIdentifierException($"Cannot resolve function signature for identifier: \"{identifier}\"");
+            parameterTargetTypes = knownDeclaration.Parameters.Select(par => par.ParameterType).ToArray();
+            return knownDeclaration;
         }
 
         private static ExpressionResult CompileFunctionPtr(
