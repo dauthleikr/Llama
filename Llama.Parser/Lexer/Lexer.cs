@@ -8,15 +8,37 @@
     {
         private readonly ITokenize[] _greedyTokenizers;
         private readonly ITokenize[] _staticTokenizers;
+        private readonly ISkipTrivia[] _triviaSkippers;
 
-        public Lexer(IEnumerable<ITokenize> staticTokenizers, IEnumerable<ITokenize> greedyTokenizers)
+        public Lexer(IEnumerable<ISkipTrivia> triviaSkippers, IEnumerable<ITokenize> staticTokenizers, IEnumerable<ITokenize> greedyTokenizers)
         {
+            _triviaSkippers = triviaSkippers.ToArray();
             _greedyTokenizers = greedyTokenizers.ToArray();
             _staticTokenizers = staticTokenizers.ToArray();
         }
 
         public Token NextToken(string source, ref int position)
         {
+            if (position >= source.Length)
+                return new Token(TokenKind.EndOfStream, string.Empty);
+
+            // Skip any trivia
+            var didSkipTrivia = true;
+            while (didSkipTrivia)
+            {
+                didSkipTrivia = false;
+                foreach (var triviaSkipper in _triviaSkippers)
+                {
+                    var positionAfterTrivia = triviaSkipper.GetPositionAfterTrivia(source, position);
+                    if (positionAfterTrivia > position)
+                    {
+                        didSkipTrivia = true;
+                        position = positionAfterTrivia;
+                        break;
+                    }
+                }
+            }
+
             if (position >= source.Length)
                 return new Token(TokenKind.EndOfStream, string.Empty);
 
@@ -58,17 +80,8 @@
                 return staticResult;
             }
 
+            static string TakeSome(string str, int maxChars) => str.Substring(0, Math.Min(str.Length, maxChars));
             throw new LexerException($"No matching token: {TakeSome(source.Substring(position), 10)} ...");
-        }
-
-        private static string TakeSome(string str, int maxChars) => str.Substring(0, Math.Min(str.Length, maxChars));
-
-        public Token NextNonTriviaToken(string source, ref int position)
-        {
-            Token token;
-            while ((token = NextToken(source, ref position)).IsTrivia) { }
-
-            return token;
         }
     }
 }

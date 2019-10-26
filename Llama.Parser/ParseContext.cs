@@ -40,6 +40,6 @@
             return token;
         }
 
-        private void PrepareNextToken() => NextCodeToken = _lexer.NextNonTriviaToken(_source, ref _sourcePosition);
+        private void PrepareNextToken() => NextCodeToken = _lexer.NextToken(_source, ref _sourcePosition);
     }
 }
