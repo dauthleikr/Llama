@@ -214,9 +214,9 @@
                 rightExpr.ImulTo(leftReg, codeGen, addressFixer);
             }
             else if (type == Constants.DoubleType)
-                rightExpr.DivsdTo(leftReg, codeGen, addressFixer);
+                rightExpr.MulsdTo(leftReg, codeGen, addressFixer);
             else if (type == Constants.FloatType)
-                rightExpr.DivssTo(leftReg, codeGen, addressFixer);
+                rightExpr.MulssTo(leftReg, codeGen, addressFixer);
             else
             {
                 throw new NotImplementedException(

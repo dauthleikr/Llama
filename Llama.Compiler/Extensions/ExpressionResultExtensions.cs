@@ -84,11 +84,11 @@
                 target,
                 codeGen,
                 fixer,
-                codeGen.Add,
-                codeGen.AddFromDereferenced,
-                codeGen.AddFromDereferenced2,
-                codeGen.AddFromDereferenced3,
-                codeGen.AddFromDereferenced4
+                codeGen.Imul,
+                codeGen.ImulFromDereferenced,
+                codeGen.ImulFromDereferenced2,
+                codeGen.ImulFromDereferenced3,
+                codeGen.ImulFromDereferenced4
             );
         }
 
