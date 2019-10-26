@@ -26,7 +26,7 @@
             Store<Declaration>.Parser = new DeclarationParser();
         }
 
-        public LlamaParseStore() { }
+        private LlamaParseStore() { }
 
         public IParse<T> GetStrategyFor<T>() => Store<T>.Parser;
     }

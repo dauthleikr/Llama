@@ -15,14 +15,14 @@
     {
         private static void Main(string[] args)
         {
-            if (args.Length != 1 || !File.Exists(args[0]))
-                Console.WriteLine($"Usage {Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().Location)} codefile.llama");
+            if (args.Length < 1 || args.Any(arg => !File.Exists(arg)))
+                Console.WriteLine($"Usage {Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().Location)} codefile.llama [, codefile2.llama, ...]");
 
-            var sourceFilePath = args[0];
             var time = Stopwatch.StartNew();
-            var source = File.ReadAllText(sourceFilePath);
+            var sourceFilePath = args[0];
+            var source = string.Join("\n", args.Select(File.ReadAllText));
             var lexer = LexerBuilder.BuildLlamaLexer();
-            var parser = new ParseContext(new LlamaParseStore(), lexer, source);
+            var parser = new ParseContext(LlamaParseStore.Instance, lexer, source);
             var document = parser.ReadNode<LlamaDocument>();
 
             Console.WriteLine($"Parsing time: {time.Elapsed.TotalMilliseconds:F2} ms");
