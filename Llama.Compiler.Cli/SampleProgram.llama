@@ -1,63 +1,48 @@
-﻿import("user32.dll") void MessageBoxA(int hwnd, cstr title, cstr text, int type)
+﻿import("kernel32.dll") long GetStdHandle(int handleType)
+import("kernel32.dll") bool WriteConsoleA(long handle, byte* str, int count, int* numWritten, long null)
 
-void main()
+int Main()
 {
+	long stdOutHandle = GetStdHandle(-11);
 
-	printWithBool(intToCstr(9001), true);
-	printWithBool(intToCstr(0), true);
-	comparisonChecks();
+	for (int i = 1; true; i = i + 1)
+	{
+		WriteConsole(stdOutHandle, IntToCstr(i));
+		WriteConsole(stdOutHandle, ": ");
+		WriteConsole(stdOutHandle, IntToCstr(FibRecursive(i)));
+		WriteConsole(stdOutHandle, "\n");
+	}
 }
 
-void printWithBool(cstr text, bool truth)
+int WriteConsole(long handle, cstr str)
 {
-	if (truth)
-		MessageBoxA(0, "True", text, 0);
-	else
-		MessageBoxA(0, "False", text, 0);
+	if (handle <= 0)
+		return 0;
+	int numWritten;
+	WriteConsoleA(handle, <byte*>str, StrLen(str), &numWritten, 0);
+	return numWritten;
 }
 
-void comparisonChecks()
+int StrLen(cstr str)
 {
-	printWithBool("3.2 > 2.9", 3.2 > 2.9);
-	printWithBool("2.9 > 3.2", 2.9 > 3.2);
-
-	printWithBool("1.2 < 2.9", 1.2 < 2.9);
-	printWithBool("9.2 < 2.9", 9.2 < 2.9);
-
-	printWithBool("1 < 2", 1 < 2);
-	printWithBool("2 < 2", 2 < 2);
-	printWithBool("2 < 1", 2 < 1);
-
-	printWithBool("1 <= 2", 1 <= 2);
-	printWithBool("2 <= 2", 2 <= 2);
-	printWithBool("2 <= 1", 2 <= 1);
-
-	printWithBool("1 > 2", 1 > 2);
-	printWithBool("1 > 1", 1 > 1);
-	printWithBool("2 > 1", 2 > 1);
-
-	printWithBool("1 >= 1", 1 >= 1);
-	printWithBool("0 >= 1", 0 >= 1);
-	printWithBool("2 >= 1", 2 >= 1);
-
-	printWithBool("2 == 2", 2 == 2);
-	printWithBool("1 == 2", 1 == 2);
-	printWithBool("3 == 2", 3 == 2);
-
-	printWithBool("2 != 2", 2 != 2);
-	printWithBool("2 != 3", 2 != 3);
-	printWithBool("3 != 2", 3 != 2);
+	for (int i = 0; true; i = i + 1)
+		if (str[i] == 0)
+			return i;
 }
 
-void printDigit(int digit)
+long GetStdOutHandle()
 {
-	byte[] msg = new byte(2);
-	msg[1] = <byte>0;
-	msg[0] = <byte>(48 + digit);
-	MessageBoxA(0, <cstr><byte*>msg, "", 1);
+	return GetStdHandle(-11);
 }
 
-cstr intToCstr(long value)
+long FibRecursive(int index)
+{
+	if(index < 3)
+		return 1;
+	return FibRecursive(index - 1) + FibRecursive(index - 2);
+}
+
+cstr IntToCstr(long value)
 {
 	if (value == 0)
 	{
@@ -81,7 +66,7 @@ cstr intToCstr(long value)
 	if (value < 0)
 		digitChars[0] = <byte>45;
 
-	value = abs(value);
+	value = Abs(value);
 	for (int i = 0; value != 0; i = i + 1)
 	{
 		digitChars[digits - (i + 1)] = <byte>(48 + value % 10);
@@ -90,16 +75,9 @@ cstr intToCstr(long value)
 	return <cstr><byte*>digitChars;
 }
 
-long abs(long value)
+long Abs(long value)
 {
 	if (value < 0)
 		return -value;
 	return value;
-}
-
-int strlen(cstr str)
-{
-	for (int i = 0; true; i = i + 1)
-		if (str[i] == 0)
-			return i + 1;
 }
