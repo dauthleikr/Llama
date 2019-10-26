@@ -244,9 +244,6 @@
             GenericFromDref4Action dref4Action
         )
         {
-            if (!target.FloatingPoint && target.BitSize / 8 != ValueType.SizeOf())
-                throw new ArgumentException($"Can not perform implicit cast in {nameof(DereferenceToRegister)} action");
-
             switch (Kind)
             {
                 case ResultKind.Value:
