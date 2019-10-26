@@ -1,0 +1,17 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "command": "${workspaceFolder}\\compilerBinaries\\Llama.Compiler.Cli.exe",
+            "type": "shell",
+            "args": [
+                "${file}"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        }
+    ]
+}

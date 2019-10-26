@@ -1,0 +1,42 @@
+﻿import("user32.dll") void MessageBoxA(int hwnd, cstr title, cstr text, int type)
+
+void PrintWithBool(cstr text, bool truth)
+{
+	if (truth)
+		MessageBoxA(0, "True", text, 0);
+	else
+		MessageBoxA(0, "False", text, 0);
+}
+
+void Main()
+{
+	PrintWithBool("3.2 > 2.9", 3.2 > 2.9);
+	PrintWithBool("2.9 > 3.2", 2.9 > 3.2);
+
+	PrintWithBool("1.2 < 2.9", 1.2 < 2.9);
+	PrintWithBool("9.2 < 2.9", 9.2 < 2.9);
+
+	PrintWithBool("1 < 2", 1 < 2);
+	PrintWithBool("2 < 2", 2 < 2);
+	PrintWithBool("2 < 1", 2 < 1);
+
+	PrintWithBool("1 <= 2", 1 <= 2);
+	PrintWithBool("2 <= 2", 2 <= 2);
+	PrintWithBool("2 <= 1", 2 <= 1);
+
+	PrintWithBool("1 > 2", 1 > 2);
+	PrintWithBool("1 > 1", 1 > 1);
+	PrintWithBool("2 > 1", 2 > 1);
+
+	PrintWithBool("1 >= 1", 1 >= 1);
+	PrintWithBool("0 >= 1", 0 >= 1);
+	PrintWithBool("2 >= 1", 2 >= 1);
+
+	PrintWithBool("2 == 2", 2 == 2);
+	PrintWithBool("1 == 2", 1 == 2);
+	PrintWithBool("3 == 2", 3 == 2);
+
+	PrintWithBool("2 != 2", 2 != 2);
+	PrintWithBool("2 != 3", 2 != 3);
+	PrintWithBool("3 != 2", 3 != 2);
+}

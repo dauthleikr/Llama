@@ -1,0 +1,1 @@
+dotnet publish -c Release -o sample-workspace\compilerBinaries -r win-x64 ..\Llama.Compiler.Cli\Llama.Compiler.Cli.csproj
