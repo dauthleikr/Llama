@@ -17,7 +17,7 @@
         )
         {
             var arrayTemp = storageManager.Allocate(true);
-            var array = context.CompileExpression(expression.Array, codeGen, storageManager, arrayTemp.Register, scope);
+            var array = context.CompileExpression(expression.Array, codeGen, storageManager, arrayTemp.IsRegister ? arrayTemp.Register : Register64.RAX, scope);
             var arrayType = array.ValueType;
             arrayTemp.Store(array, codeGen, addressFixer);
 
