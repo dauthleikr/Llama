@@ -2,7 +2,9 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
+    using System.Threading.Tasks;
 
     public class Lexer
     {
@@ -44,16 +46,23 @@
 
             // First, try to find a perfectly matching token
             var internalPositionStatic = position;
-            Token staticResult = default;
-            foreach (var tokenizer in _staticTokenizers)
-            {
-                if (!tokenizer.TryRead(source, ref internalPositionStatic, out var token))
-                    continue;
+            var emptyToken = new Token(TokenKind.EndOfStream, string.Empty);
+            var result = emptyToken;
 
-                staticResult = token;
-                break;
-            }
-
+            Parallel.ForEach(
+                _staticTokenizers,
+                tokenizer =>
+                {
+                    if (!tokenizer.TryRead(source, internalPositionStatic, out var token))
+                        return;
+                    lock (_staticTokenizers)
+                    {
+                        if (token.RawText.Length > result.RawText.Length)
+                            result = token;
+                    }
+                }
+            );
+            
             /*
               Then, try to find a better one with a non-static implementation (e.g. RegEx)
               This is done because an identifier called 'intToString' could be read as type 'int' 
@@ -61,23 +70,24 @@
               With this implementation, a greedy identifier-tokenizers would read 'intToString' as one, 
                 and it would be deemed better than 'int' based on token length
              */
-            foreach (var tokenizer in _greedyTokenizers)
-            {
-                var internalPositionGreedy = position;
-                if (!tokenizer.TryRead(source, ref internalPositionGreedy, out var token))
-                    continue;
-
-                if (token.RawText.Length > (staticResult.RawText?.Length ?? 0))
+            Parallel.ForEach(
+                _greedyTokenizers,
+                tokenizer =>
                 {
-                    position = internalPositionGreedy;
-                    return token;
+                    if (!tokenizer.TryRead(source, internalPositionStatic, out var token))
+                        return;
+                    lock (_staticTokenizers)
+                    {
+                        if (token.RawText.Length > result.RawText.Length)
+                            result = token;
+                    }
                 }
-            }
+            );
 
-            if (staticResult != default)
+            if (result != emptyToken)
             {
-                position = internalPositionStatic;
-                return staticResult;
+                position += result.RawText.Length;
+                return result;
             }
 
             static string TakeSome(string str, int maxChars) => str.Substring(0, Math.Min(str.Length, maxChars));

@@ -13,7 +13,7 @@
             _kind = kind;
         }
 
-        public bool TryRead(string src, ref int pos, out Token result)
+        public bool TryRead(string src, int pos, out Token result)
         {
             for (var i = 0; i < _text.Length; i++)
             {
@@ -24,7 +24,6 @@
                 }
             }
 
-            pos += _text.Length;
             result = new Token(_kind, _textString);
             return true;
         }

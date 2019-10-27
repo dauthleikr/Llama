@@ -13,7 +13,7 @@
             _kind = kind;
         }
 
-        public bool TryRead(string src, ref int pos, out Token result)
+        public bool TryRead(string src, int pos, out Token result)
         {
             var match = _regex.Match(src, pos);
             if (!match.Success || match.Index > pos)
@@ -22,7 +22,6 @@
                 return false;
             }
 
-            pos += match.Length;
             result = new Token(_kind, match.Value);
             return true;
         }
