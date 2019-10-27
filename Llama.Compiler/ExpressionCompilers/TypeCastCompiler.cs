@@ -42,12 +42,15 @@
 
             // we're done with pointer and array casting. Only value casting down below
             if (targetType.ChildRelation != Type.WrappingType.None || sourceType.ChildRelation != Type.WrappingType.None)
-                throw new BadCastException($"Cannot cast {sourceType} to {targetType}");
+                ThrowBadCast(sourceType, targetType);
 
             var sourceTypeSize = sourceType.SizeOf();
             var targetTypeSize = targetType.SizeOf();
             var sourceIsInt = sourceType.IsIntegerRegisterType();
             var targetIsInt = targetType.IsIntegerRegisterType();
+
+            if (sourceType == Constants.CstrType || targetType == Constants.CstrType)
+                ThrowBadCast(sourceType, targetType);
 
             if (sourceIsInt && targetIsInt)
             {
@@ -85,6 +88,8 @@
             return CastIntToFloat(sourceType, targetType, targetRegister, source, codeGen, addressFixer);
         }
 
+        private static void ThrowBadCast(Type source, Type target) => throw new BadCastException($"Cannot cast {source} to {target}");
+
         private static ExpressionResult CastIntToFloat(
             Type sourceType,
             Type targetType,
@@ -109,7 +114,8 @@
                         codeGen.CvtSi2Ss(targetRegister.AsFloat(), tempSource.AsR32());
                         break;
                     default:
-                        throw new BadCastException($"Cannot cast {sourceType} to {targetType}");
+                        ThrowBadCast(sourceType, targetType);
+                        break;
                 }
             }
 
@@ -124,11 +130,12 @@
                         codeGen.CvtSi2Sd(targetRegister.AsFloat(), tempSource.AsR32());
                         break;
                     default:
-                        throw new BadCastException($"Cannot cast {sourceType} to {targetType}");
+                        ThrowBadCast(sourceType, targetType);
+                        break;
                 }
             }
             else
-                throw new BadCastException($"Cannot cast {sourceType} to {targetType}");
+                ThrowBadCast(sourceType, targetType);
 
             return new ExpressionResult(targetType, targetRegister);
         }
@@ -154,7 +161,8 @@
                         codeGen.CvtSs2Si(targetRegister.AsR32(), XmmRegister.XMM0);
                         break;
                     default:
-                        throw new BadCastException($"Cannot cast {sourceType} to {targetType}");
+                        ThrowBadCast(sourceType, targetType);
+                        break;
                 }
             }
 
@@ -169,17 +177,20 @@
                         codeGen.CvtSd2Si(targetRegister.AsR32(), XmmRegister.XMM0);
                         break;
                     default:
-                        throw new BadCastException($"Cannot cast {sourceType} to {targetType}");
+                        ThrowBadCast(sourceType, targetType);
+                        break;
                 }
             }
             else
-                throw new BadCastException($"Cannot cast {sourceType} to {targetType}");
+                ThrowBadCast(sourceType, targetType);
 
             return new ExpressionResult(targetType, targetRegister);
         }
 
         private static bool CanCastUnsafe(Type targetType, Type sourceType)
         {
+            //if (Constants.LongType.CanAssignImplicitly(sourceType) && targetType.ChildRelation == Type.WrappingType.PointerOf)
+            //    return true; // allow number -> ptr for stuff like ptr = 0 or ptr = 0xdeadbeef
             if (sourceType == Constants.CstrType &&
                 targetType.ChildRelation == Type.WrappingType.PointerOf &&
                 targetType.Child.ChildRelation == Type.WrappingType.None &&
@@ -190,7 +201,6 @@
                 sourceType.Child.ChildRelation == Type.WrappingType.None &&
                 sourceType.Child.SizeOf() == 1)
                 return true; // allow any single byte ptr -> cstr
-
             if (sourceType.ChildRelation == Type.WrappingType.PointerOf && targetType.ChildRelation == Type.WrappingType.PointerOf)
                 return true; // Can cast any pointer to any pointer
             if (sourceType.ChildRelation == Type.WrappingType.ArrayOf &&
