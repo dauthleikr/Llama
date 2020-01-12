@@ -15,6 +15,15 @@
             return expression;
         }
 
+        public IExpression ReadShortExpression(IParseContext context)
+        {
+            var expression = ReadUncontinuedExpression(context);
+            IExpression expressionContinued;
+            while ((expressionContinued = TryContinueShortExpression(context, expression)) != expression)
+                expression = expressionContinued;
+            return expression;
+        }
+
         private IExpression ReadUncontinuedExpression(IParseContext context)
         {
             if (context.NextCodeToken.Kind == TokenKind.OpenAngularBracket)
@@ -28,15 +37,20 @@
             return ReadAtomicExpression(context);
         }
 
-        private IExpression TryContinueExpression(IParseContext context, IExpression currentExpression)
+        private IExpression TryContinueShortExpression(IParseContext context, IExpression currentExpression)
         {
             if (context.NextCodeToken.Kind == TokenKind.OpenParanthesis)
                 return ReadMethodCallExpression(context, currentExpression);
             if (context.NextCodeToken.Kind == TokenKind.OpenSquareBracket)
                 return ReadArrayAccessExpression(context, currentExpression);
+            return currentExpression;
+        }
+
+        private IExpression TryContinueExpression(IParseContext context, IExpression currentExpression)
+        {
             if (BinaryOperator.IsTokenKindValid(context.NextCodeToken.Kind))
                 return ReadBinaryOperatorExpression(context, currentExpression);
-            return currentExpression;
+            return TryContinueShortExpression(context, currentExpression);
         }
 
         private IExpression ReadAtomicExpression(IParseContext context)
@@ -61,7 +75,7 @@
         private IExpression ReadUnaryOperatorExpression(IParseContext context)
         {
             var op = context.ReadNode<UnaryOperator>();
-            return new UnaryOperatorExpression(op, ReadUncontinuedExpression(context));
+            return new UnaryOperatorExpression(op, ReadShortExpression(context));
         }
 
         private IExpression ReadTypeCastExpression(IParseContext context)
@@ -69,7 +83,7 @@
             context.ReadOrPanic(TokenKind.OpenAngularBracket);
             var type = context.ReadNode<Type>();
             context.ReadOrPanic(TokenKind.CloseAngularBracket);
-            return new TypeCastExpression(type, ReadUncontinuedExpression(context));
+            return new TypeCastExpression(type, ReadShortExpression(context));
         }
 
         private IExpression ReadParanthesisExpression(IParseContext context)
