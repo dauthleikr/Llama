@@ -6,6 +6,7 @@
     using System.Linq;
     using System.Reflection;
     using System.Reflection.PortableExecutable;
+    using System.Threading;
     using Linker;
     using Parser;
     using Parser.Lexer;
@@ -38,6 +39,7 @@
 
             foreach (var functionImplementation in document.Functions)
                 compiler.AddFunction(functionImplementation, document.Imports, document.Functions.Select(fun => fun.Declaration));
+
             var codeBlob = compiler.Finish();
             var linker = (Linker)compilationContext.AddressLinker;
 

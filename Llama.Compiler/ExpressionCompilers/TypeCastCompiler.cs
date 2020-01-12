@@ -33,7 +33,12 @@
             var targetRegister = target.MakeFor(targetType);
             if (targetType.ChildRelation == Type.WrappingType.PointerOf && // Allow array to pointer casts if the underlying type is identical
                 sourceType.ChildRelation == Type.WrappingType.ArrayOf &&
-                sourceType.Child == targetType.Child)
+                sourceType.Child == targetType.Child ||
+                targetType == Constants.CstrType && // Allow array of single byte -> cstr
+                sourceType.ChildRelation == Type.WrappingType.ArrayOf && 
+                sourceType.Child.ChildRelation == Type.WrappingType.None &&
+                sourceType.Child.SizeOf() == 1
+                )
             {
                 source.GenerateMoveTo(targetRegister, codeGen, addressFixer);
                 codeGen.Add(targetRegister.AsR64(), (sbyte)8);

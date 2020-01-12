@@ -1,6 +1,7 @@
 ﻿namespace Llama.Compiler
 {
     using System;
+    using System.Runtime.CompilerServices;
     using Parser.Nodes;
     using spit;
 
@@ -27,6 +28,7 @@
 
         public ICompilationContext CreateChildContext() => new CompilationContext(_store, _linkerFactory);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ExpressionResult CompileExpression<T>(
             T expression,
             CodeGen codeGen,

@@ -1,6 +1,8 @@
 ﻿namespace Llama.Parser.Parsers
 {
+    using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using Lexer;
     using Nodes;
 
@@ -54,8 +56,11 @@
             return new CodeBlock(statements.ToArray());
         }
 
+        private static int wow = 0;
         private IStatement ReadFor(IParseContext context)
         {
+
+            var t = Stopwatch.StartNew();
             context.ReadOrPanic(TokenKind.For);
             context.ReadOrPanic(TokenKind.OpenParanthesis);
             var variable = context.NextCodeToken.Kind != TokenKind.SemiColon ? context.ReadNode<Declaration>() : null;
@@ -64,6 +69,7 @@
             context.ReadOrPanic(TokenKind.SemiColon);
             var increment = context.NextCodeToken.Kind != TokenKind.CloseParanthesis ? context.ReadNode<IExpression>() : null;
             context.ReadOrPanic(TokenKind.CloseParanthesis);
+           // Console.WriteLine($"{wow++} {t.Elapsed.TotalMilliseconds}");
             return new For(Read(context), variable, condition, increment);
         }
 

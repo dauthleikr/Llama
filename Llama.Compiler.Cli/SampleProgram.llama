@@ -1,83 +1,8 @@
 ﻿import("kernel32.dll") long GetStdHandle(int handleType)
-import("kernel32.dll") bool WriteConsoleA(long handle, byte* str, int count, int* numWritten, long null)
+import("kernel32.dll") bool WriteConsoleA(long handle, cstr str, int count, int numWritten, long null)
 
 int Main()
 {
-	long stdOutHandle = GetStdHandle(-11);
-
-	for (int i = 1; true; i = i + 1)
-	{
-		WriteConsole(stdOutHandle, IntToCstr(i));
-		WriteConsole(stdOutHandle, ": ");
-		WriteConsole(stdOutHandle, IntToCstr(FibRecursive(i)));
-		WriteConsole(stdOutHandle, "\n");
-	}
-}
-
-int WriteConsole(long handle, cstr str)
-{
-	if (handle <= 0)
-		return 0;
-	int numWritten;
-	WriteConsoleA(handle, <byte*>str, StrLen(str), &numWritten, 0);
-	return numWritten;
-}
-
-int StrLen(cstr str)
-{
-	for (int i = 0; true; i = i + 1)
-		if (str[i] == 0)
-			return i;
-}
-
-long GetStdOutHandle()
-{
-	return GetStdHandle(-11);
-}
-
-long FibRecursive(int index)
-{
-	if(index < 3)
-		return 1;
-	return FibRecursive(index - 1) + FibRecursive(index - 2);
-}
-
-cstr IntToCstr(long value)
-{
-	if (value == 0)
-	{
-		byte[] zeroChars = new byte(2);
-		zeroChars[0] = <byte>48;
-		return <cstr><byte*>zeroChars;
-	}
-
-	int digits = 0;
-	if (value < 0)
-		digits = 1;
-
-	long valueCopy = value;
-	while(valueCopy != 0)
-	{
-		valueCopy = valueCopy / 10;
-		digits = digits + 1;
-	}
-
-	byte[] digitChars = new byte(digits + 1);
-	if (value < 0)
-		digitChars[0] = <byte>45;
-
-	value = Abs(value);
-	for (int i = 0; value != 0; i = i + 1)
-	{
-		digitChars[digits - (i + 1)] = <byte>(48 + value % 10);
-		value = value / 10;
-	}
-	return <cstr><byte*>digitChars;
-}
-
-long Abs(long value)
-{
-	if (value < 0)
-		return -value;
-	return value;
+	WriteConsoleA(GetStdHandle(-11), "Hello World!", 12, 0, 0);
+	return 0;
 }
