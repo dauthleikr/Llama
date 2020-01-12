@@ -7,6 +7,13 @@
 
     internal class ForCompiler : ICompileStatements<For>
     {
+        private readonly ICompileStatements<While> _whileCompiler;
+
+        public ForCompiler(ICompileStatements<While> whileCompiler)
+        {
+            _whileCompiler = whileCompiler;
+        }
+
         public void Compile(
             For statement,
             CodeGen codeGen,
@@ -21,7 +28,7 @@
 
             var bodyAndIncrement = statement.Instruction.StatementAsBlock().Statements.Concat(new[] { statement.Increment }).ToArray();
             var equalWhile = new While(statement.Condition, new CodeBlock(bodyAndIncrement));
-            context.CompileStatement(equalWhile, codeGen, storageManager, scope);
+            _whileCompiler.Compile(equalWhile, codeGen, storageManager, scope, addressFixer, context);
             scope.PopScope();
         }
     }

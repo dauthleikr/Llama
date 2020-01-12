@@ -1,6 +1,5 @@
 ﻿namespace Llama.Compiler
 {
-    using System;
     using ExpressionCompilers;
     using Parser.Nodes;
     using StatementCompilers;
@@ -32,7 +31,7 @@
 
             StatementCompilerStore<CodeBlock>.Compiler = new CodeBlockCompiler();
             StatementCompilerStore<Declaration>.Compiler = new DeclarationCompiler();
-            StatementCompilerStore<For>.Compiler = new ForCompiler();
+            StatementCompilerStore<For>.Compiler = new ForCompiler(new WhileCompiler());
             StatementCompilerStore<If>.Compiler = new IfCompiler();
             StatementCompilerStore<While>.Compiler = new WhileCompiler();
             StatementCompilerStore<Return>.Compiler = new ReturnCompiler();
