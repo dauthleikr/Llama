@@ -11,14 +11,12 @@
         public ExpressionResult Compile(
             ArrayAllocationExpression expression,
             PreferredRegister target,
-            CodeGen codeGen,
-            StorageManager storageManager,
-            ISymbolResolver scope,
-            ILinkingInfo linkingInfo,
             ICompilationContext context
         )
         {
-            var index = context.CompileExpression(expression.Count, codeGen, storageManager, new PreferredRegister(Register64.R8), scope);
+            var codeGen = context.Generator;
+            var linkingInfo = context.Linking;
+            var index = context.CompileExpression(expression.Count, new PreferredRegister(Register64.R8));
             var indexType = index.ValueType;
             var valueTypeSize = (sbyte)expression.Type.SizeOf();
             Constants.LongType.AssertCanAssignImplicitly(indexType);

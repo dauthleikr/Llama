@@ -5,18 +5,20 @@
 
     public interface ICompilationContext
     {
-        ILinkingInfo AddressLinker { get; }
+        ILinkingInfo Linking { get; }
+        ISymbolResolver Symbols { get; }
+        StorageManager Storage { get; }
+        CodeGen Generator { get; }
 
         ICompilationContext CreateChildContext();
 
+        void CopyToContext(ICompilationContext other);
+
         ExpressionResult CompileExpression<T>(
             T expression,
-            CodeGen codeGen,
-            StorageManager storageManager,
-            PreferredRegister target,
-            ISymbolResolver scope
+            PreferredRegister target
         ) where T : IExpression;
 
-        void CompileStatement<T>(T statement, CodeGen codeGen, StorageManager storageManager, ISymbolResolver scope) where T : IStatement;
+        void CompileStatement<T>(T statement) where T : IStatement;
     }
 }

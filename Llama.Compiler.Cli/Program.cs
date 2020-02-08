@@ -33,13 +33,14 @@
             Console.WriteLine($"Parsing time: {time.Elapsed.TotalMilliseconds:F2} ms");
             time.Restart();
 
-            var compilationContext = new CompilationContext(new LlamaCompilerStore(), new LinkerFactory());
-            var compiler = new Compiler(compilationContext);
+            var functionDeclarations = document.Functions.Select(fun => fun.Declaration).ToArray();
+            var compiler = new Compiler(new LlamaCompilerStore(), new LinkerFactory(), document.Imports, functionDeclarations);
 
             foreach (var functionImplementation in document.Functions)
-                compiler.AddFunction(functionImplementation, document.Imports, document.Functions.Select(fun => fun.Declaration));
-            var codeBlob = compiler.Finish();
-            var linker = (Linker)compilationContext.AddressLinker;
+                compiler.AddFunction(functionImplementation);
+
+            var codeBlob = compiler.Code;
+            var linker = (Linker)compiler.LinkingInfo;
 
             Console.WriteLine($"Compilation time: {time.Elapsed.TotalMilliseconds:F2} ms");
             time.Restart();

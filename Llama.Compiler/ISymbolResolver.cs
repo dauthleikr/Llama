@@ -14,7 +14,8 @@
         FunctionImport GetFunctionImport(string identifier);
         bool IsLocalDefined(string identifier);
         void DefineLocal(string identifier, Type type);
-        void PushScope();
-        void PopScope();
+        void DefineFunctionLocal(string identifier, Type type);
+        void PushLocalScope();
+        void PopLocalScope();
     }
 }

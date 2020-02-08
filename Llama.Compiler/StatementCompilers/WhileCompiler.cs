@@ -1,6 +1,5 @@
 ﻿namespace Llama.Compiler.StatementCompilers
 {
-    using System;
     using Extensions;
     using Parser.Nodes;
     using spit;
@@ -12,28 +11,24 @@
 
         public void Compile(
             While statement,
-            CodeGen codeGen,
-            StorageManager storageManager,
-            ISymbolResolver scope,
-            ILinkingInfo linkingInfo,
             ICompilationContext context
         )
         {
+            var codeGen = context.Generator;
             var conditionStart = codeGen.StreamPosition;
             var preferredRegisterCondition = new PreferredRegister(Register64.RAX);
-            var whileConditionResult = context.CompileExpression(statement.Condition, codeGen, storageManager, preferredRegisterCondition, scope);
+            var whileConditionResult = context.CompileExpression(statement.Condition, preferredRegisterCondition);
             Constants.BoolType.AssertCanAssignImplicitly(whileConditionResult.ValueType);
 
-            whileConditionResult.GenerateMoveTo(Register8.AL, Constants.BoolType, codeGen, linkingInfo);
+            whileConditionResult.GenerateMoveTo(Register8.AL, Constants.BoolType, codeGen, context.Linking);
 
             codeGen.Test(Register8.AL, Register8.AL);
 
             var childContext = context.CreateChildContext();
-            var bodyCodeGen = new CodeGen();
 
-            childContext.CompileStatement(statement.Instruction.StatementAsBlock(), bodyCodeGen, storageManager, scope);
+            childContext.CompileStatement(statement.Instruction.StatementAsBlock());
 
-            var bodySpan = bodyCodeGen.GetBufferSpan();
+            var bodySpan = childContext.Generator.GetBufferSpan();
             var bodyLength = bodySpan.Length + JmpIntSize; // assume far jmp will be generated
             if (bodyLength <= sbyte.MaxValue)
                 codeGen.Je((sbyte)bodyLength);
@@ -41,8 +36,7 @@
                 codeGen.Je(bodyLength);
             var farJmpGuessPos = codeGen.StreamPosition;
 
-            childContext.AddressLinker.CopyTo(context.AddressLinker, codeGen.StreamPosition);
-            codeGen.Write(bodySpan);
+            childContext.CopyToContext(context);
 
             var offsetToStart = conditionStart - codeGen.StreamPosition;
             if (offsetToStart >= sbyte.MinValue)

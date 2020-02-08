@@ -38,7 +38,8 @@
         private readonly Dictionary<string, FunctionDeclaration> _functionDeclarations;
         private readonly Dictionary<string, FunctionImport> _functionImports;
         private readonly Dictionary<string, int> _localToOffset;
-        private LocalScope _scope = new LocalScope();
+        private readonly LocalScope _functionScope = new LocalScope();
+        private LocalScope _scope;
 
         private FunctionSymbolResolver(
             FunctionDeclaration function,
@@ -56,6 +57,7 @@
                 throw new ArgumentNullException(nameof(declarations));
 
             CurrentFunctionIdentifier = function.Identifier.RawText;
+            _scope = _functionScope;
             _localToOffset = localToOffset ?? throw new ArgumentNullException(nameof(localToOffset));
             _functionDeclarations = declarations.ToDictionary(item => item.Identifier.RawText, item => item);
             _functionImports = imports.ToDictionary(item => item.Declaration.Identifier.RawText, item => item);
@@ -89,9 +91,11 @@
 
         public void DefineLocal(string identifier, Type type) => _scope.DefineLocal(identifier, type);
 
-        public void PushScope() => _scope = new LocalScope(_scope);
+        public void DefineFunctionLocal(string identifier, Type type) => _functionScope.DefineLocal(identifier, type);
 
-        public void PopScope() => _scope = _scope.Parent ?? throw new InvalidOperationException();
+        public void PushLocalScope() => _scope = new LocalScope(_scope);
+
+        public void PopLocalScope() => _scope = _scope.Parent ?? throw new InvalidOperationException();
 
         public static FunctionSymbolResolver FromBlock(
             FunctionImplementation function,
@@ -134,7 +138,7 @@
             }
 
             var maxCalleeParameters = 4; // R9, R8, RDX, RCX home is guaranteed
-            foreach (var methodCallExpression in function.Body.GetExpressions().OfType<MethodCallExpression>())
+            foreach (var methodCallExpression in function.Body.GetExpressions().OfType<FunctionCallExpression>())
             {
                 if (methodCallExpression.Parameters.Length > maxCalleeParameters)
                     maxCalleeParameters = methodCallExpression.Parameters.Length;

@@ -12,10 +12,6 @@
         public ExpressionResult Compile(
             BinaryOperatorExpression expression,
             PreferredRegister target,
-            CodeGen codeGen,
-            StorageManager storageManager,
-            ISymbolResolver scope,
-            ILinkingInfo linkingInfo,
             ICompilationContext context
         )
         {
@@ -29,10 +25,6 @@
                         ExpressionResultExtensions.AddsdTo,
                         ExpressionResultExtensions.AddssTo,
                         target,
-                        codeGen,
-                        storageManager,
-                        scope,
-                        linkingInfo,
                         context
                     );
                 case TokenKind.Minus:
@@ -43,97 +35,69 @@
                         ExpressionResultExtensions.SubsdTo,
                         ExpressionResultExtensions.SubssTo,
                         target,
-                        codeGen,
-                        storageManager,
-                        scope,
-                        linkingInfo,
                         context
                     );
                 case TokenKind.Pointer:
-                    return CompileMultiply(expression.Left, expression.Right, target, codeGen, storageManager, scope, linkingInfo, context);
+                    return CompileMultiply(expression.Left, expression.Right, target, context);
                 case TokenKind.Divide:
-                    return CompileDivide(expression.Left, expression.Right, target, codeGen, storageManager, scope, linkingInfo, context);
+                    return CompileDivide(expression.Left, expression.Right, target, context);
                 case TokenKind.Modolu:
-                    return CompileModolu(expression.Left, expression.Right, target, codeGen, storageManager, scope, linkingInfo, context);
+                    return CompileModolu(expression.Left, expression.Right, target, context);
                 case TokenKind.Assignment:
-                    return CompileAssign(expression.Left, expression.Right, target, codeGen, storageManager, scope, linkingInfo, context);
+                    return CompileAssign(expression.Left, expression.Right, target, context);
                 case TokenKind.Equals:
                     return CompileComparison(
                         expression.Left,
                         expression.Right,
                         target,
-                        codeGen,
-                        storageManager,
-                        scope,
-                        linkingInfo,
                         context,
-                        codeGen.Je,
-                        codeGen.Je
+                        context.Generator.Je,
+                        context.Generator.Je
                     );
                 case TokenKind.NotEquals:
                     return CompileComparison(
                         expression.Left,
                         expression.Right,
                         target,
-                        codeGen,
-                        storageManager,
-                        scope,
-                        linkingInfo,
                         context,
-                        codeGen.Jne,
-                        codeGen.Jne
+                        context.Generator.Jne,
+                        context.Generator.Jne
                     );
                 case TokenKind.OpenAngularBracket:
                     return CompileComparison(
                         expression.Left,
                         expression.Right,
                         target,
-                        codeGen,
-                        storageManager,
-                        scope,
-                        linkingInfo,
                         context,
-                        codeGen.Jl,
-                        codeGen.Jb
+                        context.Generator.Jl,
+                        context.Generator.Jb
                     );
                 case TokenKind.CloseAngularBracket:
                     return CompileComparison(
                         expression.Left,
                         expression.Right,
                         target,
-                        codeGen,
-                        storageManager,
-                        scope,
-                        linkingInfo,
                         context,
-                        codeGen.Jg,
-                        codeGen.Ja
+                        context.Generator.Jg,
+                        context.Generator.Ja
                     );
                 case TokenKind.GreaterEquals:
                     return CompileComparison(
                         expression.Left,
                         expression.Right,
                         target,
-                        codeGen,
-                        storageManager,
-                        scope,
-                        linkingInfo,
                         context,
-                        codeGen.Jge,
-                        codeGen.Jae
+                        context.Generator.Jge,
+                        context.Generator.Jae
                     );
                 case TokenKind.SmallerEquals:
                     return CompileComparison(
                         expression.Left,
                         expression.Right,
                         target,
-                        codeGen,
-                        storageManager,
-                        scope,
-                        linkingInfo,
                         context,
-                        codeGen.Jbe,
-                        codeGen.Jle
+                        context.Generator.Jbe,
+                        context.Generator.Jle
                     );
                 default:
                     throw new NotImplementedException($"Compilation for Operator {expression.Operator.Operator.Kind} is not implemented");
@@ -147,10 +111,6 @@
             Action<ExpressionResult, Register, CodeGen, ILinkingInfo> actionFloat,
             Action<ExpressionResult, Register, CodeGen, ILinkingInfo> actionDouble,
             PreferredRegister target,
-            CodeGen codeGen,
-            StorageManager storageManager,
-            ISymbolResolver scope,
-            ILinkingInfo linkingInfo,
             ICompilationContext context
         )
         {
@@ -158,20 +118,16 @@
                 left,
                 right,
                 target,
-                codeGen,
-                storageManager,
-                scope,
-                linkingInfo,
                 context,
                 true
             );
 
             if (type.IsIntegerRegisterType())
-                actionInt(rightExpr, leftReg, codeGen, linkingInfo);
+                actionInt(rightExpr, leftReg, context.Generator, context.Linking);
             else if (type == Constants.DoubleType)
-                actionDouble(rightExpr, leftReg, codeGen, linkingInfo);
+                actionDouble(rightExpr, leftReg, context.Generator, context.Linking);
             else if (type == Constants.FloatType)
-                actionFloat(rightExpr, leftReg, codeGen, linkingInfo);
+                actionFloat(rightExpr, leftReg, context.Generator, context.Linking);
             else
             {
                 throw new NotImplementedException(
@@ -186,10 +142,6 @@
             IExpression left,
             IExpression right,
             PreferredRegister target,
-            CodeGen codeGen,
-            StorageManager storageManager,
-            ISymbolResolver scope,
-            ILinkingInfo linkingInfo,
             ICompilationContext context
         )
         {
@@ -198,10 +150,6 @@
                 left,
                 right,
                 tempRegister,
-                codeGen,
-                storageManager,
-                scope,
-                linkingInfo,
                 context,
                 true
             );
@@ -211,12 +159,12 @@
                 if (type.SizeOf() == 1)
                     throw new NotImplementedException("Multiplications with 8-bit types are not implemented");
 
-                rightExpr.ImulTo(leftReg, codeGen, linkingInfo);
+                rightExpr.ImulTo(leftReg, context.Generator, context.Linking);
             }
             else if (type == Constants.DoubleType)
-                rightExpr.MulsdTo(leftReg, codeGen, linkingInfo);
+                rightExpr.MulsdTo(leftReg, context.Generator, context.Linking);
             else if (type == Constants.FloatType)
-                rightExpr.MulssTo(leftReg, codeGen, linkingInfo);
+                rightExpr.MulssTo(leftReg, context.Generator, context.Linking);
             else
             {
                 throw new NotImplementedException(
@@ -231,10 +179,6 @@
             IExpression left,
             IExpression right,
             PreferredRegister target,
-            CodeGen codeGen,
-            StorageManager storageManager,
-            ISymbolResolver scope,
-            ILinkingInfo linkingInfo,
             ICompilationContext context
         )
         {
@@ -243,24 +187,20 @@
                 left,
                 right,
                 leftRegisterPref,
-                codeGen,
-                storageManager,
-                scope,
-                linkingInfo,
                 context,
                 true
             );
 
             if (type.IsIntegerRegisterType())
             {
-                CompileIntegerDivision(codeGen, linkingInfo, type, leftReg, rightExpr);
+                CompileIntegerDivision(context.Generator, context.Linking, type, leftReg, rightExpr);
                 return new ExpressionResult(type, new PreferredRegister(Register64.RAX).MakeFor(type));
             }
 
             if (type == Constants.DoubleType)
-                rightExpr.DivsdTo(leftReg, codeGen, linkingInfo);
+                rightExpr.DivsdTo(leftReg, context.Generator, context.Linking);
             else if (type == Constants.FloatType)
-                rightExpr.DivssTo(leftReg, codeGen, linkingInfo);
+                rightExpr.DivssTo(leftReg, context.Generator, context.Linking);
             else
             {
                 throw new NotImplementedException(
@@ -275,10 +215,6 @@
             IExpression left,
             IExpression right,
             PreferredRegister target,
-            CodeGen codeGen,
-            StorageManager storageManager,
-            ISymbolResolver scope,
-            ILinkingInfo linkingInfo,
             ICompilationContext context
         )
         {
@@ -287,19 +223,15 @@
                 left,
                 right,
                 leftRegisterPref,
-                codeGen,
-                storageManager,
-                scope,
-                linkingInfo,
                 context,
                 true
             );
 
             if (type.IsIntegerRegisterType())
             {
-                var typeIsByte = CompileIntegerDivision(codeGen, linkingInfo, type, leftReg, rightExpr);
+                var typeIsByte = CompileIntegerDivision(context.Generator, context.Linking, type, leftReg, rightExpr);
                 if (typeIsByte) // for byte op. the remainder is stored in 'ah' instead
-                    codeGen.Write(0x8A, 0xD4); // mov dl, ah
+                    context.Generator.Write(0x8A, 0xD4); // mov dl, ah
 
                 return new ExpressionResult(type, new PreferredRegister(Register64.RDX).MakeFor(type));
             }
@@ -344,19 +276,10 @@
             return typeIsByte;
         }
 
-        private static ExpressionResult CompileAssign(
-            IExpression left,
-            IExpression right,
-            PreferredRegister target,
-            CodeGen codeGen,
-            StorageManager storageManager,
-            ISymbolResolver scope,
-            ILinkingInfo linkingInfo,
-            ICompilationContext context
-        )
+        private static ExpressionResult CompileAssign(IExpression left, IExpression right, PreferredRegister target, ICompilationContext context)
         {
-            var (expression, assign, type) = PrepareBinaryExpression(right, left, target, codeGen, storageManager, scope, linkingInfo, context);
-            assign.GenerateAssign(expression, codeGen, linkingInfo);
+            var (expression, assign, type) = PrepareBinaryExpression(right, left, target, context);
+            assign.GenerateAssign(expression, context.Generator, context.Linking);
             return assign;
         }
 
@@ -364,10 +287,6 @@
             IExpression left,
             IExpression right,
             PreferredRegister target,
-            CodeGen codeGen,
-            StorageManager storageManager,
-            ISymbolResolver scope,
-            ILinkingInfo linkingInfo,
             ICompilationContext context,
             Action<sbyte> comparisonJmpSigned,
             Action<sbyte> comparisonJmpUnsignedd,
@@ -378,19 +297,15 @@
                 left,
                 right,
                 target,
-                codeGen,
-                storageManager,
-                scope,
-                linkingInfo,
                 context,
                 true
             );
             if (type.IsIntegerRegisterType())
-                rightExpr.CmpTo(leftReg, codeGen, linkingInfo);
+                rightExpr.CmpTo(leftReg, context.Generator, context.Linking);
             else if (type == Constants.DoubleType)
-                rightExpr.ComisdTo(leftReg, codeGen, linkingInfo);
+                rightExpr.ComisdTo(leftReg, context.Generator, context.Linking);
             else if (type == Constants.FloatType)
-                rightExpr.ComissTo(leftReg, codeGen, linkingInfo);
+                rightExpr.ComissTo(leftReg, context.Generator, context.Linking);
             else
             {
                 throw new NotImplementedException(
@@ -411,8 +326,8 @@
             else
                 comparisonJmpUnsignedd((sbyte)mov0CodeGen.GetBufferSpan().Length);
 
-            codeGen.Write(mov0CodeGen.GetBufferSpan());
-            codeGen.Write(mov1CodeGen.GetBufferSpan());
+            context.Generator.Write(mov0CodeGen.GetBufferSpan());
+            context.Generator.Write(mov1CodeGen.GetBufferSpan());
             return new ExpressionResult(Constants.BoolType, targetRegister);
         }
 
@@ -434,20 +349,16 @@
             IExpression first,
             IExpression second,
             PreferredRegister preferredFirst,
-            CodeGen codeGen,
-            StorageManager storageManager,
-            ISymbolResolver scope,
-            ILinkingInfo linkingInfo,
             ICompilationContext context,
             bool shouldDereferenceForImplicitCast = false
         )
         {
-            var firstResult = context.CompileExpression(first, codeGen, storageManager, preferredFirst, scope);
+            var firstResult = context.CompileExpression(first, preferredFirst);
             var isfirstIntegerType = firstResult.ValueType.IsIntegerRegisterType();
-            var firstTemp = storageManager.Allocate(isfirstIntegerType);
-            firstTemp.Store(firstResult, codeGen, linkingInfo);
+            var firstTemp = context.Storage.Allocate(isfirstIntegerType);
+            firstTemp.Store(firstResult, context.Generator, context.Linking);
 
-            var secondResult = context.CompileExpression(second, codeGen, storageManager, preferredFirst, scope);
+            var secondResult = context.CompileExpression(second, preferredFirst);
             var type = firstResult.ValueType;
             if (firstResult.ValueType != secondResult.ValueType)
             {
@@ -458,7 +369,7 @@
                     type = firstResult.ValueType;
 
                     var secondDerefVolatile = secondResult.GetOccupiedOrVolatile(type);
-                    secondResult.GenerateMoveTo(secondDerefVolatile, type, codeGen, linkingInfo);
+                    secondResult.GenerateMoveTo(secondDerefVolatile, type, context.Generator, context.Linking);
                     secondResult = new ExpressionResult(type, secondDerefVolatile);
                 }
                 else
@@ -467,8 +378,8 @@
 
             var preferredRegister = preferredFirst.MakeFor(type);
             var firstRegister = secondResult.IsOccopied(preferredRegister) ? secondResult.GetUnoccupiedVolatile(type) : preferredRegister;
-            firstTemp.AsExpressionResult(firstResult.ValueType).GenerateMoveTo(firstRegister, type, codeGen, linkingInfo);
-            storageManager.Release(firstTemp);
+            firstTemp.AsExpressionResult(firstResult.ValueType).GenerateMoveTo(firstRegister, type, context.Generator, context.Linking);
+            context.Storage.Release(firstTemp);
             return (firstRegister, secondResult, type);
         }
     }

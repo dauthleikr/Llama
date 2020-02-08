@@ -8,47 +8,39 @@
     {
         public void Compile(
             If statement,
-            CodeGen codeGen,
-            StorageManager storageManager,
-            ISymbolResolver scope,
-            ILinkingInfo linkingInfo,
             ICompilationContext context
         )
         {
             var preferredRegisterCondition = new PreferredRegister(Register64.RAX);
-            var ifConditionResult = context.CompileExpression(statement.Condition, codeGen, storageManager, preferredRegisterCondition, scope);
-            ifConditionResult.GenerateMoveTo(preferredRegisterCondition.MakeFor(Constants.BoolType), codeGen, linkingInfo);
-            codeGen.Test(Register8.AL, Register8.AL);
+            var ifConditionResult = context.CompileExpression(statement.Condition, preferredRegisterCondition);
+            ifConditionResult.GenerateMoveTo(preferredRegisterCondition.MakeFor(Constants.BoolType), context.Generator, context.Linking);
+            context.Generator.Test(Register8.AL, Register8.AL);
 
-            var ifBodyContext = context.CreateChildContext();
-            var ifBodyCodeGen = new CodeGen();
-            var elseBodyContext = context.CreateChildContext();
-            var elseBodyCodeGen = new CodeGen();
+            var ifBody = context.CreateChildContext();
+            var elseBody = context.CreateChildContext();
 
             if (statement.ElseInstruction != null)
-                elseBodyContext.CompileStatement(statement.ElseInstruction.StatementAsBlock(), elseBodyCodeGen, storageManager, scope);
+                elseBody.CompileStatement(statement.ElseInstruction.StatementAsBlock());
 
-            ifBodyContext.CompileStatement(statement.Instruction.StatementAsBlock(), ifBodyCodeGen, storageManager, scope);
+            ifBody.CompileStatement(statement.Instruction.StatementAsBlock());
 
-            var elseBodySpan = elseBodyCodeGen.GetBufferSpan();
+            var elseBodySpan = elseBody.Generator.GetBufferSpan();
             if (elseBodySpan.Length > 0)
             {
                 if (elseBodySpan.Length <= sbyte.MaxValue)
-                    ifBodyCodeGen.Jmp((sbyte)elseBodySpan.Length);
+                    ifBody.Generator.Jmp((sbyte)elseBodySpan.Length);
                 else
-                    ifBodyCodeGen.Jmp(elseBodySpan.Length);
+                    ifBody.Generator.Jmp(elseBodySpan.Length);
             }
 
-            var ifBodySpan = ifBodyCodeGen.GetBufferSpan();
+            var ifBodySpan = ifBody.Generator.GetBufferSpan();
             if (ifBodySpan.Length <= sbyte.MaxValue)
-                codeGen.Je((sbyte)ifBodySpan.Length);
+                context.Generator.Je((sbyte)ifBodySpan.Length);
             else
-                codeGen.Je(ifBodySpan.Length);
+                context.Generator.Je(ifBodySpan.Length);
 
-            ifBodyContext.AddressLinker.CopyTo(context.AddressLinker, codeGen.StreamPosition);
-            codeGen.Write(ifBodySpan);
-            elseBodyContext.AddressLinker.CopyTo(context.AddressLinker, codeGen.StreamPosition);
-            codeGen.Write(elseBodySpan);
+            ifBody.CopyToContext(context);
+            elseBody.CopyToContext(context);
         }
     }
 }

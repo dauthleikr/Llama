@@ -40,7 +40,7 @@
         private IExpression TryContinueShortExpression(IParseContext context, IExpression currentExpression)
         {
             if (context.NextCodeToken.Kind == TokenKind.OpenParanthesis)
-                return ReadMethodCallExpression(context, currentExpression);
+                return ReadFunctionCallExpression(context, currentExpression);
             if (context.NextCodeToken.Kind == TokenKind.OpenSquareBracket)
                 return ReadArrayAccessExpression(context, currentExpression);
             return currentExpression;
@@ -94,7 +94,7 @@
             return expression;
         }
 
-        private IExpression ReadMethodCallExpression(IParseContext context, IExpression called)
+        private FunctionCallExpression ReadFunctionCallExpression(IParseContext context, IExpression called)
         {
             context.ReadOrPanic(TokenKind.OpenParanthesis);
             var parameters = new List<IExpression>();
@@ -106,7 +106,7 @@
             }
 
             context.ReadOrPanic(TokenKind.CloseParanthesis);
-            return new MethodCallExpression(called, parameters.ToArray());
+            return new FunctionCallExpression(called, parameters.ToArray());
         }
 
         private IExpression ReadArrayAccessExpression(IParseContext context, IExpression array)

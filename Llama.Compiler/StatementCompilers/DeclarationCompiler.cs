@@ -7,27 +7,24 @@
     {
         public void Compile(
             Declaration statement,
-            CodeGen codeGen,
-            StorageManager storageManager,
-            IScopeContext scope,
-            IAddressFixer addressFixer,
             ICompilationContext context
         )
         {
-            scope.DefineLocal(statement.Identifier.RawText, statement.Type);
+            context.Symbols.DefineLocal(statement.Identifier.RawText, statement.Type);
             if (statement.InitialValue == null)
             {
-                codeGen.Xor(Register64.RAX, Register64.RAX);
-                codeGen.MovToDereferenced(Register64.RSP, Register64.RAX, scope.GetLocalOffset(statement.Identifier.RawText));
+                context.Generator.Xor(Register64.RAX, Register64.RAX);
+                context.Generator.MovToDereferenced(Register64.RSP, Register64.RAX, context.Symbols.GetLocalOffset(statement.Identifier.RawText));
             }
             else
             {
                 var preferredRegister = new PreferredRegister(Register64.RAX, XmmRegister.XMM0);
-                var initialValue = context.CompileExpression(statement.InitialValue, codeGen, storageManager, preferredRegister, scope);
+                var initialValue = context.CompileExpression(statement.InitialValue, preferredRegister);
                 var initialValueRegister = preferredRegister.MakeFor(statement.Type);
 
-                initialValue.GenerateMoveTo(initialValueRegister, statement.Type, codeGen, addressFixer);
-                scope.GetLocalReference(statement.Identifier.RawText).GenerateAssign(initialValueRegister, codeGen, addressFixer);
+                initialValue.GenerateMoveTo(initialValueRegister, statement.Type, context.Generator, context.Linking);
+                context.Symbols.GetLocalReference(statement.Identifier.RawText)
+                    .GenerateAssign(initialValueRegister, context.Generator, context.Linking);
             }
         }
     }

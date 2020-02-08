@@ -9,51 +9,70 @@
 
     public class Compiler
     {
-        private readonly CodeGen _codeGen = new CodeGen();
-        private readonly ICompilationContext _context;
+        public Span<byte> Code => Generator.GetBufferSpan();
+        public readonly CodeGen Generator = new CodeGen();
+        public readonly ILinkingInfo LinkingInfo;
 
-        public Compiler(ICompilationContext context) => _context = context ?? throw new ArgumentNullException(nameof(context));
+        private readonly ICompilerStore _nodeCompilers;
+        private readonly IFactory<ILinkingInfo> _linkingInfoFactory;
+        private readonly IEnumerable<FunctionImport> _imports;
+        private readonly IEnumerable<FunctionDeclaration> _declarations;
 
-        public long AddFunction(FunctionImplementation function, IEnumerable<FunctionImport> imports, IEnumerable<FunctionDeclaration> declarations)
+        public Compiler(ICompilerStore nodeCompilers, IFactory<ILinkingInfo> linkingInfoFactory, IEnumerable<FunctionImport> imports, IEnumerable<FunctionDeclaration> declarations)
         {
-            if (function == null)
-                throw new ArgumentNullException(nameof(function));
-            if (declarations == null)
-                throw new ArgumentNullException(nameof(declarations));
+            _nodeCompilers = nodeCompilers ?? throw new ArgumentNullException(nameof(nodeCompilers));
+            _linkingInfoFactory = linkingInfoFactory ?? throw new ArgumentNullException(nameof(linkingInfoFactory));
+            _imports = imports ?? throw new ArgumentNullException(nameof(imports));
+            _declarations = declarations ?? throw new ArgumentNullException(nameof(declarations));
 
-            _codeGen.Write(0xCC);
-            _codeGen.Write(
-                Enumerable.Repeat((byte)0xCC, (int)(16 - _codeGen.StreamPosition % 16)).ToArray()
-            ); // 16-byte align function with int3 breakpoints
+            LinkingInfo = _linkingInfoFactory.Create();
+        }
 
-            var scope = FunctionScope.FromBlock(function, imports, declarations);
+        public long AddFunction(FunctionImplementation function)
+        {
+            // 0. Setting up scope and storage for function
+            var scope = FunctionSymbolResolver.FromBlock(function, _imports, _declarations);
             var storageManager = new StorageManager(scope);
+            var context = new CompilationContext(_nodeCompilers, _linkingInfoFactory, scope, storageManager);
 
-            foreach (var parameter in function.Declaration.Parameters)
-                scope.DefineLocal(parameter.ParameterIdentifier.RawText, parameter.ParameterType);
+            // 1. Compiling the full function (incl. prologue and epilogue) with the given context
+            CompileFunction(function, context);
 
-            var prologuePosition = _codeGen.StreamPosition;
-            if (function.Declaration.Identifier.RawText == "Main")
-                CompileEntryPointPreCode();
+            // 2. Create function padding in the global "context" (16-byte align function with int3 breakpoints)
+            Generator.Write(0xCC);
+            Generator.Write(
+                Enumerable.Repeat((byte)0xCC, (int)(16 - Generator.StreamPosition % 16)).ToArray()
+            );
 
-            _context.CompileStatement(function.Body.StatementAsBlock(), _codeGen, storageManager, scope);
-            _codeGen.InsertCode(_context.AddressLinker, prologuePosition, gen => storageManager.CreatePrologue(gen, function.Declaration));
-            _context.AddressLinker.ResolveFunctionEpilogueFixes(function.Declaration.Identifier.RawText, _codeGen.StreamPosition);
-            storageManager.CreateEpilogue(_codeGen);
-            _codeGen.Ret();
+            // 3. Copy code and linking info from the function context over to the global "context" 
+            var functionStart = Generator.StreamPosition;
+            context.Linking.CopyTo(LinkingInfo, Generator.StreamPosition);
+            Generator.Write(context.Generator.GetBufferSpan());
 
-            _context.AddressLinker.ResolveFunctionFixes(function.Declaration.Identifier.RawText, prologuePosition);
-            return prologuePosition;
+            // 4. Add linking info for the newly compiled function, so that calls to it can get resolved correctly
+            LinkingInfo.ResolveFunctionFixes(function.Declaration.Identifier.RawText, functionStart);
+            return functionStart;
         }
 
-        private void CompileEntryPointPreCode()
+        private void CompileFunction(FunctionImplementation function, ICompilationContext context)
         {
-            _codeGen.CallDereferenced4(Constants.DummyOffsetInt);
-            _context.AddressLinker.FixIATEntryOffset(_codeGen.StreamPosition, "kernel32.dll", "GetProcessHeap");
-            _codeGen.MovToDereferenced4(Constants.DummyOffsetInt, Register64.RAX);
-            _context.AddressLinker.FixDataOffset(_codeGen.StreamPosition, Constants.HeapHandleIdentifier);
-        }
+            foreach (var parameter in function.Declaration.Parameters)
+                context.Symbols.DefineLocal(parameter.ParameterIdentifier.RawText, parameter.ParameterType);
 
-        public ReadOnlySpan<byte> Finish() => _codeGen.GetBufferSpan();
+            if (function.Declaration.Identifier.RawText == "Main")
+            {
+                context.Generator.CallDereferenced4(Constants.DummyOffsetInt);
+                context.Linking.FixIATEntryOffset(context.Generator.StreamPosition, "kernel32.dll", "GetProcessHeap");
+                context.Generator.MovToDereferenced4(Constants.DummyOffsetInt, Register64.RAX);
+                context.Linking.FixDataOffset(context.Generator.StreamPosition, Constants.HeapHandleIdentifier);
+            }
+
+            context.CompileStatement(function.Body.StatementAsBlock());
+
+            context.Generator.InsertCode(context.Linking, 0, gen => context.Storage.CreatePrologue(gen, function.Declaration));
+            context.Linking.ResolveFunctionEpilogueFixes(function.Declaration.Identifier.RawText, context.Generator.StreamPosition);
+            context.Storage.CreateEpilogue(context.Generator);
+            context.Generator.Ret();
+        }
     }
 }

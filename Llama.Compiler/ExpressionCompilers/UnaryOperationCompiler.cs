@@ -9,89 +9,57 @@
 
     internal class UnaryOperationCompiler : ICompileExpressions<UnaryOperatorExpression>
     {
-        public ExpressionResult Compile(
-            UnaryOperatorExpression expression,
-            PreferredRegister target,
-            CodeGen codeGen,
-            StorageManager storageManager,
-            ISymbolResolver scope,
-            ILinkingInfo linkingInfo,
-            ICompilationContext context
-        )
+        public ExpressionResult Compile(UnaryOperatorExpression expression, PreferredRegister target, ICompilationContext context)
         {
             return expression.Operator.Operator.Kind switch
             {
-                TokenKind.Minus => CompileMinus(expression, target, codeGen, context, storageManager, linkingInfo, scope),
-                TokenKind.AddressOf => CompileAddressOf(expression, target, codeGen, context, storageManager, linkingInfo, scope),
-                TokenKind.Not => CompileNot(expression, target, codeGen, context, storageManager, linkingInfo, scope),
-                TokenKind.Pointer => CompileDereference(expression, target, codeGen, context, storageManager, linkingInfo, scope),
+                TokenKind.Minus => CompileMinus(expression, target, context),
+                TokenKind.AddressOf => CompileAddressOf(expression, target, context),
+                TokenKind.Not => CompileNot(expression, target, context),
+                TokenKind.Pointer => CompileDereference(expression, target, context),
                 _ => throw new NotImplementedException(
                     $"{nameof(UnaryOperationCompiler)}: I do not know how to compile {expression.Operator.Operator}"
                 )
             };
         }
 
-        private ExpressionResult CompileDereference(UnaryOperatorExpression expression, PreferredRegister target, CodeGen codeGen, ICompilationContext context, StorageManager storageManager, ILinkingInfo linkingInfo, ISymbolResolver scope)
+        private ExpressionResult CompileDereference(UnaryOperatorExpression expression, PreferredRegister target, ICompilationContext context)
         {
-            var result = context.CompileExpression(expression.Expression, codeGen, storageManager, target, scope);
+            var result = context.CompileExpression(expression.Expression, target);
             if (result.ValueType.ChildRelation != Type.WrappingType.PointerOf)
                 throw new TypeMismatchException($"Any dereference-able type", result.ValueType.ToString());
 
             var targetRegister = target.MakeFor(result.ValueType);
-            result.GenerateMoveTo(targetRegister, codeGen, linkingInfo);
+            result.GenerateMoveTo(targetRegister, context.Generator, context.Linking);
             return new ExpressionResult(result.ValueType.Child, targetRegister.AsR64(), 0);
         }
 
-        private static ExpressionResult CompileNot(
-            UnaryOperatorExpression expression,
-            PreferredRegister target,
-            CodeGen codeGen,
-            ICompilationContext context,
-            StorageManager storageManager,
-            ILinkingInfo linkingInfo,
-            ISymbolResolver scope
-        )
+        private static ExpressionResult CompileNot(UnaryOperatorExpression expression, PreferredRegister target, ICompilationContext context)
         {
-            var result = context.CompileExpression(expression.Expression, codeGen, storageManager, target, scope);
+            var result = context.CompileExpression(expression.Expression, target);
             Constants.BoolType.AssertCanAssignImplicitly(result.ValueType);
 
             var register = target.MakeFor(Constants.BoolType);
-            result.GenerateMoveTo(register, codeGen, linkingInfo);
-            codeGen.Xor(register.AsR8(), 1);
+            result.GenerateMoveTo(register, context.Generator, context.Linking);
+            context.Generator.Xor(register.AsR8(), 1);
             return new ExpressionResult(Constants.BoolType, register);
         }
 
-        private static ExpressionResult CompileAddressOf(
-            UnaryOperatorExpression expression,
-            PreferredRegister target,
-            CodeGen codeGen,
-            ICompilationContext context,
-            StorageManager storageManager,
-            ILinkingInfo linkingInfo,
-            ISymbolResolver scope
-        )
+        private static ExpressionResult CompileAddressOf(UnaryOperatorExpression expression, PreferredRegister target, ICompilationContext context)
         {
-            var result = context.CompileExpression(expression.Expression, codeGen, storageManager, target, scope);
+            var result = context.CompileExpression(expression.Expression, target);
             if (result.Kind == ExpressionResult.ResultKind.Value)
                 throw new ReferenceException($"Can not take the address of the r-value of: {expression.Expression}");
             var type = new Type(result.ValueType, Type.WrappingType.PointerOf);
             var register = target.MakeFor(type);
 
-            result.LeaTo(register, codeGen, linkingInfo);
+            result.LeaTo(register, context.Generator, context.Linking);
             return new ExpressionResult(type, register);
         }
 
-        private static ExpressionResult CompileMinus(
-            UnaryOperatorExpression expression,
-            PreferredRegister target,
-            CodeGen codeGen,
-            ICompilationContext context,
-            StorageManager storageManager,
-            ILinkingInfo linkingInfo,
-            ISymbolResolver scope
-        )
+        private static ExpressionResult CompileMinus(UnaryOperatorExpression expression, PreferredRegister target, ICompilationContext context)
         {
-            var result = context.CompileExpression(expression.Expression, codeGen, storageManager, target, scope);
+            var result = context.CompileExpression(expression.Expression, target);
 
             if (!result.ValueType.IsIntegerRegisterType()) // todo: float negation
             {
@@ -101,8 +69,8 @@
             }
 
             var register = target.MakeFor(result.ValueType);
-            result.GenerateMoveTo(register, codeGen, linkingInfo);
-            codeGen.Neg(register);
+            result.GenerateMoveTo(register, context.Generator, context.Linking);
+            context.Generator.Neg(register);
             return new ExpressionResult(result.ValueType, register);
         }
     }

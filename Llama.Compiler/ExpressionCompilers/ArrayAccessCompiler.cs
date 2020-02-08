@@ -9,26 +9,22 @@
         public ExpressionResult Compile(
             ArrayAccessExpression expression,
             PreferredRegister target,
-            CodeGen codeGen,
-            StorageManager storageManager,
-            ISymbolResolver scope,
-            ILinkingInfo linkingInfo,
             ICompilationContext context
         )
         {
-            var arrayTemp = storageManager.Allocate(true);
-            var array = context.CompileExpression(expression.Array, codeGen, storageManager, arrayTemp.IsRegister ? arrayTemp.Register : Register64.RAX, scope);
+            var arrayTemp = context.Storage.Allocate(true);
+            var array = context.CompileExpression(expression.Array, arrayTemp.IsRegister ? arrayTemp.Register : Register64.RAX);
             var arrayType = array.ValueType;
-            arrayTemp.Store(array, codeGen, linkingInfo);
+            arrayTemp.Store(array, context.Generator, context.Linking);
 
             const Register64 structOffsetRegister = Register64.RCX;
             const Register64 arrayRegister = Register64.RAX;
-            var arrayIndex = context.CompileExpression(expression.Index, codeGen, storageManager, new PreferredRegister(structOffsetRegister), scope);
+            var arrayIndex = context.CompileExpression(expression.Index, new PreferredRegister(structOffsetRegister));
             Constants.LongType.AssertCanAssignImplicitly(arrayIndex.ValueType);
 
-            arrayIndex.GenerateMoveTo(structOffsetRegister, Constants.LongType, codeGen, linkingInfo);
-            arrayTemp.AsExpressionResult(arrayType).GenerateMoveTo(arrayRegister, codeGen, linkingInfo);
-            storageManager.Release(arrayTemp);
+            arrayIndex.GenerateMoveTo(structOffsetRegister, Constants.LongType, context.Generator, context.Linking);
+            arrayTemp.AsExpressionResult(arrayType).GenerateMoveTo(arrayRegister, context.Generator, context.Linking);
+            context.Storage.Release(arrayTemp);
 
             if (arrayType == Constants.CstrType)
                 return new ExpressionResult(Constants.SbyteType, arrayRegister, structOffsetRegister, 1);

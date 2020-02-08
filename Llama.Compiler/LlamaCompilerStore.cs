@@ -25,7 +25,7 @@
             ExpressionCompilerStore<AtomicExpression>.Compiler = new AtomicExpressionCompiler();
             ExpressionCompilerStore<BinaryOperatorExpression>.Compiler = new BinaryOperationCompiler();
             ExpressionCompilerStore<ArrayAccessExpression>.Compiler = new ArrayAccessCompiler();
-            ExpressionCompilerStore<MethodCallExpression>.Compiler = new MethodCallCompiler();
+            ExpressionCompilerStore<FunctionCallExpression>.Compiler = new FunctionCallCompiler();
             ExpressionCompilerStore<TypeCastExpression>.Compiler = new TypeCastCompiler();
             ExpressionCompilerStore<UnaryOperatorExpression>.Compiler = new UnaryOperationCompiler();
 

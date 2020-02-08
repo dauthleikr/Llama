@@ -22,10 +22,6 @@
         ExpressionResult Compile(
             T expression,
             PreferredRegister target,
-            CodeGen codeGen,
-            StorageManager storageManager,
-            ISymbolResolver scope,
-            ILinkingInfo linkingInfo,
             ICompilationContext context
         );
     }

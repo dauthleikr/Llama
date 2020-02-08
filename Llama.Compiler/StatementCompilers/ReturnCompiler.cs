@@ -7,24 +7,20 @@
     {
         public void Compile(
             Return statement,
-            CodeGen codeGen,
-            StorageManager storageManager,
-            ISymbolResolver scope,
-            ILinkingInfo linkingInfo,
             ICompilationContext context
         )
         {
             if (statement.ReturnValue != null)
             {
                 var returnRegisters = new PreferredRegister(Register64.RAX, XmmRegister.XMM0);
-                var returnResult = context.CompileExpression(statement.ReturnValue, codeGen, storageManager, returnRegisters, scope);
-                var myFunction = scope.GetFunctionDeclaration(scope.CurrentFunctionIdentifier);
+                var returnResult = context.CompileExpression(statement.ReturnValue, returnRegisters);
+                var myFunction = context.Symbols.GetFunctionDeclaration(context.Symbols.CurrentFunctionIdentifier);
 
-                returnResult.GenerateMoveTo(returnRegisters.MakeFor(myFunction.ReturnType), myFunction.ReturnType, codeGen, linkingInfo);
+                returnResult.GenerateMoveTo(returnRegisters.MakeFor(myFunction.ReturnType), myFunction.ReturnType, context.Generator, context.Linking);
             }
 
-            codeGen.Jmp(Constants.DummyOffsetInt);
-            linkingInfo.FixFunctionEpilogueOffset(codeGen.StreamPosition, scope.CurrentFunctionIdentifier);
+            context.Generator.Jmp(Constants.DummyOffsetInt);
+            context.Linking.FixFunctionEpilogueOffset(context.Generator.StreamPosition, context.Symbols.CurrentFunctionIdentifier);
         }
     }
 }

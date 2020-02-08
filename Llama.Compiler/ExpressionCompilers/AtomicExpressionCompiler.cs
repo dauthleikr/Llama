@@ -13,21 +13,17 @@
         public ExpressionResult Compile(
             AtomicExpression expression,
             PreferredRegister target,
-            CodeGen codeGen,
-            StorageManager storageManager,
-            ISymbolResolver scope,
-            ILinkingInfo linkingInfo,
             ICompilationContext context
         )
         {
             return expression.Token.Kind switch
             {
-                TokenKind.Identifier     => CompileIdentifier(expression, codeGen, scope),
+                TokenKind.Identifier     => CompileIdentifier(expression, context.Generator, context.Symbols),
                 TokenKind.FloatLiteral   => CompileFloatLiteral(expression),
                 TokenKind.IntegerLiteral => CompileIntegerLiteral(expression),
-                TokenKind.StringLiteral  => CompileStringLiteral(expression, codeGen, target, linkingInfo),
-                TokenKind.True           => CompileTrue(codeGen, target),
-                TokenKind.False          => CompileFalse(codeGen, target),
+                TokenKind.StringLiteral  => CompileStringLiteral(expression, context.Generator, target, context.Linking),
+                TokenKind.True           => CompileTrue(context.Generator, target),
+                TokenKind.False          => CompileFalse(context.Generator, target),
                 _                        => throw new NotImplementedException($"Atomic expression type {expression.Token.Kind} not implemented")
             };
         }

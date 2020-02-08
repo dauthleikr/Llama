@@ -70,7 +70,7 @@
                     foreach (var subExpression in GetExpressions(binaryOperatorExpression.Right))
                         yield return subExpression;
                     break;
-                case MethodCallExpression methodCallExpression:
+                case FunctionCallExpression methodCallExpression:
                     foreach (var subExpression in GetExpressions(methodCallExpression.Expression))
                         yield return subExpression;
                     foreach (var paramExpression in methodCallExpression.Parameters)

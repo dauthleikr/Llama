@@ -6,34 +6,44 @@
 
     public class CompilationContext : ICompilationContext
     {
-        public ILinkingInfo AddressLinker { get; }
-        private readonly IFactory<ILinkingInfo> _linkerFactory;
+        public ILinkingInfo Linking { get; }
+        public ISymbolResolver Symbols { get; }
+        public StorageManager Storage { get; }
+        public CodeGen Generator { get; } = new CodeGen();
+
+        private readonly IFactory<ILinkingInfo> _linkingInfoFactory;
         private readonly ICompilerStore _store;
 
-        public CompilationContext(ICompilerStore store, IFactory<ILinkingInfo> linkerFactory)
+        public CompilationContext(ICompilerStore store, IFactory<ILinkingInfo> linkingInfoFactory, ISymbolResolver symbolResolver, StorageManager storageManager)
         {
+            Symbols = symbolResolver;
+            Storage = storageManager;
+            Linking = linkingInfoFactory.Create();
+
             _store = store;
-            _linkerFactory = linkerFactory;
-            AddressLinker = linkerFactory.Create();
+            _linkingInfoFactory = linkingInfoFactory;
         }
 
-        public void CompileStatement<T>(T statement, CodeGen codeGen, StorageManager storageManager, ISymbolResolver scope) where T : IStatement
+        public void CopyToContext(ICompilationContext other)
+        {
+            Linking.CopyTo(other.Linking, other.Generator.StreamPosition);
+            other.Generator.Write(Generator.GetBufferSpan());
+        }
+
+        public void CompileStatement<T>(T statement) where T : IStatement
         {
             var compiler = _store.GetStatementCompiler<T>();
             if (compiler == null)
                 throw new NotImplementedException($"{nameof(CompilationContext)}: I can not get a compiler for: {statement}");
-            compiler.Compile(statement, codeGen, storageManager, scope, AddressLinker, this);
+            compiler.Compile(statement, this);
         }
 
-        public ICompilationContext CreateChildContext() => new CompilationContext(_store, _linkerFactory);
+        public ICompilationContext CreateChildContext() => new CompilationContext(_store, _linkingInfoFactory, Symbols, Storage);
 
         public ExpressionResult CompileExpression<T>(
             T expression,
-            CodeGen codeGen,
-            StorageManager storageManager,
-            PreferredRegister target,
-            ISymbolResolver scope
+            PreferredRegister target
         ) where T : IExpression =>
-            _store.GetExpressionCompiler<T>().Compile(expression, target, codeGen, storageManager, scope, AddressLinker, this);
+            _store.GetExpressionCompiler<T>().Compile(expression, target, this);
     }
 }
