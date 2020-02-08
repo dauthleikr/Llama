@@ -28,7 +28,7 @@ statementSingle: (declaration | returnStatement | expression) SemiColon
 
 expression:
 	OpenParanthesis expression CloseParanthesis
-	| expression methodCallParameters
+	| expression functionCallParameters
 	| expression OpenSquareBracket expression CloseSquareBracket
 	| expression binaryOperator expression
 	| typeCast expression
@@ -49,7 +49,7 @@ type:
 	| type OpenSquareBracket CloseSquareBracket
 	| PrimitiveType; 
 
-methodCallParameters:
+functionCallParameters:
 	OpenParanthesis ((expression Comma)*? expression)? CloseParanthesis;
 
 functionDeclaration:
@@ -111,10 +111,7 @@ PrimitiveType:
 	| 'float'
 	| 'double';
 
-
-
 String: '"' .*? '"';
 IntegerLiteral: [0-9]+ [0-9_]*;
 FloatLiteral: IntegerLiteral? '.' IntegerLiteral;
 Identifier: [_A-Za-z][_A-Za-z0-9]*;
-
