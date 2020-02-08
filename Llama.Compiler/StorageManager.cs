@@ -10,14 +10,14 @@
     public class StorageManager
     {
         private readonly HashSet<Register> _borrowedRegisters = new HashSet<Register>();
-        private readonly IScopeContext _functionScope;
+        private readonly ISymbolResolver _functionScope;
         private readonly Stack<Storage> _registerStorageFloat = new Stack<Storage>();
         private readonly Stack<Storage> _registerStorageInt = new Stack<Storage>();
         private readonly Stack<Storage> _stackStorageFloat = new Stack<Storage>();
         private readonly Stack<Storage> _stackStorageInt = new Stack<Storage>();
         private int _stackNeededForFunction;
 
-        public StorageManager(IScopeContext functionScope)
+        public StorageManager(ISymbolResolver functionScope)
         {
             _functionScope = functionScope;
             _stackNeededForFunction = functionScope.TotalStackSpace;

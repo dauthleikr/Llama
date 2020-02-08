@@ -11,8 +11,8 @@
             PreferredRegister target,
             CodeGen codeGen,
             StorageManager storageManager,
-            IScopeContext scope,
-            IAddressFixer addressFixer,
+            ISymbolResolver scope,
+            ILinkingInfo linkingInfo,
             ICompilationContext context
         )
         {
@@ -35,7 +35,7 @@
                 sourceType.ChildRelation == Type.WrappingType.ArrayOf &&
                 sourceType.Child == targetType.Child)
             {
-                source.GenerateMoveTo(targetRegister, codeGen, addressFixer);
+                source.GenerateMoveTo(targetRegister, codeGen, linkingInfo);
                 codeGen.Add(targetRegister.AsR64(), (sbyte)8);
                 return new ExpressionResult(targetType, targetRegister);
             }
@@ -57,12 +57,12 @@
                 if (targetTypeSize > sourceTypeSize)
                 {
                     // int register widening - works implicitly - isCast flag given to do signed <-> unsigned conversion by force
-                    source.GenerateMoveTo(targetRegister, targetType, codeGen, addressFixer, true);
+                    source.GenerateMoveTo(targetRegister, targetType, codeGen, linkingInfo, true);
                     return new ExpressionResult(targetType, targetRegister);
                 }
 
                 // int register narrowing
-                source.GenerateMoveTo(targetRegister, codeGen, addressFixer);
+                source.GenerateMoveTo(targetRegister, codeGen, linkingInfo);
                 // // clean rest of register
                 //if (targetTypeSize == 4)
                 //    codeGen.Mov(targetRegister.AsR32(), targetRegister.AsR32());
@@ -73,7 +73,7 @@
 
             if (!sourceIsInt && !targetIsInt) // float <-> double conversions
             {
-                source.GenerateMoveTo(targetRegister, codeGen, addressFixer);
+                source.GenerateMoveTo(targetRegister, codeGen, linkingInfo);
                 if (targetTypeSize < sourceTypeSize)
                     codeGen.CvtSd2Ss(targetRegister.AsFloat(), targetRegister.AsFloat());
                 else
@@ -82,10 +82,10 @@
             }
 
             if (!sourceIsInt) /* && targetIsInt) */
-                return CastFloatToInt(sourceType, targetType, targetRegister, source, codeGen, addressFixer);
+                return CastFloatToInt(sourceType, targetType, targetRegister, source, codeGen, linkingInfo);
 
             /* if (!targetIsInt && sourceIsInt) */
-            return CastIntToFloat(sourceType, targetType, targetRegister, source, codeGen, addressFixer);
+            return CastIntToFloat(sourceType, targetType, targetRegister, source, codeGen, linkingInfo);
         }
 
         private static void ThrowBadCast(Type source, Type target) => throw new BadCastException($"Cannot cast {source} to {target}");
@@ -96,12 +96,12 @@
             Register targetRegister,
             ExpressionResult source,
             CodeGen codeGen,
-            IAddressFixer addressFixer
+            ILinkingInfo linkingInfo
         )
         {
             var sourceTypeSize = sourceType.SizeOf();
             var tempSource = Register.IntRegisterFromSize(sourceTypeSize, 0);
-            source.GenerateMoveTo(tempSource, Constants.LongType, codeGen, addressFixer);
+            source.GenerateMoveTo(tempSource, Constants.LongType, codeGen, linkingInfo);
 
             if (targetType == Constants.FloatType)
             {
@@ -146,10 +146,10 @@
             Register targetRegister,
             ExpressionResult source,
             CodeGen codeGen,
-            IAddressFixer addressFixer
+            ILinkingInfo linkingInfo
         )
         {
-            source.GenerateMoveTo(XmmRegister.XMM0, sourceType, codeGen, addressFixer);
+            source.GenerateMoveTo(XmmRegister.XMM0, sourceType, codeGen, linkingInfo);
             if (sourceType == Constants.FloatType)
             {
                 switch (targetType.SizeOf())

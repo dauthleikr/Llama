@@ -11,23 +11,23 @@
             PreferredRegister target,
             CodeGen codeGen,
             StorageManager storageManager,
-            IScopeContext scope,
-            IAddressFixer addressFixer,
+            ISymbolResolver scope,
+            ILinkingInfo linkingInfo,
             ICompilationContext context
         )
         {
             var arrayTemp = storageManager.Allocate(true);
             var array = context.CompileExpression(expression.Array, codeGen, storageManager, arrayTemp.IsRegister ? arrayTemp.Register : Register64.RAX, scope);
             var arrayType = array.ValueType;
-            arrayTemp.Store(array, codeGen, addressFixer);
+            arrayTemp.Store(array, codeGen, linkingInfo);
 
             const Register64 structOffsetRegister = Register64.RCX;
             const Register64 arrayRegister = Register64.RAX;
             var arrayIndex = context.CompileExpression(expression.Index, codeGen, storageManager, new PreferredRegister(structOffsetRegister), scope);
             Constants.LongType.AssertCanAssignImplicitly(arrayIndex.ValueType);
 
-            arrayIndex.GenerateMoveTo(structOffsetRegister, Constants.LongType, codeGen, addressFixer);
-            arrayTemp.AsExpressionResult(arrayType).GenerateMoveTo(arrayRegister, codeGen, addressFixer);
+            arrayIndex.GenerateMoveTo(structOffsetRegister, Constants.LongType, codeGen, linkingInfo);
+            arrayTemp.AsExpressionResult(arrayType).GenerateMoveTo(arrayRegister, codeGen, linkingInfo);
             storageManager.Release(arrayTemp);
 
             if (arrayType == Constants.CstrType)

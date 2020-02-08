@@ -2,7 +2,7 @@
 {
     using Parser.Nodes;
 
-    public interface IScopeContext
+    public interface ISymbolResolver
     {
         int TotalStackSpace { get; }
         string CurrentFunctionIdentifier { get; }

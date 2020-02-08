@@ -13,6 +13,7 @@
                 TokenKind.If => ReadIf(context),
                 TokenKind.While => ReadWhile(context),
                 TokenKind.For => ReadFor(context),
+                TokenKind.Delete => ReadDelete(context),
                 TokenKind.Return => ReadReturn(context),
                 TokenKind.PrimitiveType => ReadDeclaration(context),
                 TokenKind.OpenBraces => ReadBlock(context),
@@ -34,7 +35,15 @@
             return declaration;
         }
 
-        private static IStatement ReadReturn(IParseContext context)
+        private Delete ReadDelete(IParseContext context)
+        {
+            context.ReadOrPanic(TokenKind.Delete);
+            var deleteStatement = new Delete(context.ReadOrPanic(TokenKind.Identifier));
+            context.ReadOrPanic(TokenKind.SemiColon);
+            return deleteStatement;
+        }
+
+        private static Return ReadReturn(IParseContext context)
         {
             context.ReadOrPanic(TokenKind.Return);
             IExpression returnExpression = null;

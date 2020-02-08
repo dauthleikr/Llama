@@ -27,12 +27,12 @@
             IsIntegerType = isIntegerType;
         }
 
-        public void Store(ExpressionResult expressionResult, CodeGen codeGen, IAddressFixer addressFixer)
+        public void Store(ExpressionResult expressionResult, CodeGen codeGen, ILinkingInfo linkingInfo)
         {
             if (!IsRegister)
             {
                 var tempRegister = IsIntegerType ? (Register)TempIntRegister : TempFloatRegister;
-                expressionResult.GenerateMoveTo(tempRegister, expressionResult.ValueType, codeGen, addressFixer);
+                expressionResult.GenerateMoveTo(tempRegister, expressionResult.ValueType, codeGen, linkingInfo);
 
                 if (IsIntegerType)
                     codeGen.MovToDereferenced(Register64.RSP, tempRegister, StackOffset, Segment.SS);
@@ -45,7 +45,7 @@
                     expressionResult.ValueType.MakeRegisterWithCorrectSize(Register),
                     expressionResult.ValueType,
                     codeGen,
-                    addressFixer
+                    linkingInfo
                 );
             }
         }

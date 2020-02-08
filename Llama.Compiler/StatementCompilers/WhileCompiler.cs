@@ -14,8 +14,8 @@
             While statement,
             CodeGen codeGen,
             StorageManager storageManager,
-            IScopeContext scope,
-            IAddressFixer addressFixer,
+            ISymbolResolver scope,
+            ILinkingInfo linkingInfo,
             ICompilationContext context
         )
         {
@@ -24,7 +24,7 @@
             var whileConditionResult = context.CompileExpression(statement.Condition, codeGen, storageManager, preferredRegisterCondition, scope);
             Constants.BoolType.AssertCanAssignImplicitly(whileConditionResult.ValueType);
 
-            whileConditionResult.GenerateMoveTo(Register8.AL, Constants.BoolType, codeGen, addressFixer);
+            whileConditionResult.GenerateMoveTo(Register8.AL, Constants.BoolType, codeGen, linkingInfo);
 
             codeGen.Test(Register8.AL, Register8.AL);
 

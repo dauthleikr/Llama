@@ -2,8 +2,8 @@
 {
     using Linker;
 
-    internal class LinkerFactory : IFactory<IAddressFixer>
+    internal class LinkerFactory : IFactory<ILinkingInfo>
     {
-        public IAddressFixer Create() => new Linker();
+        public ILinkingInfo Create() => new Linker();
     }
 }

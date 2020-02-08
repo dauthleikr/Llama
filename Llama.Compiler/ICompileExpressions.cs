@@ -13,7 +13,7 @@
         /// <param name="codeGen"></param>
         /// <param name="storageManager">Manages non-volatile storage spaces (register or stack)</param>
         /// <param name="scope">Tracker for local variables. Compilers must declare their locals. Accesses have to be declared</param>
-        /// <param name="addressFixer">
+        /// <param name="linkingInfo">
         ///     For fixing offsets retroactively, as the compiler does not know where its code will be
         ///     placed in memory
         /// </param>
@@ -24,8 +24,8 @@
             PreferredRegister target,
             CodeGen codeGen,
             StorageManager storageManager,
-            IScopeContext scope,
-            IAddressFixer addressFixer,
+            ISymbolResolver scope,
+            ILinkingInfo linkingInfo,
             ICompilationContext context
         );
     }

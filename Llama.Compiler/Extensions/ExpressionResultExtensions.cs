@@ -5,7 +5,7 @@
 
     internal static class ExpressionResultExtensions
     {
-        public static void XorTo(this ExpressionResult source, Register target, CodeGen codeGen, IAddressFixer fixer)
+        public static void XorTo(this ExpressionResult source, Register target, CodeGen codeGen, ILinkingInfo fixer)
         {
             source.DereferenceToRegister(
                 target,
@@ -19,7 +19,7 @@
             );
         }
 
-        public static void TestTo(this ExpressionResult source, Register other, CodeGen codeGen, IAddressFixer fixer)
+        public static void TestTo(this ExpressionResult source, Register other, CodeGen codeGen, ILinkingInfo fixer)
         {
             source.DereferenceFromRegister(
                 codeGen,
@@ -33,7 +33,7 @@
             );
         }
 
-        public static void CmpTo(this ExpressionResult source, Register target, CodeGen codeGen, IAddressFixer fixer)
+        public static void CmpTo(this ExpressionResult source, Register target, CodeGen codeGen, ILinkingInfo fixer)
         {
             source.DereferenceToRegister(
                 target,
@@ -47,7 +47,7 @@
             );
         }
 
-        public static void ComisdTo(this ExpressionResult source, Register target, CodeGen codeGen, IAddressFixer fixer)
+        public static void ComisdTo(this ExpressionResult source, Register target, CodeGen codeGen, ILinkingInfo fixer)
         {
             source.DereferenceToRegister(
                 target,
@@ -61,7 +61,7 @@
             );
         }
 
-        public static void ComissTo(this ExpressionResult source, Register target, CodeGen codeGen, IAddressFixer fixer)
+        public static void ComissTo(this ExpressionResult source, Register target, CodeGen codeGen, ILinkingInfo fixer)
         {
             source.DereferenceToRegister(
                 target,
@@ -75,7 +75,7 @@
             );
         }
 
-        public static void ImulTo(this ExpressionResult source, Register target, CodeGen codeGen, IAddressFixer fixer)
+        public static void ImulTo(this ExpressionResult source, Register target, CodeGen codeGen, ILinkingInfo fixer)
         {
             if (target.BitSize == 8)
                 throw new ArgumentException($"{nameof(ImulTo)} does not work with 8 bit types");
@@ -92,7 +92,7 @@
             );
         }
 
-        public static void AddTo(this ExpressionResult source, Register target, CodeGen codeGen, IAddressFixer fixer)
+        public static void AddTo(this ExpressionResult source, Register target, CodeGen codeGen, ILinkingInfo fixer)
         {
             source.DereferenceToRegister(
                 target,
@@ -106,7 +106,7 @@
             );
         }
 
-        public static void LeaTo(this ExpressionResult source, Register target, CodeGen codeGen, IAddressFixer fixer)
+        public static void LeaTo(this ExpressionResult source, Register target, CodeGen codeGen, ILinkingInfo fixer)
         {
             source.DereferenceToRegister(
                 target,
@@ -120,7 +120,7 @@
             );
         }
 
-        public static void MulsdTo(this ExpressionResult source, Register target, CodeGen codeGen, IAddressFixer fixer)
+        public static void MulsdTo(this ExpressionResult source, Register target, CodeGen codeGen, ILinkingInfo fixer)
         {
             source.DereferenceToRegister(
                 target,
@@ -134,7 +134,7 @@
             );
         }
 
-        public static void MulssTo(this ExpressionResult source, Register target, CodeGen codeGen, IAddressFixer fixer)
+        public static void MulssTo(this ExpressionResult source, Register target, CodeGen codeGen, ILinkingInfo fixer)
         {
             source.DereferenceToRegister(
                 target,
@@ -148,7 +148,7 @@
             );
         }
 
-        public static void DivsdTo(this ExpressionResult source, Register target, CodeGen codeGen, IAddressFixer fixer)
+        public static void DivsdTo(this ExpressionResult source, Register target, CodeGen codeGen, ILinkingInfo fixer)
         {
             source.DereferenceToRegister(
                 target,
@@ -162,7 +162,7 @@
             );
         }
 
-        public static void DivssTo(this ExpressionResult source, Register target, CodeGen codeGen, IAddressFixer fixer)
+        public static void DivssTo(this ExpressionResult source, Register target, CodeGen codeGen, ILinkingInfo fixer)
         {
             source.DereferenceToRegister(
                 target,
@@ -176,7 +176,7 @@
             );
         }
 
-        public static void AddssTo(this ExpressionResult source, Register target, CodeGen codeGen, IAddressFixer fixer)
+        public static void AddssTo(this ExpressionResult source, Register target, CodeGen codeGen, ILinkingInfo fixer)
         {
             source.DereferenceToRegister(
                 target,
@@ -190,7 +190,7 @@
             );
         }
 
-        public static void AddsdTo(this ExpressionResult source, Register target, CodeGen codeGen, IAddressFixer fixer)
+        public static void AddsdTo(this ExpressionResult source, Register target, CodeGen codeGen, ILinkingInfo fixer)
         {
             source.DereferenceToRegister(
                 target,
@@ -204,7 +204,7 @@
             );
         }
 
-        public static void SubTo(this ExpressionResult source, Register target, CodeGen codeGen, IAddressFixer fixer)
+        public static void SubTo(this ExpressionResult source, Register target, CodeGen codeGen, ILinkingInfo fixer)
         {
             source.DereferenceToRegister(
                 target,
@@ -218,7 +218,7 @@
             );
         }
 
-        public static void SubssTo(this ExpressionResult source, Register target, CodeGen codeGen, IAddressFixer fixer)
+        public static void SubssTo(this ExpressionResult source, Register target, CodeGen codeGen, ILinkingInfo fixer)
         {
             source.DereferenceToRegister(
                 target,
@@ -232,7 +232,7 @@
             );
         }
 
-        public static void SubsdTo(this ExpressionResult source, Register target, CodeGen codeGen, IAddressFixer fixer)
+        public static void SubsdTo(this ExpressionResult source, Register target, CodeGen codeGen, ILinkingInfo fixer)
         {
             source.DereferenceToRegister(
                 target,

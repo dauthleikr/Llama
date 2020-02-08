@@ -15,8 +15,8 @@
             PreferredRegister target,
             CodeGen codeGen,
             StorageManager storageManager,
-            IScopeContext scope,
-            IAddressFixer addressFixer,
+            ISymbolResolver scope,
+            ILinkingInfo linkingInfo,
             ICompilationContext context
         )
         {
@@ -25,7 +25,7 @@
                 TokenKind.Identifier     => CompileIdentifier(expression, codeGen, scope),
                 TokenKind.FloatLiteral   => CompileFloatLiteral(expression),
                 TokenKind.IntegerLiteral => CompileIntegerLiteral(expression),
-                TokenKind.StringLiteral  => CompileStringLiteral(expression, codeGen, target, addressFixer),
+                TokenKind.StringLiteral  => CompileStringLiteral(expression, codeGen, target, linkingInfo),
                 TokenKind.True           => CompileTrue(codeGen, target),
                 TokenKind.False          => CompileFalse(codeGen, target),
                 _                        => throw new NotImplementedException($"Atomic expression type {expression.Token.Kind} not implemented")
@@ -72,7 +72,7 @@
             AtomicExpression expression,
             CodeGen codeGen,
             PreferredRegister target,
-            IAddressFixer fixer
+            ILinkingInfo fixer
         )
         {
             var literalContent = PrepareStringLiteral(expression.Token);
@@ -98,7 +98,7 @@
             return literalContent.ToString();
         }
 
-        private static ExpressionResult CompileIdentifier(AtomicExpression expression, CodeGen codeGen, IScopeContext scope)
+        private static ExpressionResult CompileIdentifier(AtomicExpression expression, CodeGen codeGen, ISymbolResolver scope)
         {
             if (scope.IsLocalDefined(expression.Token.RawText))
             {

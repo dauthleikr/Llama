@@ -28,7 +28,7 @@
 
         public delegate void GenericFromDrefAction(Register target, Register64 ptr, int offsetFlat = 0, Segment segment = Segment.DS);
 
-        public void GenerateMoveTo(Register target, Type targetType, CodeGen codeGen, IAddressFixer fixer, bool isExplicitCast = false)
+        public void GenerateMoveTo(Register target, Type targetType, CodeGen codeGen, ILinkingInfo fixer, bool isExplicitCast = false)
         {
             if (!isExplicitCast && !targetType.CanAssignImplicitly(ValueType))
                 throw new TypeMismatchException(targetType.ToString(), ValueType.ToString());
@@ -68,7 +68,7 @@
         }
 
         //todo: bug: rework this redundant shit
-        private void GenerateUpgradeToOffset(Register target, CodeGen codeGen, IAddressFixer fixer, bool signed)
+        private void GenerateUpgradeToOffset(Register target, CodeGen codeGen, ILinkingInfo fixer, bool signed)
         {
             if (!target.FloatingPoint && ValueType.IsIntegerRegisterType())
             {
@@ -209,7 +209,7 @@
                 throw new NotImplementedException();
         }
 
-        public void GenerateMoveTo(Register target, CodeGen codeGen, IAddressFixer fixer)
+        public void GenerateMoveTo(Register target, CodeGen codeGen, ILinkingInfo fixer)
         {
             switch (Kind)
             {
@@ -236,7 +236,7 @@
         public void DereferenceToRegister(
             Register target,
             CodeGen codeGen,
-            IAddressFixer fixer,
+            ILinkingInfo fixer,
             GenericBrotherAction brotherAction,
             GenericFromDrefAction drefAction,
             GenericFromDref2Action dref2Action,
@@ -266,7 +266,7 @@
             }
         }
 
-        private void DereferenceToRegister(Register target, CodeGen codeGen, GenericFromDref4Action action, IAddressFixer fixer)
+        private void DereferenceToRegister(Register target, CodeGen codeGen, GenericFromDref4Action action, ILinkingInfo fixer)
         {
             action(target, Offset);
             OffsetFixup(fixer, codeGen);
@@ -295,7 +295,7 @@
             action(target, Value);
         }
 
-        private void GenerateMoveToOffset(Register register, CodeGen codeGen, IAddressFixer fixer)
+        private void GenerateMoveToOffset(Register register, CodeGen codeGen, ILinkingInfo fixer)
         {
             if (!register.FloatingPoint)
             {

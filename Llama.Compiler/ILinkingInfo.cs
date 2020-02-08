@@ -1,6 +1,6 @@
 ﻿namespace Llama.Compiler
 {
-    public interface IAddressFixer
+    public interface ILinkingInfo
     {
         void FixIATEntryOffset(long position, string library, string function);
         void FixConstantDataOffset(long position, byte[] data);
@@ -12,6 +12,6 @@
         void ResolveFunctionFixes(string identifier, long position);
         void ResolveFunctionEpilogueFixes(string identifier, long position);
         void Insert(long position, int count);
-        void CopyTo(IAddressFixer other, long offset);
+        void CopyTo(ILinkingInfo other, long offset);
     }
 }

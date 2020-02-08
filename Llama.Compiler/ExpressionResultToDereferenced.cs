@@ -29,7 +29,7 @@
         public void DereferenceFromRegister(
             CodeGen codeGen,
             Register source,
-            IAddressFixer fixer,
+            ILinkingInfo fixer,
             GenericBrotherAction brotherAction,
             GenericToDrefAction drefAction,
             GenericToDref2Action dref2Action,
@@ -59,7 +59,7 @@
             }
         }
 
-        private void DereferenceFromRegister(CodeGen codeGen, Register source, GenericToDref4Action action, IAddressFixer fixer)
+        private void DereferenceFromRegister(CodeGen codeGen, Register source, GenericToDref4Action action, ILinkingInfo fixer)
         {
             action(Offset, source);
             OffsetFixup(fixer, codeGen);
@@ -88,7 +88,7 @@
             action(source, Value);
         }
 
-        private void GenerateAssignOffset(Register register, CodeGen codeGen, IAddressFixer fixer)
+        private void GenerateAssignOffset(Register register, CodeGen codeGen, ILinkingInfo fixer)
         {
             if (!register.FloatingPoint)
             {
@@ -161,7 +161,7 @@
                 codeGen.Movq(Value.AsR64(), register.AsFloat());
         }
 
-        public void GenerateAssign(Register source, CodeGen codeGen, IAddressFixer fixer)
+        public void GenerateAssign(Register source, CodeGen codeGen, ILinkingInfo fixer)
         {
             switch (Kind)
             {

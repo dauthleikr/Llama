@@ -15,9 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Llama.BinaryUtils.Tests", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Llama.Compiler", "Llama.Compiler\Llama.Compiler.csproj", "{2DF825CD-75D6-4D9C-AFF6-E5AFBB368306}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Llama.Compiler.Cli", "Llama.Compiler.Cli\Llama.Compiler.Cli.csproj", "{2E751F33-E7E1-4E87-AE49-924B44AF93B7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Llama.Compiler.Cli", "Llama.Compiler.Cli\Llama.Compiler.Cli.csproj", "{2E751F33-E7E1-4E87-AE49-924B44AF93B7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Llama.Linker", "Llama.Linker\Llama.Linker.csproj", "{717F73E2-B4A1-4518-A303-98574AF1812F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Llama.Linker", "Llama.Linker\Llama.Linker.csproj", "{717F73E2-B4A1-4518-A303-98574AF1812F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

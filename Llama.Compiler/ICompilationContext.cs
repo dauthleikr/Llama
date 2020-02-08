@@ -5,7 +5,7 @@
 
     public interface ICompilationContext
     {
-        IAddressFixer AddressLinker { get; }
+        ILinkingInfo AddressLinker { get; }
 
         ICompilationContext CreateChildContext();
 
@@ -14,9 +14,9 @@
             CodeGen codeGen,
             StorageManager storageManager,
             PreferredRegister target,
-            IScopeContext scope
+            ISymbolResolver scope
         ) where T : IExpression;
 
-        void CompileStatement<T>(T statement, CodeGen codeGen, StorageManager storageManager, IScopeContext scope) where T : IStatement;
+        void CompileStatement<T>(T statement, CodeGen codeGen, StorageManager storageManager, ISymbolResolver scope) where T : IStatement;
     }
 }

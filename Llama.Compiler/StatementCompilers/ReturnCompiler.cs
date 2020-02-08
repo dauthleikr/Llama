@@ -9,8 +9,8 @@
             Return statement,
             CodeGen codeGen,
             StorageManager storageManager,
-            IScopeContext scope,
-            IAddressFixer addressFixer,
+            ISymbolResolver scope,
+            ILinkingInfo linkingInfo,
             ICompilationContext context
         )
         {
@@ -20,11 +20,11 @@
                 var returnResult = context.CompileExpression(statement.ReturnValue, codeGen, storageManager, returnRegisters, scope);
                 var myFunction = scope.GetFunctionDeclaration(scope.CurrentFunctionIdentifier);
 
-                returnResult.GenerateMoveTo(returnRegisters.MakeFor(myFunction.ReturnType), myFunction.ReturnType, codeGen, addressFixer);
+                returnResult.GenerateMoveTo(returnRegisters.MakeFor(myFunction.ReturnType), myFunction.ReturnType, codeGen, linkingInfo);
             }
 
             codeGen.Jmp(Constants.DummyOffsetInt);
-            addressFixer.FixFunctionEpilogueOffset(codeGen.StreamPosition, scope.CurrentFunctionIdentifier);
+            linkingInfo.FixFunctionEpilogueOffset(codeGen.StreamPosition, scope.CurrentFunctionIdentifier);
         }
     }
 }

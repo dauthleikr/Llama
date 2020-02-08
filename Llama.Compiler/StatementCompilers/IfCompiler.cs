@@ -10,14 +10,14 @@
             If statement,
             CodeGen codeGen,
             StorageManager storageManager,
-            IScopeContext scope,
-            IAddressFixer addressFixer,
+            ISymbolResolver scope,
+            ILinkingInfo linkingInfo,
             ICompilationContext context
         )
         {
             var preferredRegisterCondition = new PreferredRegister(Register64.RAX);
             var ifConditionResult = context.CompileExpression(statement.Condition, codeGen, storageManager, preferredRegisterCondition, scope);
-            ifConditionResult.GenerateMoveTo(preferredRegisterCondition.MakeFor(Constants.BoolType), codeGen, addressFixer);
+            ifConditionResult.GenerateMoveTo(preferredRegisterCondition.MakeFor(Constants.BoolType), codeGen, linkingInfo);
             codeGen.Test(Register8.AL, Register8.AL);
 
             var ifBodyContext = context.CreateChildContext();

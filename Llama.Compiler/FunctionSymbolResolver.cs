@@ -9,7 +9,7 @@
     using spit;
     using Type = Parser.Nodes.Type;
 
-    public class FunctionScope : IScopeContext
+    public class FunctionSymbolResolver : ISymbolResolver
     {
         private class LocalScope
         {
@@ -40,7 +40,7 @@
         private readonly Dictionary<string, int> _localToOffset;
         private LocalScope _scope = new LocalScope();
 
-        private FunctionScope(
+        private FunctionSymbolResolver(
             FunctionDeclaration function,
             Dictionary<string, int> localToOffset,
             int calleeParameterSpace,
@@ -68,7 +68,7 @@
             if (offset < 0)
             {
                 throw new ArgumentException(
-                    $"{nameof(FunctionScope)}: {nameof(GetCalleeParameterOffset)}: Cannot get paramter for index {index} (bad index)"
+                    $"{nameof(FunctionSymbolResolver)}: {nameof(GetCalleeParameterOffset)}: Cannot get paramter for index {index} (bad index)"
                 );
             }
 
@@ -93,7 +93,7 @@
 
         public void PopScope() => _scope = _scope.Parent ?? throw new InvalidOperationException();
 
-        public static FunctionScope FromBlock(
+        public static FunctionSymbolResolver FromBlock(
             FunctionImplementation function,
             IEnumerable<FunctionImport> imports,
             IEnumerable<FunctionDeclaration> declarations
@@ -148,7 +148,7 @@
 
             SetLocalOffsets(offset, function.Body);
 
-            var scope = new FunctionScope(function.Declaration, localToOffset, calleeParameterSpace, imports, declarations);
+            var scope = new FunctionSymbolResolver(function.Declaration, localToOffset, calleeParameterSpace, imports, declarations);
             foreach (var parameter in function.Declaration.Parameters)
                 scope.DefineLocal(parameter.ParameterIdentifier.RawText, parameter.ParameterType);
             return scope;

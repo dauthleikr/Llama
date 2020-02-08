@@ -8,7 +8,7 @@
     using Compiler;
     using PE.Builder.PE32Plus;
 
-    public class Linker : IAddressFixer
+    public class Linker : ILinkingInfo
     {
         private const int ForcedDataAlignment = 8;
         private readonly List<ConstDataFixup> _constDataAddressFixes = new List<ConstDataFixup>();
@@ -100,7 +100,7 @@
             }
         }
 
-        public void CopyTo(IAddressFixer other, long offset)
+        public void CopyTo(ILinkingInfo other, long offset)
         {
             foreach (var fixup in _constDataOffsetFixes)
                 other.FixConstantDataOffset(fixup.Position + offset, fixup.ConstData);

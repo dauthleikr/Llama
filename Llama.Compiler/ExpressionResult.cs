@@ -26,13 +26,13 @@
 
         public readonly ResultKind Kind;
         public readonly int Offset;
-        public readonly Action<IAddressFixer, CodeGen> OffsetFixup;
+        public readonly Action<ILinkingInfo, CodeGen> OffsetFixup;
         public readonly byte OffsetMul = 1;
         public readonly Register64 Ptr;
         public readonly Segment Segment;
         public readonly Register64 StructOffset;
 
-        public ExpressionResult(Type valueType, Action<IAddressFixer, CodeGen> offsetFixup)
+        public ExpressionResult(Type valueType, Action<ILinkingInfo, CodeGen> offsetFixup)
         {
             ValueType = valueType ?? throw new ArgumentNullException(nameof(valueType));
             OffsetFixup = offsetFixup ?? throw new ArgumentNullException(nameof(offsetFixup));

@@ -14,8 +14,8 @@
             PreferredRegister target,
             CodeGen codeGen,
             StorageManager storageManager,
-            IScopeContext scope,
-            IAddressFixer addressFixer,
+            ISymbolResolver scope,
+            ILinkingInfo linkingInfo,
             ICompilationContext context
         )
         {
@@ -32,7 +32,7 @@
                         codeGen,
                         storageManager,
                         scope,
-                        addressFixer,
+                        linkingInfo,
                         context
                     );
                 case TokenKind.Minus:
@@ -46,17 +46,17 @@
                         codeGen,
                         storageManager,
                         scope,
-                        addressFixer,
+                        linkingInfo,
                         context
                     );
                 case TokenKind.Pointer:
-                    return CompileMultiply(expression.Left, expression.Right, target, codeGen, storageManager, scope, addressFixer, context);
+                    return CompileMultiply(expression.Left, expression.Right, target, codeGen, storageManager, scope, linkingInfo, context);
                 case TokenKind.Divide:
-                    return CompileDivide(expression.Left, expression.Right, target, codeGen, storageManager, scope, addressFixer, context);
+                    return CompileDivide(expression.Left, expression.Right, target, codeGen, storageManager, scope, linkingInfo, context);
                 case TokenKind.Modolu:
-                    return CompileModolu(expression.Left, expression.Right, target, codeGen, storageManager, scope, addressFixer, context);
+                    return CompileModolu(expression.Left, expression.Right, target, codeGen, storageManager, scope, linkingInfo, context);
                 case TokenKind.Assignment:
-                    return CompileAssign(expression.Left, expression.Right, target, codeGen, storageManager, scope, addressFixer, context);
+                    return CompileAssign(expression.Left, expression.Right, target, codeGen, storageManager, scope, linkingInfo, context);
                 case TokenKind.Equals:
                     return CompileComparison(
                         expression.Left,
@@ -65,7 +65,7 @@
                         codeGen,
                         storageManager,
                         scope,
-                        addressFixer,
+                        linkingInfo,
                         context,
                         codeGen.Je,
                         codeGen.Je
@@ -78,7 +78,7 @@
                         codeGen,
                         storageManager,
                         scope,
-                        addressFixer,
+                        linkingInfo,
                         context,
                         codeGen.Jne,
                         codeGen.Jne
@@ -91,7 +91,7 @@
                         codeGen,
                         storageManager,
                         scope,
-                        addressFixer,
+                        linkingInfo,
                         context,
                         codeGen.Jl,
                         codeGen.Jb
@@ -104,7 +104,7 @@
                         codeGen,
                         storageManager,
                         scope,
-                        addressFixer,
+                        linkingInfo,
                         context,
                         codeGen.Jg,
                         codeGen.Ja
@@ -117,7 +117,7 @@
                         codeGen,
                         storageManager,
                         scope,
-                        addressFixer,
+                        linkingInfo,
                         context,
                         codeGen.Jge,
                         codeGen.Jae
@@ -130,7 +130,7 @@
                         codeGen,
                         storageManager,
                         scope,
-                        addressFixer,
+                        linkingInfo,
                         context,
                         codeGen.Jbe,
                         codeGen.Jle
@@ -143,14 +143,14 @@
         private static ExpressionResult CompileAny(
             IExpression left,
             IExpression right,
-            Action<ExpressionResult, Register, CodeGen, IAddressFixer> actionInt,
-            Action<ExpressionResult, Register, CodeGen, IAddressFixer> actionFloat,
-            Action<ExpressionResult, Register, CodeGen, IAddressFixer> actionDouble,
+            Action<ExpressionResult, Register, CodeGen, ILinkingInfo> actionInt,
+            Action<ExpressionResult, Register, CodeGen, ILinkingInfo> actionFloat,
+            Action<ExpressionResult, Register, CodeGen, ILinkingInfo> actionDouble,
             PreferredRegister target,
             CodeGen codeGen,
             StorageManager storageManager,
-            IScopeContext scope,
-            IAddressFixer addressFixer,
+            ISymbolResolver scope,
+            ILinkingInfo linkingInfo,
             ICompilationContext context
         )
         {
@@ -161,17 +161,17 @@
                 codeGen,
                 storageManager,
                 scope,
-                addressFixer,
+                linkingInfo,
                 context,
                 true
             );
 
             if (type.IsIntegerRegisterType())
-                actionInt(rightExpr, leftReg, codeGen, addressFixer);
+                actionInt(rightExpr, leftReg, codeGen, linkingInfo);
             else if (type == Constants.DoubleType)
-                actionDouble(rightExpr, leftReg, codeGen, addressFixer);
+                actionDouble(rightExpr, leftReg, codeGen, linkingInfo);
             else if (type == Constants.FloatType)
-                actionFloat(rightExpr, leftReg, codeGen, addressFixer);
+                actionFloat(rightExpr, leftReg, codeGen, linkingInfo);
             else
             {
                 throw new NotImplementedException(
@@ -188,8 +188,8 @@
             PreferredRegister target,
             CodeGen codeGen,
             StorageManager storageManager,
-            IScopeContext scope,
-            IAddressFixer addressFixer,
+            ISymbolResolver scope,
+            ILinkingInfo linkingInfo,
             ICompilationContext context
         )
         {
@@ -201,7 +201,7 @@
                 codeGen,
                 storageManager,
                 scope,
-                addressFixer,
+                linkingInfo,
                 context,
                 true
             );
@@ -211,12 +211,12 @@
                 if (type.SizeOf() == 1)
                     throw new NotImplementedException("Multiplications with 8-bit types are not implemented");
 
-                rightExpr.ImulTo(leftReg, codeGen, addressFixer);
+                rightExpr.ImulTo(leftReg, codeGen, linkingInfo);
             }
             else if (type == Constants.DoubleType)
-                rightExpr.MulsdTo(leftReg, codeGen, addressFixer);
+                rightExpr.MulsdTo(leftReg, codeGen, linkingInfo);
             else if (type == Constants.FloatType)
-                rightExpr.MulssTo(leftReg, codeGen, addressFixer);
+                rightExpr.MulssTo(leftReg, codeGen, linkingInfo);
             else
             {
                 throw new NotImplementedException(
@@ -233,8 +233,8 @@
             PreferredRegister target,
             CodeGen codeGen,
             StorageManager storageManager,
-            IScopeContext scope,
-            IAddressFixer addressFixer,
+            ISymbolResolver scope,
+            ILinkingInfo linkingInfo,
             ICompilationContext context
         )
         {
@@ -246,21 +246,21 @@
                 codeGen,
                 storageManager,
                 scope,
-                addressFixer,
+                linkingInfo,
                 context,
                 true
             );
 
             if (type.IsIntegerRegisterType())
             {
-                CompileIntegerDivision(codeGen, addressFixer, type, leftReg, rightExpr);
+                CompileIntegerDivision(codeGen, linkingInfo, type, leftReg, rightExpr);
                 return new ExpressionResult(type, new PreferredRegister(Register64.RAX).MakeFor(type));
             }
 
             if (type == Constants.DoubleType)
-                rightExpr.DivsdTo(leftReg, codeGen, addressFixer);
+                rightExpr.DivsdTo(leftReg, codeGen, linkingInfo);
             else if (type == Constants.FloatType)
-                rightExpr.DivssTo(leftReg, codeGen, addressFixer);
+                rightExpr.DivssTo(leftReg, codeGen, linkingInfo);
             else
             {
                 throw new NotImplementedException(
@@ -277,8 +277,8 @@
             PreferredRegister target,
             CodeGen codeGen,
             StorageManager storageManager,
-            IScopeContext scope,
-            IAddressFixer addressFixer,
+            ISymbolResolver scope,
+            ILinkingInfo linkingInfo,
             ICompilationContext context
         )
         {
@@ -290,14 +290,14 @@
                 codeGen,
                 storageManager,
                 scope,
-                addressFixer,
+                linkingInfo,
                 context,
                 true
             );
 
             if (type.IsIntegerRegisterType())
             {
-                var typeIsByte = CompileIntegerDivision(codeGen, addressFixer, type, leftReg, rightExpr);
+                var typeIsByte = CompileIntegerDivision(codeGen, linkingInfo, type, leftReg, rightExpr);
                 if (typeIsByte) // for byte op. the remainder is stored in 'ah' instead
                     codeGen.Write(0x8A, 0xD4); // mov dl, ah
 
@@ -309,10 +309,10 @@
             );
         }
 
-        private static bool CompileIntegerDivision(CodeGen codeGen, IAddressFixer addressFixer, Type type, Register leftReg, ExpressionResult rightExpr)
+        private static bool CompileIntegerDivision(CodeGen codeGen, ILinkingInfo linkingInfo, Type type, Register leftReg, ExpressionResult rightExpr)
         {
             var rightReg = type.OtherVolatileIntRegister(leftReg, Register64.RAX, Register64.RDX);
-            rightExpr.GenerateMoveTo(rightReg, type, codeGen, addressFixer);
+            rightExpr.GenerateMoveTo(rightReg, type, codeGen, linkingInfo);
 
             if (!leftReg.IsSameRegister(Register64.RAX))
                 codeGen.Mov(Register64.RAX, leftReg.AsR64());
@@ -350,13 +350,13 @@
             PreferredRegister target,
             CodeGen codeGen,
             StorageManager storageManager,
-            IScopeContext scope,
-            IAddressFixer addressFixer,
+            ISymbolResolver scope,
+            ILinkingInfo linkingInfo,
             ICompilationContext context
         )
         {
-            var (expression, assign, type) = PrepareBinaryExpression(right, left, target, codeGen, storageManager, scope, addressFixer, context);
-            assign.GenerateAssign(expression, codeGen, addressFixer);
+            var (expression, assign, type) = PrepareBinaryExpression(right, left, target, codeGen, storageManager, scope, linkingInfo, context);
+            assign.GenerateAssign(expression, codeGen, linkingInfo);
             return assign;
         }
 
@@ -366,8 +366,8 @@
             PreferredRegister target,
             CodeGen codeGen,
             StorageManager storageManager,
-            IScopeContext scope,
-            IAddressFixer addressFixer,
+            ISymbolResolver scope,
+            ILinkingInfo linkingInfo,
             ICompilationContext context,
             Action<sbyte> comparisonJmpSigned,
             Action<sbyte> comparisonJmpUnsignedd,
@@ -381,16 +381,16 @@
                 codeGen,
                 storageManager,
                 scope,
-                addressFixer,
+                linkingInfo,
                 context,
                 true
             );
             if (type.IsIntegerRegisterType())
-                rightExpr.CmpTo(leftReg, codeGen, addressFixer);
+                rightExpr.CmpTo(leftReg, codeGen, linkingInfo);
             else if (type == Constants.DoubleType)
-                rightExpr.ComisdTo(leftReg, codeGen, addressFixer);
+                rightExpr.ComisdTo(leftReg, codeGen, linkingInfo);
             else if (type == Constants.FloatType)
-                rightExpr.ComissTo(leftReg, codeGen, addressFixer);
+                rightExpr.ComissTo(leftReg, codeGen, linkingInfo);
             else
             {
                 throw new NotImplementedException(
@@ -426,7 +426,7 @@
         /// <param name="codeGen"></param>
         /// <param name="storageManager"></param>
         /// <param name="scope"></param>
-        /// <param name="addressFixer"></param>
+        /// <param name="linkingInfo"></param>
         /// <param name="context"></param>
         /// <param name="shouldDereferenceForImplicitCast">The reference may be deferenced to cast it to the common type</param>
         /// <returns></returns>
@@ -436,8 +436,8 @@
             PreferredRegister preferredFirst,
             CodeGen codeGen,
             StorageManager storageManager,
-            IScopeContext scope,
-            IAddressFixer addressFixer,
+            ISymbolResolver scope,
+            ILinkingInfo linkingInfo,
             ICompilationContext context,
             bool shouldDereferenceForImplicitCast = false
         )
@@ -445,7 +445,7 @@
             var firstResult = context.CompileExpression(first, codeGen, storageManager, preferredFirst, scope);
             var isfirstIntegerType = firstResult.ValueType.IsIntegerRegisterType();
             var firstTemp = storageManager.Allocate(isfirstIntegerType);
-            firstTemp.Store(firstResult, codeGen, addressFixer);
+            firstTemp.Store(firstResult, codeGen, linkingInfo);
 
             var secondResult = context.CompileExpression(second, codeGen, storageManager, preferredFirst, scope);
             var type = firstResult.ValueType;
@@ -458,7 +458,7 @@
                     type = firstResult.ValueType;
 
                     var secondDerefVolatile = secondResult.GetOccupiedOrVolatile(type);
-                    secondResult.GenerateMoveTo(secondDerefVolatile, type, codeGen, addressFixer);
+                    secondResult.GenerateMoveTo(secondDerefVolatile, type, codeGen, linkingInfo);
                     secondResult = new ExpressionResult(type, secondDerefVolatile);
                 }
                 else
@@ -467,7 +467,7 @@
 
             var preferredRegister = preferredFirst.MakeFor(type);
             var firstRegister = secondResult.IsOccopied(preferredRegister) ? secondResult.GetUnoccupiedVolatile(type) : preferredRegister;
-            firstTemp.AsExpressionResult(firstResult.ValueType).GenerateMoveTo(firstRegister, type, codeGen, addressFixer);
+            firstTemp.AsExpressionResult(firstResult.ValueType).GenerateMoveTo(firstRegister, type, codeGen, linkingInfo);
             storageManager.Release(firstTemp);
             return (firstRegister, secondResult, type);
         }

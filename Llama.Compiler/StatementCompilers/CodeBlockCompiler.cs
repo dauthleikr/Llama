@@ -10,8 +10,8 @@
             CodeBlock statement,
             CodeGen codeGen,
             StorageManager storageManager,
-            IScopeContext scope,
-            IAddressFixer addressFixer,
+            ISymbolResolver scope,
+            ILinkingInfo linkingInfo,
             ICompilationContext context
         )
         {
@@ -21,7 +21,7 @@
                 switch (subStatement)
                 {
                     case CodeBlock codeBlock:
-                        Compile(codeBlock, codeGen, storageManager, scope, addressFixer, context);
+                        Compile(codeBlock, codeGen, storageManager, scope, linkingInfo, context);
                         break;
                     case Declaration declaration:
                         context.CompileStatement(declaration, codeGen, storageManager, scope);

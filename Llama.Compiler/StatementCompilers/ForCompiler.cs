@@ -18,8 +18,8 @@
             For statement,
             CodeGen codeGen,
             StorageManager storageManager,
-            IScopeContext scope,
-            IAddressFixer addressFixer,
+            ISymbolResolver scope,
+            ILinkingInfo linkingInfo,
             ICompilationContext context
         )
         {
@@ -28,7 +28,7 @@
 
             var bodyAndIncrement = statement.Instruction.StatementAsBlock().Statements.Concat(new[] { statement.Increment }).ToArray();
             var equalWhile = new While(statement.Condition, new CodeBlock(bodyAndIncrement));
-            _whileCompiler.Compile(equalWhile, codeGen, storageManager, scope, addressFixer, context);
+            _whileCompiler.Compile(equalWhile, codeGen, storageManager, scope, linkingInfo, context);
             scope.PopScope();
         }
     }
