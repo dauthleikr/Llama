@@ -18,11 +18,9 @@
             }
             else
             {
-                var preferredRegister = new PreferredRegister(Register64.RAX, XmmRegister.XMM0);
-                var initialValue = context.CompileExpression(statement.InitialValue, preferredRegister);
-                var initialValueRegister = preferredRegister.MakeFor(statement.Type);
+                var initialValueRegister = context.CompileExpression(statement.InitialValue, PreferredRegister.DefaultVolatile)
+                    .ToRegister(statement.Type, context.Generator, context.Linking);
 
-                initialValue.GenerateMoveTo(initialValueRegister, statement.Type, context.Generator, context.Linking);
                 context.Symbols.GetLocalReference(statement.Identifier.RawText)
                     .GenerateAssign(initialValueRegister, context.Generator, context.Linking);
             }
