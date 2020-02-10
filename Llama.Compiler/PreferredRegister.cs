@@ -6,6 +6,8 @@
 
     public class PreferredRegister
     {
+        public static readonly PreferredRegister DefaultVolatile = new PreferredRegister(Register64.RAX, XmmRegister.XMM0);
+
         public readonly XmmRegister FloatRegister;
         public readonly Register64 IntRegister;
 
