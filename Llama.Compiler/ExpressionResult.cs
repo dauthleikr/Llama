@@ -11,11 +11,11 @@
         public enum ResultKind
         {
             Invalid,
-            Value, // RAX
-            Pointer, // [RAX + c]
-            Pointer2, // [RAX + RCX * cPtr + c]
-            Pointer3, // [RAX * cPtr + c]
-            Offset // [12345678]
+            Value, // e.g. RAX
+            Pointer, // e.g. [RAX + c]
+            Pointer2, // e.g. [RAX + RCX * cPtr + c]
+            Pointer3, // e.g. [RAX * cPtr + c]
+            Offset // e.g. [12345678]
         }
 
         public delegate void GenericBrotherAction(Register target, Register source);
@@ -102,17 +102,30 @@
 
         public Register GetOccupiedOrVolatile(Type type)
         {
+            static Register FirstIfGood(Register first, Register otherwise) =>
+                first.IsBasePointerRegister || first.IsStackPointerRegister ? otherwise : first;
+
+            Register GetVolatile() =>
+                type.IsIntegerRegisterType() ? type.OtherVolatileIntRegister() : type.OtherVolatileFloatRegister();
+
             return type.MakeRegisterWithCorrectSize(
                 Kind switch
                 {
                     ResultKind.Value => Value,
-                    ResultKind.Pointer => Ptr,
-                    ResultKind.Pointer3 => Ptr,
-                    ResultKind.Pointer2 => Ptr,
-                    ResultKind.Offset => type.IsIntegerRegisterType() ? type.OtherVolatileIntRegister() : type.OtherVolatileFloatRegister(),
+                    ResultKind.Pointer => FirstIfGood(Ptr, GetVolatile()),
+                    ResultKind.Pointer3 => FirstIfGood(Ptr, GetVolatile()),
+                    ResultKind.Pointer2 => FirstIfGood(Ptr, FirstIfGood(StructOffset, GetVolatile())),
+                    ResultKind.Offset => GetVolatile(),
                     _ => throw new ArgumentOutOfRangeException()
                 }
             );
+        }
+
+        public Register ToRegister(Type type, CodeGen generator, ILinkingInfo linking)
+        {
+            var targetRegister = GetOccupiedOrVolatile(type);
+            GenerateMoveTo(targetRegister, type, generator, linking);
+            return targetRegister;
         }
 
         public Register GetUnoccupiedVolatile(Type type)
