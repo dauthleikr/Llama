@@ -15,12 +15,12 @@
         private readonly Stack<Storage> _registerStorageInt = new Stack<Storage>();
         private readonly Stack<Storage> _stackStorageFloat = new Stack<Storage>();
         private readonly Stack<Storage> _stackStorageInt = new Stack<Storage>();
-        private int _stackNeededForFunction;
+        private int _stackOffset;
 
         public StorageManager(ISymbolResolver functionScope)
         {
             _functionScope = functionScope;
-            _stackNeededForFunction = functionScope.TotalStackSpace;
+            _stackOffset = functionScope.TotalStackSpace;
 
             _registerStorageInt.Push(new Storage(Register64.R15));
             _registerStorageInt.Push(new Storage(Register64.R14));
@@ -58,8 +58,8 @@
             if (_stackStorageInt.Count != 0)
                 return _stackStorageInt.Pop();
 
-            var storage = new Storage(_stackNeededForFunction, true);
-            _stackNeededForFunction += 8;
+            var storage = new Storage(_stackOffset, true);
+            _stackOffset += 8;
             return storage;
         }
 
@@ -71,8 +71,8 @@
             if (_stackStorageFloat.Count != 0)
                 return _stackStorageFloat.Pop();
 
-            var storage = new Storage(_stackNeededForFunction, false);
-            _stackNeededForFunction += 8;
+            var storage = new Storage(_stackOffset, false);
+            _stackOffset += 8;
             return storage;
         }
 
@@ -108,7 +108,7 @@
 
             //for now we assume llama only uses the scalar operating mode, thus we save and restore only the first 8 bytes
             var stackForFloatRegisters = _borrowedRegisters.Count(reg => reg.FloatingPoint) * 8;
-            var totalStack = stackForFloatRegisters + _stackNeededForFunction;
+            var totalStack = stackForFloatRegisters + _stackOffset;
             while ((totalStack + borrowedIntRegisters.Length * 8) % 16 != 8) // make aligned by 8 but not by 16 (call will align)
                 totalStack = Round.AlwaysUp(totalStack, 8);
             if (totalStack == 0)
@@ -171,7 +171,7 @@
 
             //for now we assume llama only uses the scalar operating mode, thus we save and restore only the first 8 bytes
             var stackForFloatRegisters = _borrowedRegisters.Count(reg => reg.FloatingPoint) * 8;
-            var totalStack = stackForFloatRegisters + _stackNeededForFunction;
+            var totalStack = stackForFloatRegisters + _stackOffset;
             while ((totalStack + borrowedIntRegister.Length * 8) % 16 != 8) // make aligned by 8 but not by 16 (call will align)
                 totalStack = Round.AlwaysUp(totalStack, 8);
 

@@ -17,14 +17,14 @@
         private readonly List<FunctionFixup> _functionAddressFixes = new List<FunctionFixup>();
         private readonly List<FunctionFixup> _functionEpilogueOffsetFixes = new List<FunctionFixup>();
         private readonly List<FunctionFixup> _functionOffsetFixes = new List<FunctionFixup>();
-        private readonly List<IATFixup> _iatOffsetFixes = new List<IATFixup>();
+        private readonly List<IATFixup> _externalFunctionOffsets = new List<IATFixup>();
 
         private readonly List<FunctionFixup> _resolvedFunctionEpilogueFixes = new List<FunctionFixup>();
         private readonly List<FunctionFixup> _resolvedFunctionFixes = new List<FunctionFixup>();
 
         public void FixIATEntryOffset(long position, string library, string function)
         {
-            _iatOffsetFixes.Add(new IATFixup(position, library, function));
+            _externalFunctionOffsets.Add(new IATFixup(position, library, function));
         }
 
         public void FixConstantDataOffset(long position, byte[] data)
@@ -86,7 +86,7 @@
             ProcessInsertForFixups(_functionAddressFixes, position, count);
             ProcessInsertForFixups(_functionOffsetFixes, position, count);
             ProcessInsertForFixups(_functionEpilogueOffsetFixes, position, count);
-            ProcessInsertForFixups(_iatOffsetFixes, position, count);
+            ProcessInsertForFixups(_externalFunctionOffsets, position, count);
             ProcessInsertForFixups(_resolvedFunctionFixes, position, count);
             ProcessInsertForFixups(_resolvedFunctionEpilogueFixes, position, count);
 
@@ -106,7 +106,7 @@
                 other.FixConstantDataOffset(fixup.Position + offset, fixup.ConstData);
             foreach (var fixup in _constDataAddressFixes)
                 other.FixConstantDataAddress(fixup.Position + offset, fixup.ConstData);
-            foreach (var fixup in _iatOffsetFixes)
+            foreach (var fixup in _externalFunctionOffsets)
                 other.FixIATEntryOffset(fixup.Position + offset, fixup.Library, fixup.Function);
             foreach (var fixup in _functionAddressFixes)
                 other.FixFunctionAddress(fixup.Position + offset, fixup.Function);
@@ -141,7 +141,7 @@
         }
 
         private IEnumerable<(string library, string function)> GetAllImports() =>
-            _iatOffsetFixes.Select(item => (item.Library, item.Function)).Distinct();
+            _externalFunctionOffsets.Select(item => (item.Library, item.Function)).Distinct();
 
         private int GetRdataSectionSize() =>
             _constDataOffsetFixes.Concat(_constDataAddressFixes).Sum(item => Round.Up(item.ConstData.Length, ForcedDataAlignment));
@@ -177,24 +177,27 @@
                 builder.AddRelocation64(".text", (uint)codeRelocationOffset);
         }
 
-        public void LinkPostBuild(IExecutableBuilderResult peResult)
+        public void LinkPostBuild(IExecutableBuilderResult pe)
         {
-            var codeBuffer = peResult.GetCodeSectionBuffer();
-            var codeRVA = (long)peResult.GetSectionRVA(".text");
+            var codeBuffer = pe.GetSectionBuffer(".text");
 
-            var rdataBuffer = peResult.GetSectionBuffer(".rdata");
-            var rdataOffset = peResult.GetSectionOffsetFromStartOfCode(".rdata");
-            var rdataRVA = (long)peResult.GetSectionRVA(".rdata");
+            var codeRVA = (long)pe.GetSectionRVA(".text");
+
+            var rdataBuffer = pe.GetSectionBuffer(".rdata");
+            var rdataOffset = pe.GetSectionOffsetFromStartOfCode(".rdata");
+            var rdataRVA = (long)pe.GetSectionRVA(".rdata");
             var rdataPtr = 0;
 
-            var dataOffset = peResult.GetSectionOffsetFromStartOfCode(".data");
+            var dataOffset = pe.GetSectionOffsetFromStartOfCode(".data");
             var dataPtr = 0;
 
-            foreach (var iatOffsetFix in _iatOffsetFixes) // Fix references to IAT functions
+
+            foreach (var function in _externalFunctionOffsets) // Fix references to IAT functions
             {
-                var functionOffsetCode = peResult.GetIATEntryOffsetToStartOfCode(iatOffsetFix.Library, iatOffsetFix.Function);
-                var rva = (int)(functionOffsetCode - iatOffsetFix.Position);
-                BitConverter.GetBytes(rva).CopyTo(codeBuffer.Slice((int)iatOffsetFix.Position - 4, 4));
+                var offset = pe.GetIATOffsetFromCode((int)function.Position, function.Library, function.Function);
+                var bufferOfDummyOffset = codeBuffer.Slice((int)function.Position - 4, 4);
+
+                BitConverter.GetBytes(offset).CopyTo(bufferOfDummyOffset);
             }
 
             foreach (var constDataFix in _constDataOffsetFixes)

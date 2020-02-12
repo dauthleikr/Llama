@@ -58,6 +58,7 @@
                 return;
             }
 
+            pe32PlusExeBuilder.AddAdditionalSection("A\nB\t\0", 200, SectionCharacteristics.MemWrite | SectionCharacteristics.MemRead);
             var peResult = pe32PlusExeBuilder.Build((uint)codeBlob.Length, (uint)mainOffset);
             codeBlob.CopyTo(peResult.GetCodeSectionBuffer());
             linker.LinkPostBuild(peResult);

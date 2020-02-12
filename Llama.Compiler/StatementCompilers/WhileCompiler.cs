@@ -16,13 +16,12 @@
         {
             var codeGen = context.Generator;
             var conditionStart = codeGen.StreamPosition;
-            var preferredRegisterCondition = new PreferredRegister(Register64.RAX);
-            var whileConditionResult = context.CompileExpression(statement.Condition, preferredRegisterCondition);
-            Constants.BoolType.AssertCanAssignImplicitly(whileConditionResult.ValueType);
+            var whileConditionResult = context.CompileExpression(statement.Condition, new PreferredRegister(Register64.RAX));
+            var whileConditionRegister = whileConditionResult.GetOccupiedOrVolatile(Constants.BoolType);
 
-            whileConditionResult.GenerateMoveTo(Register8.AL, Constants.BoolType, codeGen, context.Linking);
+            whileConditionResult.GenerateMoveTo(whileConditionRegister, Constants.BoolType, codeGen, context.Linking);
 
-            codeGen.Test(Register8.AL, Register8.AL);
+            codeGen.Test(whileConditionRegister, whileConditionRegister);
 
             var childContext = context.CreateChildContext();
 
