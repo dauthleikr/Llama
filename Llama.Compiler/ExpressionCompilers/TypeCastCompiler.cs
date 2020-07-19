@@ -185,8 +185,8 @@
 
         private static bool CanCastUnsafe(Type targetType, Type sourceType)
         {
-            //if (Constants.LongType.CanAssignImplicitly(sourceType) && targetType.ChildRelation == Type.WrappingType.PointerOf)
-            //    return true; // allow number -> ptr for stuff like ptr = 0 or ptr = 0xdeadbeef
+            if (Constants.LongType.CanAssignImplicitly(sourceType) && targetType.ChildRelation == Type.WrappingType.PointerOf)
+                return true; // allow number -> ptr for stuff like ptr = 0 or ptr = 0xdeadbeef
             if (sourceType == Constants.CstrType &&
                 targetType.ChildRelation == Type.WrappingType.PointerOf &&
                 targetType.Child.ChildRelation == Type.WrappingType.None &&
